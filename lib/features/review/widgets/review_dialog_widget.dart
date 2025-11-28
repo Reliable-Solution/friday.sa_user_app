@@ -1,0 +1,91 @@
+import 'package:flutter/material.dart';
+import 'package:friday_sa/features/review/domain/models/review_model.dart';
+import 'package:friday_sa/util/dimensions.dart';
+import 'package:friday_sa/util/styles.dart';
+import 'package:friday_sa/common/widgets/custom_image.dart';
+import 'package:friday_sa/common/widgets/rating_bar.dart';
+
+class ReviewDialogWidget extends StatelessWidget {
+  const ReviewDialogWidget({
+    super.key,
+    required this.review,
+    this.fromOrderDetails = false,
+  });
+  final ReviewModel review;
+  final bool fromOrderDetails;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+      ),
+      insetPadding: const EdgeInsets.all(30),
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      child: SizedBox(
+        width: 500,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+          child: !fromOrderDetails
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipOval(
+                      child: CustomImage(
+                        image: review.itemImageFullUrl ?? '',
+                        height: 60,
+                        width: 60,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            review.itemName!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: robotoBold.copyWith(
+                              fontSize: Dimensions.fontSizeSmall,
+                            ),
+                          ),
+                          RatingBar(
+                            rating: review.rating!.toDouble(),
+                            ratingCount: null,
+                            size: 15,
+                          ),
+                          Text(
+                            review.customerName ?? '',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: robotoMedium.copyWith(
+                              fontSize: Dimensions.fontSizeExtraSmall,
+                            ),
+                          ),
+                          Text(
+                            review.comment!,
+                            style: robotoRegular.copyWith(
+                              fontSize: Dimensions.fontSizeExtraSmall,
+                              color: Theme.of(context).disabledColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              : Text(
+                  review.comment!,
+                  style: robotoRegular.copyWith(
+                    fontSize: Dimensions.fontSizeSmall,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+}

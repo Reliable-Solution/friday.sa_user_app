@@ -1,0 +1,29 @@
+import 'package:friday_sa/common/enums/data_source_enum.dart';
+import 'package:friday_sa/features/item/domain/models/basic_medicine_model.dart';
+import 'package:friday_sa/interfaces/repository_interface.dart';
+
+abstract class ItemRepositoryInterface implements RepositoryInterface {
+  // Future<dynamic> getPopularItemList(String type);
+  @override
+  Future getList({
+    int? offset,
+    String? type,
+    bool isPopularItem = false,
+    bool isReviewedItem = false,
+    bool isFeaturedCategoryItems = false,
+    bool isRecommendedItems = false,
+    bool isCommonConditions = false,
+    bool isDiscountedItems = false,
+    DataSourceEnum? source,
+  });
+  // Future<dynamic> getReviewedItemList(String type);
+  // Future<dynamic> getFeaturedCategoriesItemList();
+  // Future<dynamic> getRecommendedItemList(String type);
+  // Future<dynamic> getDiscountedItemList();
+  // Future<dynamic> getItemDetails(int? itemID);
+  Future<BasicMedicineModel?> getBasicMedicine(DataSourceEnum source);
+  @override
+  Future get(String? id, {bool isConditionWiseItem = false});
+  // Future<dynamic> getCommonConditions();
+  // Future<dynamic> getConditionsWiseItem(int id);
+}
