@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 import 'package:friday_sa/features/auth/controllers/auth_controller.dart';
 import 'package:friday_sa/features/favourite/controllers/favourite_controller.dart';
 import 'package:friday_sa/features/location/controllers/location_controller.dart';
@@ -13,19 +14,43 @@ import 'package:friday_sa/util/app_constants.dart';
 // class SplashRouteHelper{
 
 Future<void> route({NotificationBodyModel? body}) async {
-  String minimumVersion = _getMinimumVersion() ?? "0";
-  bool isMaintenanceMode =
-      Get.find<SplashController>().configModel!.maintenanceMode!;
-  bool needsUpdate = isHigherVersion('1.0.0');
+  try {
+    String minimumVersion = _getMinimumVersion() ?? "0";
 
-  if (isHigherVersion(minimumVersion.toString()) || isMaintenanceMode) {
-    Get.offNamed(RouteHelper.getUpdateRoute(needsUpdate));
-  } else if (!GetPlatform.isWeb) {
-    if (body != null) {
-      _forNotificationRouteProcess(body);
-    } else {
-      _handleUserRouting();
+    print("=====> Splash Screen Version ${minimumVersion.toString()}");
+    bool isMaintenanceMode =
+        Get.find<SplashController>().configModel?.maintenanceMode ?? false;
+    bool needsUpdate = isHigherVersion(minimumVersion);
+
+    print("=======> Second Splash Screen Version $needsUpdate");
+
+    if (isHigherVersion(minimumVersion) || isMaintenanceMode) {
+      print(
+        "========> Check Splash Screen Check - Navigating to Update Screen",
+      );
+      Get.offNamed(RouteHelper.getUpdateRoute(needsUpdate));
+      return; // Explicit return to prevent further navigation
     }
+
+    if (!GetPlatform.isWeb) {
+      if (body != null) {
+        _forNotificationRouteProcess(body);
+      } else {
+        await _handleUserRouting();
+      }
+    }
+  } catch (e) {
+    debugPrint('Route error: $e');
+    // On error, still check for update requirement as fallback
+    try {
+      String minimumVersion = _getMinimumVersion() ?? "0";
+      if (isHigherVersion(minimumVersion)) {
+        Get.offNamed(RouteHelper.getUpdateRoute(true));
+        return;
+      }
+    } catch (_) {}
+    // Final fallback - go to main screen
+    Get.offNamed(RouteHelper.getInitialRoute(fromSplash: true));
   }
 }
 

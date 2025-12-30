@@ -24,18 +24,22 @@ class AddressHelper {
   }
 
   static AddressModel? getUserAddressFromSharedPref() {
-    SharedPreferences sharedPreferences = Get.find<SharedPreferences>();
-    AddressModel? addressModel;
     try {
-      addressModel = AddressModel.fromJson(
-        jsonDecode(sharedPreferences.getString(AppConstants.userAddress)!),
+      SharedPreferences sharedPreferences = Get.find<SharedPreferences>();
+      AddressModel? addressModel;
+      String? addressString = sharedPreferences.getString(
+        AppConstants.userAddress,
       );
+      if (addressString != null && addressString.isNotEmpty) {
+        addressModel = AddressModel.fromJson(jsonDecode(addressString));
+      }
+      return addressModel;
     } catch (e) {
       if (!GetPlatform.isWeb) {
-        debugPrint('Address Catch exception : $e');
+        debugPrint('Address Catch exception: $e');
       }
+      return null;
     }
-    return addressModel;
   }
 
   static bool clearAddressFromSharedPref() {

@@ -11,6 +11,7 @@ import 'package:friday_sa/util/app_constants.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/images.dart';
 import 'package:friday_sa/common/widgets/no_internet_screen.dart';
+import 'package:friday_sa/features/address/domain/models/address_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -176,9 +177,14 @@ class SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     Get.find<SplashController>().initSharedData();
-    if (AddressHelper.getUserAddressFromSharedPref() != null &&
-        AddressHelper.getUserAddressFromSharedPref()!.zoneIds == null) {
-      Get.find<AuthController>().clearSharedAddress();
+
+    try {
+      AddressModel? address = AddressHelper.getUserAddressFromSharedPref();
+      if (address != null && address.zoneIds == null) {
+        Get.find<AuthController>().clearSharedAddress();
+      }
+    } catch (e) {
+      debugPrint('Splash screen address check error: $e');
     }
 
     return Scaffold(

@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'package:flutter/foundation.dart';
 import 'package:friday_sa/features/auth/controllers/auth_controller.dart';
 import 'package:friday_sa/features/auth/screens/new_user_setup_screen.dart';
 import 'package:friday_sa/features/brands/screens/brands_product_screen.dart';
@@ -1287,25 +1289,57 @@ class RouteHelper {
     AccessLocationScreen? locationScreen,
     bool byPuss = false,
   }) {
-    String? minimumVersion = "0";
-    if (GetPlatform.isAndroid) {
-      minimumVersion =
-          Get.find<SplashController>().configModel!.appMinimumVersionAndroid;
-    } else if (GetPlatform.isIOS) {
-      minimumVersion =
-          Get.find<SplashController>().configModel!.appMinimumVersionIos;
-    }
-    return (isHigherVersion(minimumVersion.toString()) && !GetPlatform.isWeb)
-        ? const UpdateScreen(isUpdate: true)
-        : Get.find<SplashController>().configModel!.maintenanceMode!
-        ? const UpdateScreen(isUpdate: false)
-        : (AddressHelper.getUserAddressFromSharedPref() == null && !byPuss)
-        ? AccessLocationScreen(
+    try {
+      final splashController = Get.find<SplashController>();
+      final configModel = splashController.configModel;
+
+      if (configModel == null) {
+        return navigateTo; // Config not loaded yet, proceed to requested screen
+      }
+
+      String? minimumVersion = "0";
+      if (GetPlatform.isAndroid) {
+        minimumVersion = configModel.appMinimumVersionAndroid;
+      } else if (GetPlatform.isIOS) {
+        minimumVersion = configModel.appMinimumVersionIos;
+      }
+
+      // Check for required update
+      if (isHigherVersion(minimumVersion ?? "0") && !GetPlatform.isWeb) {
+        return const UpdateScreen(isUpdate: true);
+      }
+
+      // Check for maintenance mode
+      if (configModel.maintenanceMode == true) {
+        return const UpdateScreen(isUpdate: false);
+      }
+
+      // Check for address
+      if (!byPuss) {
+        try {
+          AddressModel? address = AddressHelper.getUserAddressFromSharedPref();
+          if (address == null) {
+            return AccessLocationScreen(
+              fromSignUp: false,
+              fromHome: false,
+              route: Get.currentRoute,
+            );
+          }
+        } catch (e) {
+          debugPrint('getRoute address error: $e');
+          return AccessLocationScreen(
             fromSignUp: false,
             fromHome: false,
             route: Get.currentRoute,
-          )
-        : navigateTo;
+          );
+        }
+      }
+
+      return navigateTo;
+    } catch (e) {
+      debugPrint('getRoute error: $e');
+      return navigateTo;
+    }
   }
 }
 

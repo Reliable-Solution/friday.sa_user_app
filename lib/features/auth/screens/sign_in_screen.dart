@@ -43,9 +43,7 @@ class SignInScreenState extends State<SignInScreen> {
             widget.fromResetPassword ||
             widget.fromCountry) {
           if (widget.fromCountry) {
-            Get.offAllNamed(
-              RouteHelper.getInitialRoute(fromSplash: true, isLoad: true),
-            );
+            Get.back();
           } else {
             Navigator.pushNamed(context, RouteHelper.getInitialRoute());
           }
@@ -95,12 +93,7 @@ class SignInScreenState extends State<SignInScreen> {
                         widget.fromResetPassword ||
                         widget.fromCountry) {
                       if (widget.fromCountry) {
-                        Get.offAllNamed(
-                          RouteHelper.getInitialRoute(
-                            fromSplash: true,
-                            isLoad: true,
-                          ),
-                        );
+                        Get.back();
                       } else {
                         Navigator.pushNamed(
                           context,

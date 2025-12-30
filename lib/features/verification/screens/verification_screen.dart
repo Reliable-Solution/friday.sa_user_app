@@ -193,7 +193,7 @@ class VerificationScreenState extends State<VerificationScreen> {
                                           ),
                                           TextSpan(
                                             text:
-                                                ' ${(_email != null && _email!.isNotEmpty) ? _email : _number}',
+                                                ' \u200e${(_email != null && _email!.isNotEmpty) ? _email : _number}',
                                             style: robotoMedium.copyWith(
                                               color: Theme.of(
                                                 context,
@@ -511,15 +511,19 @@ class VerificationScreenState extends State<VerificationScreen> {
           ),
         );
       } else {
-        Get.bottomSheet(
-          ExistingUserBottomSheet(
-            userModel: response.authResponseModel!.isExistUser!,
-            number: _number,
-            email: _email,
-            loginType: widget.loginType,
-            otp: Get.find<VerificationController>().verificationCode,
-          ),
+        Get.find<LocationController>().navigateToLocationScreen(
+          'verification',
+          offNamed: true,
         );
+        // Get.bottomSheet(
+        //   ExistingUserBottomSheet(
+        //     userModel: response.authResponseModel!.isExistUser!,
+        //     number: _number,
+        //     email: _email,
+        //     loginType: widget.loginType,
+        //     otp: Get.find<VerificationController>().verificationCode,
+        //   ),
+        // );
       }
     } else if (response.authResponseModel != null &&
         !response.authResponseModel!.isPersonalInfo!) {
@@ -534,14 +538,18 @@ class VerificationScreenState extends State<VerificationScreen> {
           ),
         );
       } else {
-        Get.toNamed(
-          RouteHelper.getNewUserSetupScreen(
-            name: '',
-            loginType: widget.loginType,
-            phone: number,
-            email: email,
-          ),
+        Get.find<LocationController>().navigateToLocationScreen(
+          'verification',
+          offNamed: true,
         );
+        // Get.toNamed(
+        //   RouteHelper.getNewUserSetupScreen(
+        //     name: '',
+        //     loginType: widget.loginType,
+        //     phone: number,
+        //     email: email,
+        //   ),
+        // );
       }
     } else {
       if (widget.fromForgetPassword) {

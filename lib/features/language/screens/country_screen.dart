@@ -163,7 +163,7 @@ class _CountryScreenState extends State<CountryScreen> {
                                 onPressed: () {
                                   controller.changeCountry();
                                   if (widget.fromLogin) {
-                                    Get.offAllNamed(
+                                    Get.toNamed(
                                       RouteHelper.getSignInRoute(
                                         widget.page,
                                         fromCountry: true,

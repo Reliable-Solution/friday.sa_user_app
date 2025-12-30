@@ -12,6 +12,8 @@ import 'package:friday_sa/helper/validate_check.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/styles.dart';
 
+import '../../../../helper/route_helper.dart';
+
 class OtpLoginWidget extends StatelessWidget {
   const OtpLoginWidget({
     super.key,
@@ -51,22 +53,27 @@ class OtpLoginWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: Dimensions.paddingSizeLarge),
-              CustomTextField(
-                titleText: 'xxx-xxx-xxxxx'.tr,
-                controller: phoneController,
-                focusNode: phoneFocus,
-                inputAction: TextInputAction.done,
-                inputType: TextInputType.phone,
-                isPhone: true,
-                onCountryChanged: onCountryChanged,
-                countryDialCode:
-                    countryDialCode ??
-                    Get.find<LocalizationController>().locale.countryCode,
-                labelText: 'phone'.tr,
-                required: true,
-                validator: (value) => ValidateCheck.validateEmptyText(
-                  value,
-                  "please_enter_phone_number".tr,
+              Directionality(
+                textDirection: TextDirection.ltr, // or determine dynamically based on language
+
+                child: CustomTextField(
+                  titleText: 'xxx-xxx-xxxxx'.tr,
+                  controller: phoneController,
+                  focusNode: phoneFocus,
+                  inputAction: TextInputAction.done,
+                  inputType: TextInputType.phone,
+                  isPhone: true,
+                  forceLTR: true,
+                  onCountryChanged: onCountryChanged,
+                  countryDialCode:
+                      countryDialCode ??
+                      Get.find<LocalizationController>().locale.countryCode,
+                  labelText: 'phone'.tr,
+                  required: true,
+                  validator: (value) => ValidateCheck.validateEmptyText(
+                    value,
+                    "please_enter_phone_number".tr,
+                  ),
                 ),
               ),
               const SizedBox(height: Dimensions.paddingSizeExtraLarge),
@@ -110,6 +117,35 @@ class OtpLoginWidget extends StatelessWidget {
                     : Dimensions.fontSizeDefault,
               ),
               const SizedBox(height: Dimensions.paddingSizeLarge),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'do_not_have_account'.tr,
+                    style: robotoRegular.copyWith(
+                      color: Theme.of(context).hintColor,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: authController.isLoading
+                        ? null
+                        : () {
+                      Get.toNamed(RouteHelper.getSignUpRoute());
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(
+                        Dimensions.paddingSizeExtraSmall,
+                      ),
+                      child: Text(
+                        'sign_up'.tr,
+                        style: robotoMedium.copyWith(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               socialEnable
                   ? const SocialLoginWidget(onlySocialLogin: false)
                   : const SizedBox(),
@@ -117,6 +153,7 @@ class OtpLoginWidget extends StatelessWidget {
                   ? const SizedBox(height: Dimensions.paddingSizeLarge)
                   : const SizedBox(),
               !socialEnable ? const SizedBox(height: 100) : const SizedBox(),
+
             ],
           ),
         );

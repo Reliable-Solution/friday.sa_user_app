@@ -48,6 +48,7 @@ class CustomTextField extends StatefulWidget {
     this.suffixImage,
     this.divider = false,
     this.fromUpdateProfile = false,
+  this.forceLTR = false,
   });
   final String titleText;
   final String hintText;
@@ -85,6 +86,7 @@ class CustomTextField extends StatefulWidget {
   final Function()? suffixOnPressed;
   final bool divider;
   final bool fromUpdateProfile;
+  final bool forceLTR;
 
   @override
   CustomTextFieldState createState() => CustomTextFieldState();
@@ -133,6 +135,7 @@ class CustomTextFieldState extends State<CustomTextField> {
             controller: widget.controller,
             focusNode: widget.focusNode,
             textAlign: widget.textAlign,
+            textDirection: widget.forceLTR ? TextDirection.ltr : (widget.isPhone ? (Get.locale?.languageCode == 'ar' ? TextDirection.rtl : TextDirection.ltr) : null),
             validator: widget.validator,
             style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeLarge),
             textInputAction: widget.inputAction,
@@ -244,7 +247,7 @@ class CustomTextFieldState extends State<CustomTextField> {
                                     ).hintColor.withValues(alpha: .75),
                             ),
                           ),
-                          if (widget.required && widget.labelText != null)
+                          if (widget.required )
                             TextSpan(
                               text: ' *',
                               style: robotoRegular.copyWith(
