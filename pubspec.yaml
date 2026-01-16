@@ -82,7 +82,7 @@ dependencies:
   pull_to_refresh: ^2.0.0
   app_links: ^6.4.1
   webview_flutter: ^4.13.0
-  package_info_plus: ^8.3.0
+  package_info_plus: ^9.0.0
   cupertino_icons: ^1.0.8
   flutter_facebook_auth: ^7.1.2
   dio: ^5.9.0

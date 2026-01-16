@@ -87,6 +87,9 @@ import 'package:friday_sa/features/update/screens/update_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/features/wallet/screens/wallet_screen.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
+import '../main.dart';
 
 class RouteHelper {
   static const String initial = '/';
@@ -1343,20 +1346,49 @@ class RouteHelper {
   }
 }
 
-bool isHigherVersion(String storeVersion) {
-  final store = int.tryParse(storeVersion.replaceAll('.', '')) ?? 0;
-  final storeV = storeVersion.split('.');
-  final appV = AppConstants.appVersion.split('.');
-  "appVersion $appV == store $store = storeVersion $storeVersion".print;
-  for (
-    var i = 0;
-    i < (storeV.length > appV.length ? storeV.length : appV.length);
-    i++
-  ) {
-    final store = i < storeV.length ? (int.tryParse(storeV[i]) ?? 0) : 0;
-    final app = i < appV.length ? (int.tryParse(appV[i]) ?? 0) : 0;
-    if (store < app) return false;
-    if (store > app) return true;
+// bool isHigherVersion(String storeVersion) {
+//   final store = int.tryParse(storeVersion.replaceAll('.', '')) ?? 0;
+//   final storeV = storeVersion.split('.');
+//   final appV = AppConstants.appVersion.split('.');
+//   "appVersion $appV == store $store = storeVersion $storeVersion".print;
+//   for (
+//     var i = 0;
+//     i < (storeV.length > appV.length ? storeV.length : appV.length);
+//     i++
+//   ) {
+//     final store = i < storeV.length ? (int.tryParse(storeV[i]) ?? 0) : 0;
+//     final app = i < appV.length ? (int.tryParse(appV[i]) ?? 0) : 0;
+//     if (store < app) return false;
+//     if (store > app) return true;
+//   }
+//   return false;
+// }
+
+bool isHigherVersion(String minimumVersion) {
+  // Use the global currentAppVersion
+  String appVersion = currentAppVersion;
+
+  List<int> minParts = minimumVersion.split('.').map((e) {
+    return int.tryParse(e.trim()) ?? 0;
+  }).toList();
+
+  List<int> appParts = appVersion.split('.').map((e) {
+    return int.tryParse(e.trim()) ?? 0;
+  }).toList();
+
+  int maxLength = minParts.length > appParts.length ? minParts.length : appParts.length;
+
+  for (int i = 0; i < maxLength; i++) {
+    int minPart = i < minParts.length ? minParts[i] : 0;
+    int appPart = i < appParts.length ? appParts[i] : 0;
+
+    if (minPart > appPart) {
+      return true;  // Minimum required > current → need update
+    }
+    if (minPart < appPart) {
+      return false; // Current is higher → no need to update
+    }
   }
-  return false;
+
+  return false; // Versions are equal → no forced update
 }

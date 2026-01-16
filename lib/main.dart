@@ -27,13 +27,29 @@ import 'package:get/get.dart';
 import 'package:friday_sa/features/home/widgets/cookies_view.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'helper/get_di.dart' as di;
+import 'package:package_info_plus/package_info_plus.dart';
+
+String currentAppVersion = '1.0.0';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
+Future<void> initAppVersion() async {
+  try {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    currentAppVersion = packageInfo.version; // e.g., "1.2.3"
+  } catch (e) {
+    print('Failed to get app version: $e');
+    // Keep fallback
+  }
+}
+
 Future<void> main() async {
   print("object 0");
   WidgetsFlutterBinding.ensureInitialized();
+
+  print('loading version');
+  await initAppVersion();
 
   print("object 1");
 

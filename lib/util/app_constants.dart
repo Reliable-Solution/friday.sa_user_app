@@ -6,7 +6,7 @@ import 'package:friday_sa/util/images.dart';
 
 class AppConstants {
   static const String appName = 'Friday.sa | فرايدي';
-  static String appVersion = '1.0.0';
+  static String appVersion = '1.1.9';
 
   static const String fontFamily = 'Roboto';
   static const bool payInWevView = false;
@@ -15,11 +15,11 @@ class AppConstants {
   static const bool useReactWebsite = false;
 
 
-  static String baseUrl = 'https://friday.sa';
-  static String mainUrl = 'https://friday.sa';
-
-  // static String baseUrl = 'http://172.105.39.242/testing';
-  // static String mainUrl = 'http://172.105.39.242/testing';
+  // static String baseUrl = 'https://friday.sa';
+  // static String mainUrl = 'https://friday.sa';
+  //
+  static String baseUrl = 'http://172.105.39.242/testing';
+  static String mainUrl = 'http://172.105.39.242/testing';
 
   // static String baseUrl = 'http://172.105.39.242/testing';
   // static String mainUrl = 'http://172.105.39.242/testing';
