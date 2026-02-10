@@ -1493,7 +1493,8 @@ class _StoreScreenState extends State<StoreScreen> {
 
                         ResponsiveHelper.isDesktop(context)
                             ? const SliverToBoxAdapter(child: SizedBox())
-                            : (storeController.categoryList.isNotEmpty)
+                            : (storeController.categoryList.isNotEmpty ||
+                                  storeController.isSubCatLoad)
                             ? SliverPersistentHeader(
                                 pinned: true,
                                 delegate: SliverDelegate(

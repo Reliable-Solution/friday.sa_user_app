@@ -21,9 +21,11 @@ class CategoryItemScreen extends StatefulWidget {
     super.key,
     required this.categoryID,
     required this.categoryName,
+    this.storeID,
   });
   final String? categoryID;
   final String categoryName;
+  final String? storeID;
 
   @override
   CategoryItemScreenState createState() => CategoryItemScreenState();
@@ -41,7 +43,10 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
     super.initState();
 
     _tabController = TabController(length: 2, initialIndex: 0, vsync: this);
-    Get.find<CategoryController>().getSubCategoryList(widget.categoryID);
+    Get.find<CategoryController>().getSubCategoryList(
+      widget.categoryID,
+      storeId: widget.storeID,
+    );
 
     Get.find<CategoryController>().getCategoryStoreList(
       widget.categoryID,

@@ -529,15 +529,15 @@ class StoreController extends GetxController implements GetxService {
   }
 
   void setCategoryList() {
-    print(
-      "storeCategoryList _store!. === value ${Get.find<CategoryController>().storeCategoryList.length}",
-    );
     if (_store != null) {
       _categoryList.clear();
-      // _categoryList.add(CategoryModel(id: 0, name: 'all'.tr));
-      for (var category in Get.find<CategoryController>().storeCategoryList) {
-        if (_store!.categoryIds!.contains(category.id)) {
-          _categoryList.add(category);
+      if (_store!.categories != null && _store!.categories!.isNotEmpty) {
+        _categoryList.addAll(_store!.categories!);
+      } else {
+        for (var category in Get.find<CategoryController>().storeCategoryList) {
+          if (_store!.categoryIds!.contains(category.id)) {
+            _categoryList.add(category);
+          }
         }
       }
     }
@@ -791,13 +791,15 @@ class StoreController extends GetxController implements GetxService {
       Get.find<CategoryController>()
           .getSubCategoryList(
             _categoryList[_categoryIndex].id?.toString() ?? "0",
+            storeId: _store?.id?.toString(),
           )
           .then((value) {
             isSubCatLoad = false;
-            update();
             _subCategoryList.clear();
-            // _subCategoryList.add(CategoryModel(id: 0, name: 'all'.tr));
-            _subCategoryList.addAll(value ?? []);
+            if (value != null) {
+              _subCategoryList.addAll(value);
+            }
+            update();
             if (itemSearching) {
               _storeSearchItemModel = null;
               getStoreSearchItemList(

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:friday_sa/api/api_checker.dart';
@@ -14,7 +14,32 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class ApiClient extends GetxService {
+  static final Map<String, int> _apiPerformance = {};
+
+  static void printPerformanceSummary() {
+    debugPrint('\n\n\u001b[35m' + '=' * 60);
+    debugPrint('          🚀 API PERFORMANCE SUMMARY (Slowest 10)');
+    debugPrint('=' * 60 + '\u001b[0m');
+    var sortedEntries = _apiPerformance.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    if (sortedEntries.isEmpty) {
+      debugPrint('No API records yet.');
+    } else {
+      for (var entry in sortedEntries.take(10)) {
+        String color = entry.value > 1000
+            ? '\u001b[31m'
+            : (entry.value > 500 ? '\u001b[33m' : '\u001b[32m');
+        debugPrint(
+          '$color${entry.value.toString().padLeft(6)} ms : ${entry.key}\u001b[0m',
+        );
+      }
+    }
+    debugPrint('\u001b[35m' + '=' * 60 + '\u001b[0m\n\n');
+  }
+
   ApiClient({required this.appBaseUrl, required this.sharedPreferences}) {
+    _httpClient = http.Client();
     token = sharedPreferences.getString(AppConstants.token);
     if (kDebugMode) {
       debugPrint('Token: $token');
@@ -53,30 +78,30 @@ class ApiClient extends GetxService {
   }) async {
     try {
       final usedHeaders = headers ?? _mainHeaders;
-      final url = Uri.parse(
+      final fullUri = Uri.parse(
         AppConstants.cardUrl + uri,
-      ).replace(queryParameters: query).toString();
+      ).replace(queryParameters: query);
 
-      // Construct the curl command
-      final curlCommand = StringBuffer("curl -X GET");
-      usedHeaders.forEach((key, value) {
-        curlCommand.write(" -H '$key: $value'");
-      });
-      curlCommand.write(" '$url'");
+      printCurl("GET", fullUri, usedHeaders);
 
-      debugPrint('====> API Call: $url\nHeader: $usedHeaders');
-      debugPrint('====> cURL:\n$curlCommand');
-
-      final http.Response response = await http
-          .get(Uri.parse(url), headers: usedHeaders)
+      final stopwatch = Stopwatch()..start();
+      final http.Response response = await _httpClient
+          .get(fullUri, headers: usedHeaders)
           .timeout(Duration(seconds: timeoutInSeconds));
+      stopwatch.stop();
 
-      return handleResponse(response, uri, handleError);
+      return handleResponse(
+        response,
+        uri,
+        handleError,
+        duration: stopwatch.elapsedMilliseconds,
+      );
     } catch (e) {
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
 
+  late http.Client _httpClient;
   final String appBaseUrl;
   final SharedPreferences sharedPreferences;
   static final String noInternetMessage = 'connection_to_api_server_failed'.tr;
@@ -128,14 +153,27 @@ class ApiClient extends GetxService {
     Map<String, String> headers, [
     dynamic body,
   ]) {
-    final headerStrings = headers.entries
-        .map((e) => "-H '${e.key}: ${e.value}'")
-        .join(' ');
-    String curl = "curl -X $method '$uri' $headerStrings";
+    final curl = StringBuffer("curl --location --request $method '$uri'");
+
+    headers.forEach((key, value) {
+      curl.write(" --header '$key: $value'");
+    });
+
     if (body != null) {
-      curl += " -d '${jsonEncode(body)}'";
+      if (body is Map && body.isNotEmpty) {
+        curl.write(" --data-raw '${jsonEncode(body)}'");
+      } else if (body is String && body.isNotEmpty) {
+        curl.write(" --data-raw '$body'");
+      }
     }
-    log('CURL: $curl');
+
+    debugPrint(
+      '\n\u001b[36m==================== POSTMAN cURL START ====================\u001b[0m',
+    );
+    debugPrint('\u001b[36m${curl.toString()}\u001b[0m');
+    debugPrint(
+      '\u001b[36m===================== POSTMAN cURL END =====================\u001b[0m\n',
+    );
   }
 
   Map<String, String> getHeader() => _mainHeaders;
@@ -155,11 +193,18 @@ class ApiClient extends GetxService {
 
       printCurl("GET", fullUri, requestHeaders);
 
-      http.Response response = await http
+      final stopwatch = Stopwatch()..start();
+      http.Response response = await _httpClient
           .get(fullUri, headers: requestHeaders)
           .timeout(Duration(seconds: timeoutInSeconds));
+      stopwatch.stop();
 
-      return handleResponse(response, uri, handleError);
+      return handleResponse(
+        response,
+        uri,
+        handleError,
+        duration: stopwatch.elapsedMilliseconds,
+      );
     } catch (e) {
       if (kDebugMode) {
         debugPrint('------------${e.toString()}');
@@ -190,14 +235,21 @@ class ApiClient extends GetxService {
       final fullUri = Uri.parse(AppConstants.baseUrl + uri);
       final requestHeaders = headers ?? _mainHeaders;
       printCurl("POST", fullUri, requestHeaders, newBody);
-      http.Response response = await http
+      final stopwatch = Stopwatch()..start();
+      http.Response response = await _httpClient
           .post(
             Uri.parse(AppConstants.baseUrl + uri),
             body: jsonEncode(newBody),
             headers: headers ?? _mainHeaders,
           )
           .timeout(Duration(seconds: timeout ?? timeoutInSeconds));
-      return handleResponse(response, uri, handleError);
+      stopwatch.stop();
+      return handleResponse(
+        response,
+        uri,
+        handleError,
+        duration: stopwatch.elapsedMilliseconds,
+      );
     } catch (e) {
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
@@ -248,10 +300,17 @@ class ApiClient extends GetxService {
         }
       });
       request.fields.addAll(newBody);
+      final stopwatch = Stopwatch()..start();
       http.Response response = await http.Response.fromStream(
-        await request.send(),
+        await _httpClient.send(request),
       );
-      return handleResponse(response, uri, handleError);
+      stopwatch.stop();
+      return handleResponse(
+        response,
+        uri,
+        handleError,
+        duration: stopwatch.elapsedMilliseconds,
+      );
     } catch (e) {
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
@@ -270,14 +329,21 @@ class ApiClient extends GetxService {
       final requestHeaders = headers ?? _mainHeaders;
 
       printCurl("PUT", fullUri, requestHeaders, body);
-      http.Response response = await http
+      final stopwatch = Stopwatch()..start();
+      http.Response response = await _httpClient
           .put(
             Uri.parse(AppConstants.baseUrl + uri),
             body: jsonEncode(body),
             headers: headers ?? _mainHeaders,
           )
           .timeout(Duration(seconds: timeoutInSeconds));
-      return handleResponse(response, uri, handleError);
+      stopwatch.stop();
+      return handleResponse(
+        response,
+        uri,
+        handleError,
+        duration: stopwatch.elapsedMilliseconds,
+      );
     } catch (e) {
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
@@ -295,14 +361,21 @@ class ApiClient extends GetxService {
       final requestHeaders = headers ?? _mainHeaders;
 
       printCurl("DELETE", fullUri, requestHeaders);
-      http.Response response = await http
+      final stopwatch = Stopwatch()..start();
+      http.Response response = await _httpClient
           .delete(
             Uri.parse(AppConstants.baseUrl + uri),
             headers: headers ?? _mainHeaders,
             body: jsonEncode(body),
           )
           .timeout(Duration(seconds: timeoutInSeconds));
-      return handleResponse(response, uri, handleError);
+      stopwatch.stop();
+      return handleResponse(
+        response,
+        uri,
+        handleError,
+        duration: stopwatch.elapsedMilliseconds,
+      );
     } catch (e) {
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
@@ -311,8 +384,12 @@ class ApiClient extends GetxService {
   Response handleResponse(
     http.Response response,
     String uri,
-    bool handleError,
-  ) {
+    bool handleError, {
+    int? duration,
+  }) {
+    if (duration != null) {
+      _apiPerformance[uri] = duration;
+    }
     dynamic body;
     try {
       body = jsonDecode(response.body);
@@ -329,6 +406,23 @@ class ApiClient extends GetxService {
       statusCode: response.statusCode,
       statusText: response.reasonPhrase,
     );
+
+    // Color coding logic
+    String color = '\u001b[32m'; // Green (Fast)
+    String tag = ' [FAST] ';
+    if (duration != null) {
+      if (duration > 1000) {
+        color = '\u001b[31m'; // Red (High Load)
+        tag = ' 🚨 [HIGH LOAD] ';
+      } else if (duration > 500) {
+        color = '\u001b[33m'; // Yellow (Medium Load)
+        tag = ' ⚠️ [MEDIUM LOAD] ';
+      }
+    }
+    debugPrint(
+      '$color$tag====> API Response: [${response0.statusCode}] $uri ${duration != null ? '($duration ms)' : ''}\u001b[0m',
+    );
+
     if (response0.statusCode != 200 &&
         response0.body != null &&
         response0.body is! String) {
@@ -350,7 +444,6 @@ class ApiClient extends GetxService {
       response0 = Response(statusCode: 0, statusText: noInternetMessage);
     }
 
-    debugPrint('====> API Response: [${response0.statusCode}] $uri');
     if (!ResponsiveHelper.isWeb() || response.statusCode != 500) {
       // debugPrint('${response0.body}');
     }
@@ -364,6 +457,12 @@ class ApiClient extends GetxService {
     } else {
       return response0;
     }
+  }
+
+  @override
+  void onClose() {
+    _httpClient.close();
+    super.onClose();
   }
 }
 

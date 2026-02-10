@@ -329,10 +329,10 @@ class RouteHelper {
 
   static String getCategoryRoute() => categories;
 
-  static String getCategoryItemRoute(int? id, String name) {
+  static String getCategoryItemRoute(int? id, String name, {int? storeId}) {
     List<int> encoded = utf8.encode(name);
     String data = base64Encode(encoded);
-    return '$categoryItem?id=$id&name=$data';
+    return '$categoryItem?id=$id&name=$data${storeId != null ? '&store_id=$storeId' : ''}';
   }
 
   static String getPopularItemRoute(bool isPopular, bool isSpecial) =>
@@ -907,6 +907,7 @@ class RouteHelper {
           CategoryItemScreen(
             categoryID: Get.parameters['id'],
             categoryName: data,
+            storeID: Get.parameters['store_id'],
           ),
         );
       },
@@ -1376,14 +1377,16 @@ bool isHigherVersion(String minimumVersion) {
     return int.tryParse(e.trim()) ?? 0;
   }).toList();
 
-  int maxLength = minParts.length > appParts.length ? minParts.length : appParts.length;
+  int maxLength = minParts.length > appParts.length
+      ? minParts.length
+      : appParts.length;
 
   for (int i = 0; i < maxLength; i++) {
     int minPart = i < minParts.length ? minParts[i] : 0;
     int appPart = i < appParts.length ? appParts[i] : 0;
 
     if (minPart > appPart) {
-      return true;  // Minimum required > current → need update
+      return true; // Minimum required > current → need update
     }
     if (minPart < appPart) {
       return false; // Current is higher → no need to update

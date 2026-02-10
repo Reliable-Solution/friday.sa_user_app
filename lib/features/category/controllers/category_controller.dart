@@ -5,6 +5,7 @@ import 'package:friday_sa/features/store/domain/models/store_model.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/features/category/domain/services/category_service_interface.dart';
 import 'package:friday_sa/helper/string_extension.dart';
+import '../../store/controllers/store_controller.dart';
 
 class CategoryController extends GetxController implements GetxService {
   CategoryController({required this.categoryServiceInterface});
@@ -145,6 +146,8 @@ class CategoryController extends GetxController implements GetxService {
             .print;
         list = storeCategoryList;
         _prepareStoreCategoryList(storeCategoryList);
+        Get.find<StoreController>().setCategoryList();
+        Get.find<StoreController>().update();
       }
     }
     return list;
@@ -161,12 +164,15 @@ class CategoryController extends GetxController implements GetxService {
     update();
   }
 
-  Future<List<CategoryModel>?> getSubCategoryList(String? categoryID) async {
+  Future<List<CategoryModel>?> getSubCategoryList(
+    String? categoryID, {
+    String? storeId,
+  }) async {
     _subCategoryIndex = 0;
     _subCategoryList = null;
     _categoryItemList = null;
     List<CategoryModel>? subCategoryList = await categoryServiceInterface
-        .getSubCategoryList(categoryID);
+        .getSubCategoryList(categoryID, storeId: storeId);
     if (subCategoryList != null) {
       _subCategoryList = [];
       // _subCategoryList!.add(
