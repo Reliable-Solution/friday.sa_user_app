@@ -585,8 +585,6 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                           )
                                                         : priceWithAddons,
                                                   ),
-                                                  textDirection:
-                                                      TextDirection.ltr,
                                                   style: robotoBold.copyWith(
                                                     color: Theme.of(
                                                       context,

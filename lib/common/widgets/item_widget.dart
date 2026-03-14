@@ -472,7 +472,6 @@ class ItemWidget extends StatelessWidget {
                                                 fontSize:
                                                     Dimensions.fontSizeSmall,
                                               ),
-                                              textDirection: TextDirection.ltr,
                                             ),
                                             SizedBox(
                                               width: discount! > 0
@@ -494,8 +493,6 @@ class ItemWidget extends StatelessWidget {
                                                       decoration: TextDecoration
                                                           .lineThrough,
                                                     ),
-                                                    textDirection:
-                                                        TextDirection.ltr,
                                                   )
                                                 : const SizedBox(),
                                           ],

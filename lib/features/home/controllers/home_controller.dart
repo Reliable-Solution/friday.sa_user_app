@@ -38,6 +38,7 @@ class HomeController extends GetxController implements GetxService {
     update();
   }
 
+
   /*  Future<num> getCashBackAmount(num amount) async {
     _cashBackAmount = await homeServiceInterface.getCashBackAmount(amount);
     return _cashBackAmount;

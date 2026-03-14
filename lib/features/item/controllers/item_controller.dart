@@ -180,8 +180,9 @@ class ItemController extends GetxController implements GetxService {
 
   _preparePopularItems(List<Item>? items) {
     if (items != null) {
-      _popularItemList = [];
-      _popularItemList!.addAll(items);
+      List<Item> popularItemList = [];
+      popularItemList.addAll(items);
+      _popularItemList = popularItemList;
       _isLoading = false;
     }
     update();
@@ -228,10 +229,12 @@ class ItemController extends GetxController implements GetxService {
 
   _preparedReviewedItems(ItemModel? itemModel) {
     if (itemModel != null) {
-      _reviewedItemList = [];
-      _reviewedCategoriesList = [];
-      _reviewedItemList!.addAll(itemModel.items!);
-      _reviewedCategoriesList!.addAll(itemModel.categories!);
+      List<Item> reviewedItemList = [];
+      List<Categories> reviewedCategoriesList = [];
+      reviewedItemList.addAll(itemModel.items!);
+      reviewedCategoriesList.addAll(itemModel.categories!);
+      _reviewedItemList = reviewedItemList;
+      _reviewedCategoriesList = reviewedCategoriesList;
       _isLoading = false;
     }
     update();
@@ -259,8 +262,9 @@ class ItemController extends GetxController implements GetxService {
           dataSource,
         );
         if (items != null) {
-          _discountedItemList = [];
-          _discountedItemList!.addAll(items);
+          List<Item> discountedItemList = [];
+          discountedItemList.addAll(items);
+          _discountedItemList = discountedItemList;
           _isLoading = false;
         }
         update();
@@ -277,8 +281,9 @@ class ItemController extends GetxController implements GetxService {
           dataSource,
         );
         if (items != null) {
-          _discountedItemList = [];
-          _discountedItemList!.addAll(items);
+          List<Item> discountedItemList = [];
+          discountedItemList.addAll(items);
+          _discountedItemList = discountedItemList;
           _isLoading = false;
         }
         update();
@@ -293,7 +298,7 @@ class ItemController extends GetxController implements GetxService {
     bool fromRecall = false,
   }) async {
     if (reload) {
-      _featuredCategoriesItem = null;
+      // _featuredCategoriesItem = null;
     }
     if (notify) {
       update();
@@ -358,8 +363,9 @@ class ItemController extends GetxController implements GetxService {
 
   _prepareRecommendedItems(List<Item>? items) {
     if (items != null) {
-      _recommendedItemList = [];
-      _recommendedItemList!.addAll(items);
+      List<Item> recommendedItemList = [];
+      recommendedItemList.addAll(items);
+      _recommendedItemList = recommendedItemList;
       _isLoading = false;
     }
     update();
@@ -407,8 +413,7 @@ class ItemController extends GetxController implements GetxService {
     }
     List<Item>? items = await itemServiceInterface.getConditionsWiseItems(id);
     if (items != null) {
-      _conditionWiseProduct = [];
-      _conditionWiseProduct!.addAll(items);
+      _conditionWiseProduct = items;
       _isLoading = false;
     }
     update();
@@ -422,7 +427,7 @@ class ItemController extends GetxController implements GetxService {
     List<CommonConditionModel>? conditions = await itemServiceInterface
         .getCommonConditions();
     if (conditions != null) {
-      _commonConditions!.addAll(conditions);
+      _commonConditions = conditions;
       _isLoading = false;
     }
     update();

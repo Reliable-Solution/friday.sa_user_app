@@ -605,7 +605,7 @@ class StoreController extends GetxController implements GetxService {
           );
         }
         if (fromModule) {
-          HomeScreen.loadData(true);
+          HomeScreen.loadData(false);
         } else {
           Get.find<CheckoutController>().clearPrevData();
         }
@@ -672,10 +672,8 @@ class StoreController extends GetxController implements GetxService {
         (_store != null &&
             _store!.categoryIds!.isNotEmpty &&
             _categoryIndex != -1)
-        ? _subCategoryIndex != -1
-              ? _subCategoryList.isEmpty
-                    ? 0
-                    : _subCategoryList[_subCategoryIndex].id
+        ? (_subCategoryIndex != -1 && _subCategoryList.isNotEmpty && _subCategoryIndex != 0)
+              ? _subCategoryList[_subCategoryIndex].id
               : (_categoryList.isEmpty ? 0 : _categoryList[_categoryIndex].id)
         : 0;
 
@@ -686,6 +684,7 @@ class StoreController extends GetxController implements GetxService {
         catId,
         type,
       );
+
       if (storeItemModel != null) {
         if (offset == 1) {
           _storeItemModel = storeItemModel;
@@ -696,7 +695,8 @@ class StoreController extends GetxController implements GetxService {
         }
       }
     } else {
-      _storeItemModel!.items!.clear();
+      _storeItemModel ??= ItemModel(items: [], totalSize: 0, offset: 1);
+      _storeItemModel?.items?.clear();
     }
     update();
   }

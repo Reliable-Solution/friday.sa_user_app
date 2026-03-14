@@ -76,7 +76,7 @@ class HomeScreen extends StatefulWidget {
             .module!
             .isTaxi!) {
       Get.find<BannerController>().getBannerList(reload);
-      Get.find<StoreController>().getRecommendedStoreList();
+      Get.find<StoreController>().getRecommendedStoreList(fromRecall: !reload);
       if (Get.find<SplashController>().module!.moduleType.toString() ==
           AppConstants.grocery) {
         Get.find<FlashSaleController>().getFlashSale(reload, false);
@@ -88,16 +88,16 @@ class HomeScreen extends StatefulWidget {
         Get.find<BrandsController>().getBrandList();
       }
       Get.find<BannerController>().getPromotionalBannerList(reload);
-      Get.find<ItemController>().getDiscountedItemList(reload, false, 'all');
-      Get.find<CategoryController>().getCategoryList(reload);
-      Get.find<StoreController>().getPopularStoreList(reload, 'all', false);
+      Get.find<ItemController>().getDiscountedItemList(reload, true, 'all', fromRecall: !reload);
+      Get.find<CategoryController>().getCategoryList(reload, fromRecall: !reload);
+      Get.find<StoreController>().getPopularStoreList(reload, 'all', true, fromRecall: !reload);
       Get.find<CampaignController>().getBasicCampaignList(reload);
       Get.find<CampaignController>().getItemCampaignList(reload);
-      Get.find<ItemController>().getPopularItemList(reload, 'all', false);
-      Get.find<StoreController>().getLatestStoreList(reload, 'all', false);
-      Get.find<StoreController>().getTopOfferStoreList(reload, false);
-      Get.find<ItemController>().getReviewedItemList(reload, 'all', false);
-      Get.find<ItemController>().getRecommendedItemList(reload, 'all', false);
+      Get.find<ItemController>().getPopularItemList(reload, 'all', true, fromRecall: !reload);
+      Get.find<StoreController>().getLatestStoreList(reload, 'all', true, fromRecall: !reload);
+      Get.find<StoreController>().getTopOfferStoreList(reload, true, fromRecall: !reload);
+      Get.find<ItemController>().getReviewedItemList(reload, 'all', true, fromRecall: !reload);
+      Get.find<ItemController>().getRecommendedItemList(reload, 'all', true, fromRecall: !reload);
       Get.find<StoreController>().getStoreList(1, reload);
       Get.find<AdvertisementController>().getAdvertisementList();
     }

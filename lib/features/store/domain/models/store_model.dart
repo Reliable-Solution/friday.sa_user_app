@@ -197,6 +197,7 @@ class Store {
   int? zoneId;
   int? selfDeliverySystem;
   bool? posSystem;
+
   num? minimumShippingCharge;
   num? maximumShippingCharge;
   num? perKmShippingCharge;

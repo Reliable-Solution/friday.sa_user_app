@@ -1,17 +1,18 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:get/get_connect/http/src/request/request.dart';
+
 import 'package:friday_sa/api/api_checker.dart';
 import 'package:friday_sa/features/address/domain/models/address_model.dart';
 import 'package:friday_sa/common/models/error_response.dart';
 import 'package:friday_sa/common/models/module_model.dart';
-import 'package:friday_sa/helper/responsive_helper.dart';
+
 import 'package:friday_sa/util/app_constants.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+
+import 'package:dio/dio.dart' as dio;
 
 class ApiClient extends GetxService {
   static final Map<String, int> _apiPerformance = {};
@@ -39,7 +40,12 @@ class ApiClient extends GetxService {
   }
 
   ApiClient({required this.appBaseUrl, required this.sharedPreferences}) {
-    _httpClient = http.Client();
+    _dio = dio.Dio();
+    _dio.options.baseUrl = appBaseUrl;
+    _dio.options.connectTimeout = Duration(seconds: timeoutInSeconds);
+    _dio.options.receiveTimeout = Duration(seconds: timeoutInSeconds);
+    _dio.options.validateStatus = (status) => status! < 600;
+
     token = sharedPreferences.getString(AppConstants.token);
     if (kDebugMode) {
       debugPrint('Token: $token');
@@ -78,19 +84,23 @@ class ApiClient extends GetxService {
   }) async {
     try {
       final usedHeaders = headers ?? _mainHeaders;
-      final fullUri = Uri.parse(
-        AppConstants.cardUrl + uri,
-      ).replace(queryParameters: query);
+      final fullUrl = AppConstants.cardUrl + uri;
 
-      printCurl("GET", fullUri, usedHeaders);
+      printCurl(
+        "GET",
+        Uri.parse(fullUrl).replace(queryParameters: query),
+        usedHeaders,
+      );
 
       final stopwatch = Stopwatch()..start();
-      final http.Response response = await _httpClient
-          .get(fullUri, headers: usedHeaders)
-          .timeout(Duration(seconds: timeoutInSeconds));
+      dio.Response response = await _dio.get(
+        fullUrl,
+        queryParameters: query,
+        options: dio.Options(headers: usedHeaders),
+      );
       stopwatch.stop();
 
-      return handleResponse(
+      return handleDioResponse(
         response,
         uri,
         handleError,
@@ -101,11 +111,11 @@ class ApiClient extends GetxService {
     }
   }
 
-  late http.Client _httpClient;
+  late dio.Dio _dio;
   final String appBaseUrl;
   final SharedPreferences sharedPreferences;
   static final String noInternetMessage = 'connection_to_api_server_failed'.tr;
-  final int timeoutInSeconds = 40;
+  final int timeoutInSeconds = 10;
 
   String? token;
   late Map<String, String> _mainHeaders;
@@ -143,6 +153,7 @@ class ApiClient extends GetxService {
     });
     if (setHeader) {
       _mainHeaders = header;
+      _dio.options.headers = header;
     }
     return header;
   }
@@ -186,29 +197,43 @@ class ApiClient extends GetxService {
     bool handleError = true,
   }) async {
     try {
-      final fullUri = Uri.parse(
-        (baseUrl ?? AppConstants.baseUrl) + uri,
-      ).replace(queryParameters: query);
       final requestHeaders = headers ?? _mainHeaders;
+      final fullUrl = (baseUrl ?? appBaseUrl) + uri;
 
-      printCurl("GET", fullUri, requestHeaders);
+      printCurl(
+        "GET",
+        Uri.parse(fullUrl).replace(queryParameters: query),
+        requestHeaders,
+      );
+
+      // When custom headers are passed, temporarily clear Dio's default
+      // headers to prevent merging (e.g., old moduleId leaking through).
+      Map<String, dynamic>? savedHeaders;
+      if (headers != null) {
+        savedHeaders = Map<String, dynamic>.from(_dio.options.headers);
+        _dio.options.headers = {};
+      }
 
       final stopwatch = Stopwatch()..start();
-      http.Response response = await _httpClient
-          .get(fullUri, headers: requestHeaders)
-          .timeout(Duration(seconds: timeoutInSeconds));
+      dio.Response response = await _dio.get(
+        fullUrl,
+        queryParameters: query,
+        options: dio.Options(headers: requestHeaders),
+      );
       stopwatch.stop();
 
-      return handleResponse(
+      // Restore default headers
+      if (savedHeaders != null) {
+        _dio.options.headers = savedHeaders;
+      }
+
+      return handleDioResponse(
         response,
         uri,
         handleError,
         duration: stopwatch.elapsedMilliseconds,
       );
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint('------------${e.toString()}');
-      }
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
@@ -221,30 +246,20 @@ class ApiClient extends GetxService {
     bool handleError = true,
   }) async {
     try {
-      debugPrint('====> API Call: $uri\nHeader: ${headers ?? _mainHeaders}');
-      debugPrint('====> API Body: $body');
-
-      Map<dynamic, dynamic> newBody = {};
-      if (body != null) {
-        body.forEach((key, value) {
-          if (value != null && value.toString().isNotEmpty) {
-            newBody.addAll({key: value});
-          }
-        });
-      }
-      final fullUri = Uri.parse(AppConstants.baseUrl + uri);
       final requestHeaders = headers ?? _mainHeaders;
-      printCurl("POST", fullUri, requestHeaders, newBody);
+      final fullUrl = appBaseUrl + uri;
+
+      printCurl("POST", Uri.parse(fullUrl), requestHeaders, body);
+
       final stopwatch = Stopwatch()..start();
-      http.Response response = await _httpClient
-          .post(
-            Uri.parse(AppConstants.baseUrl + uri),
-            body: jsonEncode(newBody),
-            headers: headers ?? _mainHeaders,
-          )
-          .timeout(Duration(seconds: timeout ?? timeoutInSeconds));
+      dio.Response response = await _dio.post(
+        fullUrl,
+        data: body,
+        options: dio.Options(headers: requestHeaders),
+      );
       stopwatch.stop();
-      return handleResponse(
+
+      return handleDioResponse(
         response,
         uri,
         handleError,
@@ -263,49 +278,48 @@ class ApiClient extends GetxService {
     bool handleError = true,
   }) async {
     try {
-      debugPrint('====> API Call: $uri\nHeader: ${headers ?? _mainHeaders}');
-      debugPrint('====> API Body: $body with ${multipartBody.length} picture');
-      Uri fullUri = Uri.parse(AppConstants.baseUrl + uri);
-      Map<String, String> newBody1 = {};
-      body.forEach((s, i) {
-        if (i.isNotEmpty) {
-          newBody1.addAll({s: i});
-        }
-      });
+      final requestHeaders = headers ?? _mainHeaders;
+      final fullUrl = appBaseUrl + uri;
 
-      printCurl("POST", fullUri, headers ?? _mainHeaders, newBody1);
-
-      http.MultipartRequest request = http.MultipartRequest(
-        'POST',
-        Uri.parse(AppConstants.baseUrl + uri),
-      );
-      request.headers.addAll(headers ?? _mainHeaders);
+      dio.FormData formData = dio.FormData.fromMap(body);
       for (MultipartBody multipart in multipartBody) {
         if (multipart.file != null) {
-          Uint8List list = await multipart.file!.readAsBytes();
-          request.files.add(
-            http.MultipartFile(
-              multipart.key,
-              multipart.file!.readAsBytes().asStream(),
-              list.length,
-              filename: '${DateTime.now().toString()}.png',
-            ),
-          );
+          if (kIsWeb) {
+            Uint8List list = await multipart.file!.readAsBytes();
+            formData.files.add(
+              MapEntry(
+                multipart.key,
+                dio.MultipartFile.fromBytes(
+                  list,
+                  filename: multipart.file!.name,
+                ),
+              ),
+            );
+          } else {
+            formData.files.add(
+              MapEntry(
+                multipart.key,
+                await dio.MultipartFile.fromFile(
+                  multipart.file!.path,
+                  filename: multipart.file!.name,
+                ),
+              ),
+            );
+          }
         }
       }
-      Map<String, String> newBody = {};
-      body.forEach((s, i) {
-        if (i.isNotEmpty) {
-          newBody.addAll({s: i});
-        }
-      });
-      request.fields.addAll(newBody);
+
+      printCurl("POST (Multipart)", Uri.parse(fullUrl), requestHeaders, body);
+
       final stopwatch = Stopwatch()..start();
-      http.Response response = await http.Response.fromStream(
-        await _httpClient.send(request),
+      dio.Response response = await _dio.post(
+        fullUrl,
+        data: formData,
+        options: dio.Options(headers: requestHeaders),
       );
       stopwatch.stop();
-      return handleResponse(
+
+      return handleDioResponse(
         response,
         uri,
         handleError,
@@ -323,22 +337,20 @@ class ApiClient extends GetxService {
     bool handleError = true,
   }) async {
     try {
-      debugPrint('====> API Call: $uri\nHeader: ${headers ?? _mainHeaders}');
-      debugPrint('====> API Body: $body');
-      final fullUri = Uri.parse(AppConstants.baseUrl + uri);
       final requestHeaders = headers ?? _mainHeaders;
+      final fullUrl = appBaseUrl + uri;
 
-      printCurl("PUT", fullUri, requestHeaders, body);
+      printCurl("PUT", Uri.parse(fullUrl), requestHeaders, body);
+
       final stopwatch = Stopwatch()..start();
-      http.Response response = await _httpClient
-          .put(
-            Uri.parse(AppConstants.baseUrl + uri),
-            body: jsonEncode(body),
-            headers: headers ?? _mainHeaders,
-          )
-          .timeout(Duration(seconds: timeoutInSeconds));
+      dio.Response response = await _dio.put(
+        fullUrl,
+        data: body,
+        options: dio.Options(headers: requestHeaders),
+      );
       stopwatch.stop();
-      return handleResponse(
+
+      return handleDioResponse(
         response,
         uri,
         handleError,
@@ -356,21 +368,20 @@ class ApiClient extends GetxService {
     bool handleError = true,
   }) async {
     try {
-      debugPrint('====> API Call: $uri\nHeader: ${headers ?? _mainHeaders}');
-      final fullUri = Uri.parse(AppConstants.baseUrl + uri);
       final requestHeaders = headers ?? _mainHeaders;
+      final fullUrl = appBaseUrl + uri;
 
-      printCurl("DELETE", fullUri, requestHeaders);
+      printCurl("DELETE", Uri.parse(fullUrl), requestHeaders, body);
+
       final stopwatch = Stopwatch()..start();
-      http.Response response = await _httpClient
-          .delete(
-            Uri.parse(AppConstants.baseUrl + uri),
-            headers: headers ?? _mainHeaders,
-            body: jsonEncode(body),
-          )
-          .timeout(Duration(seconds: timeoutInSeconds));
+      dio.Response response = await _dio.delete(
+        fullUrl,
+        data: body,
+        options: dio.Options(headers: requestHeaders),
+      );
       stopwatch.stop();
-      return handleResponse(
+
+      return handleDioResponse(
         response,
         uri,
         handleError,
@@ -381,8 +392,8 @@ class ApiClient extends GetxService {
     }
   }
 
-  Response handleResponse(
-    http.Response response,
+  Response handleDioResponse(
+    dio.Response response,
     String uri,
     bool handleError, {
     int? duration,
@@ -390,21 +401,15 @@ class ApiClient extends GetxService {
     if (duration != null) {
       _apiPerformance[uri] = duration;
     }
-    dynamic body;
-    try {
-      body = jsonDecode(response.body);
-    } catch (_) {}
+
     Response response0 = Response(
-      body: body ?? response.body,
-      bodyString: response.body.toString(),
-      request: Request(
-        headers: response.request!.headers,
-        method: response.request!.method,
-        url: response.request!.url,
+      body: response.data,
+      bodyString: response.data.toString(),
+      headers: response.headers.map.map(
+        (key, value) => MapEntry(key, value.join(',')),
       ),
-      headers: response.headers,
       statusCode: response.statusCode,
-      statusText: response.reasonPhrase,
+      statusText: response.statusMessage,
     );
 
     // Color coding logic
@@ -444,9 +449,6 @@ class ApiClient extends GetxService {
       response0 = Response(statusCode: 0, statusText: noInternetMessage);
     }
 
-    if (!ResponsiveHelper.isWeb() || response.statusCode != 500) {
-      // debugPrint('${response0.body}');
-    }
     if (handleError) {
       if (response0.statusCode == 200) {
         return response0;
@@ -461,7 +463,7 @@ class ApiClient extends GetxService {
 
   @override
   void onClose() {
-    _httpClient.close();
+    _dio.close();
     super.onClose();
   }
 }

@@ -13,7 +13,7 @@ import 'package:friday_sa/features/cart/controllers/cart_controller.dart';
 import 'package:friday_sa/features/item/controllers/item_controller.dart';
 import 'package:friday_sa/features/notification/domain/models/notification_body_model.dart';
 import 'package:friday_sa/features/profile/controllers/profile_controller.dart';
-import 'package:friday_sa/features/store/controllers/store_controller.dart';
+
 import 'package:friday_sa/features/favourite/controllers/favourite_controller.dart';
 import 'package:friday_sa/api/api_client.dart';
 import 'package:friday_sa/features/splash/domain/models/landing_model.dart';
@@ -33,6 +33,7 @@ import 'package:friday_sa/util/app_constants.dart';
 import 'package:universal_html/html.dart' as html;
 
 import '../../language/domain/models/country_model.dart';
+import '../../store/controllers/store_controller.dart';
 
 class SplashController extends GetxController implements GetxService {
   SplashController({required this.splashServiceInterface});
@@ -355,15 +356,15 @@ class SplashController extends GetxController implements GetxService {
 
   _prepareModuleList(List<ModuleModel>? moduleList) {
     if (moduleList != null) {
-      _moduleList = [];
+      List<ModuleModel> modules = [];
       for (var module in moduleList) {
-        // log('moduleList====>>>> ${moduleList.length} === ${module.toJson()}');
         if (module.moduleType != AppConstants.taxi && GetPlatform.isWeb) {
-          _moduleList!.add(module);
+          modules.add(module);
         } else if (!GetPlatform.isWeb) {
-          _moduleList!.add(module);
+          modules.add(module);
         }
       }
+      _moduleList = modules;
     }
     update();
   }
@@ -380,15 +381,18 @@ class SplashController extends GetxController implements GetxService {
 
   Future<void> switchModule(int index, bool fromPhone) async {
     if (_module == null || _module!.id != _moduleList![index].id) {
+      final hadPreviousModule = _module != null;
       await setModule(_moduleList![index]);
 
       if (_module!.moduleType.toString() != AppConstants.taxi) {
         Get.find<CartController>().getCartDataOnline();
-        Get.find<ItemController>().clearItemLists();
-        Get.find<BannerController>().clearBanner();
-        Get.find<CategoryController>().clearCategoryList();
-        Get.find<CampaignController>().itemAndBasicCampaignNull();
-        Get.find<FlashSaleController>().setEmptyFlashSale(fromModule: true);
+        if (hadPreviousModule) {
+          Get.find<ItemController>().clearItemLists();
+          Get.find<BannerController>().clearBanner();
+          Get.find<CategoryController>().clearCategoryList();
+          Get.find<CampaignController>().itemAndBasicCampaignNull();
+          Get.find<FlashSaleController>().setEmptyFlashSale(fromModule: true);
+        }
 
         if (AuthHelper.isLoggedIn()) {
           Get.find<HomeController>().getCashBackOfferList();
@@ -417,12 +421,10 @@ class SplashController extends GetxController implements GetxService {
     setModule(null);
     Get.find<BannerController>().getFeaturedBanner();
     getModules();
-    Get.find<HomeController>().forcefullyNullCashBackOffers();
     if (AuthHelper.isLoggedIn()) {
       Get.find<AddressController>().getAddressList();
     }
     Get.find<StoreController>().getFeaturedStoreList();
-    Get.find<CampaignController>().itemAndBasicCampaignNull();
   }
 
   Future<void> removeCacheModule() async {

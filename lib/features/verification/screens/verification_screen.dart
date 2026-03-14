@@ -183,8 +183,9 @@ class VerificationScreenState extends State<VerificationScreen> {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: 'we_have_a_verification_code'
-                                                .tr,
+                                            text:
+                                                "we_ve_sent_a_verification_code_capital"
+                                                    .tr,
                                             style: robotoRegular.copyWith(
                                               color: Theme.of(
                                                 context,
@@ -193,11 +194,19 @@ class VerificationScreenState extends State<VerificationScreen> {
                                           ),
                                           TextSpan(
                                             text:
-                                                ' \u200e${(_email != null && _email!.isNotEmpty) ? _email : _number}',
+                                                ' \u200e${(_email != null && _email!.isNotEmpty) ? _email : _number} ',
                                             style: robotoMedium.copyWith(
                                               color: Theme.of(
                                                 context,
                                               ).textTheme.bodyLarge!.color,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: "whatsapp_message_capital".tr,
+                                            style: robotoRegular.copyWith(
+                                              color: Theme.of(
+                                                context,
+                                              ).hintColor,
                                             ),
                                           ),
                                         ],

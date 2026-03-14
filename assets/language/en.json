@@ -1319,6 +1319,8 @@
   "here_is_what_you_might_like": "Here is what you might like",
   "recommended_for_you": "Recommended For You",
   "we_have_a_verification_code": "We’ve sent a verification code to",
+  "we_ve_sent_a_verification_code_capital": "We've sent a verification code to",
+  "whatsapp_message_capital": "via WhatsApp message",
   "password_reset_successfully": "Password reset successfully",
   "enter_name": "Enter Name",
   "timed_out_please_try_again_after_few_minutes": "Timed out. Please try again after few minutes",

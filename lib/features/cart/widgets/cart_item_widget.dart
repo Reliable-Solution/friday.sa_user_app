@@ -308,7 +308,6 @@ class CartItemWidget extends StatelessWidget {
                                 style: robotoBold.copyWith(
                                   fontSize: Dimensions.fontSizeSmall,
                                 ),
-                                textDirection: TextDirection.ltr,
                               ),
                               SizedBox(
                                 width: discount! > 0
@@ -319,7 +318,6 @@ class CartItemWidget extends StatelessWidget {
                                   ? Text(
                                       '${PriceConverter.convertPrice(startingPrice)}'
                                       '${endingPrice != null ? ' - ${PriceConverter.convertPrice(endingPrice)}' : ''}',
-                                      textDirection: TextDirection.ltr,
                                       style: robotoRegular.copyWith(
                                         color: Theme.of(context).disabledColor,
                                         decoration: TextDecoration.lineThrough,

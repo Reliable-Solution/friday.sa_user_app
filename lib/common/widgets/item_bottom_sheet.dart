@@ -367,14 +367,11 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                                 fontSize:
                                                     Dimensions.fontSizeLarge,
                                               ),
-                                              textDirection: TextDirection.ltr,
                                             ),
                                             price > priceWithDiscount
                                                 ? Text(
                                                     '${PriceConverter.convertPrice(startingPrice)}'
                                                     '${endingPrice != null ? ' - ${PriceConverter.convertPrice(endingPrice)}' : ''}',
-                                                    textDirection:
-                                                        TextDirection.ltr,
                                                     style: robotoMedium
                                                         .copyWith(
                                                           color: Theme.of(
@@ -1609,7 +1606,6 @@ class AddonView extends StatelessWidget {
                           : 'free'.tr,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      textDirection: TextDirection.ltr,
                       style: itemController.addOnActiveList[index]
                           ? robotoMedium.copyWith(
                               fontSize: Dimensions.fontSizeSmall,
@@ -2074,10 +2070,9 @@ class NewVariationView extends StatelessWidget {
                                   const Spacer(),
                                   showOriginalPrice
                                       ? Text(
-                                          '+${PriceConverter.convertPrice(item!.foodVariations![index].variationValues![i].optionPrice)}',
+                                          PriceConverter.convertPriceWithSign(item!.foodVariations![index].variationValues![i].optionPrice, isPositive: true),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          textDirection: TextDirection.ltr,
                                           style: robotoRegular.copyWith(
                                             fontSize:
                                                 Dimensions.fontSizeExtraSmall,
@@ -2095,10 +2090,9 @@ class NewVariationView extends StatelessWidget {
                                         : 0,
                                   ),
                                   Text(
-                                    '+${PriceConverter.convertPrice(item!.foodVariations![index].variationValues![i].optionPrice, discount: discount, discountType: discountType, isFoodVariation: true)}',
+                                    PriceConverter.convertPriceWithSign(item!.foodVariations![index].variationValues![i].optionPrice, discount: discount, discountType: discountType, isFoodVariation: true, isPositive: true),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    textDirection: TextDirection.ltr,
                                     style:
                                         itemController
                                             .selectedVariations[index][i]!

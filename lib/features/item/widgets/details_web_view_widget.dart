@@ -516,7 +516,6 @@ class DetailsWebViewWidget extends StatelessWidget {
                                                     )
                                                   : priceWithAddOns,
                                             ),
-                                            textDirection: TextDirection.ltr,
                                             style: robotoBold.copyWith(
                                               color: Theme.of(
                                                 context,

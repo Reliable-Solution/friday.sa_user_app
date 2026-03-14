@@ -102,12 +102,14 @@ class CategoryController extends GetxController implements GetxService {
 
   _prepareCategoryList(List<CategoryModel>? categoryList) {
     if (categoryList != null) {
-      _categoryList = [];
-      _interestSelectedList = [];
-      _categoryList!.addAll(categoryList);
-      for (int i = 0; i < _categoryList!.length; i++) {
-        _interestSelectedList!.add(false);
+      List<CategoryModel> categories = [];
+      List<bool> interestSelectedList = [];
+      categories.addAll(categoryList);
+      for (int i = 0; i < categories.length; i++) {
+        interestSelectedList.add(false);
       }
+      _categoryList = categories;
+      _interestSelectedList = interestSelectedList;
     }
     update();
   }
@@ -121,7 +123,7 @@ class CategoryController extends GetxController implements GetxService {
     List<CategoryModel>? list;
     if (_storeCategoryList.isEmpty || reload || fromRecall) {
       if (reload) {
-        _storeCategoryList = [];
+        // _storeCategoryList = [];
       }
       List<CategoryModel>? storeCategoryList;
       if (dataSource == DataSourceEnum.local) {
@@ -173,11 +175,9 @@ class CategoryController extends GetxController implements GetxService {
     _categoryItemList = null;
     List<CategoryModel>? subCategoryList = await categoryServiceInterface
         .getSubCategoryList(categoryID, storeId: storeId);
+
     if (subCategoryList != null) {
       _subCategoryList = [];
-      // _subCategoryList!.add(
-      //   CategoryModel(id: int.parse(categoryID!), name: 'all'.tr),
-      // );
       _subCategoryList!.addAll(subCategoryList);
       getCategoryItemList(categoryID, 1, 'all', false);
     }

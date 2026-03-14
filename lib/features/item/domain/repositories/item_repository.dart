@@ -152,7 +152,14 @@ class ItemRepository implements ItemRepositoryInterface {
             '${AppConstants.popularItemUri}?type=$type',
           );
           if (response.statusCode == 200) {
-            popularItemList = ItemModel.fromJson(response.body).items ?? [];
+            if (response.body is Map<String, dynamic>) {
+              popularItemList = ItemModel.fromJson(response.body).items ?? [];
+            } else if (response.body is List<dynamic>) {
+              popularItemList = (response.body as List<dynamic>)
+                  .map((item) => Item.fromJson(item))
+                  .toList();
+            }
+
             LocalClient.organize(
               DataSourceEnum.client,
               cacheId,

@@ -82,6 +82,7 @@ import 'package:friday_sa/features/language/domain/service/language_service_inte
 import 'package:friday_sa/features/location/controllers/location_controller.dart';
 import 'package:friday_sa/common/controllers/theme_controller.dart';
 import 'package:friday_sa/api/api_client.dart';
+import 'package:friday_sa/api/dio_client.dart';
 import 'package:friday_sa/features/address/controllers/address_controller.dart';
 import 'package:friday_sa/features/address/domain/repositories/address_repository.dart';
 import 'package:friday_sa/features/address/domain/repositories/address_repository_interface.dart';
@@ -222,6 +223,10 @@ Future<Map<String, Map<String, String>>> init() async {
       sharedPreferences: Get.find(),
     ),
   );
+  Get.lazyPut(
+    () =>
+        DioClient(baseUrl: AppConstants.baseUrl, sharedPreferences: Get.find()),
+  );
 
   /// Repository interface
   CheckoutRepositoryInterface checkoutRepositoryInterface = CheckoutRepository(
@@ -344,6 +349,7 @@ Future<Map<String, Map<String, String>>> init() async {
   SplashRepositoryInterface splashRepositoryInterface = SplashRepository(
     sharedPreferences: Get.find(),
     apiClient: Get.find(),
+    dioClient: Get.find(),
   );
   Get.lazyPut(() => splashRepositoryInterface);
 
