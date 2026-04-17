@@ -274,11 +274,16 @@ class StoreRepository implements StoreRepositoryInterface {
               ? HeaderHelper.featuredHeader()
               : null,
         );
+        print("========> REPO: response=${response.body}");
+        print(
+          "========> REPO: statusCode=${response.statusCode} | module=${Get.find<SplashController>().module?.id} | total_size=${response.body?['total_size']} | stores_count=${(response.body?['stores'] as List?)?.length ?? 'null'}",
+        );
         if (response.statusCode == 200) {
           featuredStoreList = [];
           response.body['stores'].forEach(
             (store) => featuredStoreList!.add(Store.fromJson(store)),
           );
+          print("========> REPO: parsed ${featuredStoreList.length} stores");
           LocalClient.organize(
             DataSourceEnum.client,
             cacheId,

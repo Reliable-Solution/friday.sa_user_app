@@ -61,8 +61,9 @@ class CampaignController extends GetxController implements GetxService {
 
   _prepareBasicCampaign(List<BasicCampaignModel>? basicCampaignList) {
     if (basicCampaignList != null) {
-      _basicCampaignList = [];
-      _basicCampaignList!.addAll(basicCampaignList);
+      List<BasicCampaignModel> campaigns = [];
+      campaigns.addAll(basicCampaignList);
+      _basicCampaignList = campaigns;
     }
     update();
   }
@@ -105,7 +106,7 @@ class CampaignController extends GetxController implements GetxService {
 
   _prepareItemCampaign(List<Item>? itemCampaignList) {
     if (itemCampaignList != null) {
-      _itemCampaignList = [];
+      List<Item> campaigns = [];
       List<Item> campaign = [];
       campaign.addAll(itemCampaignList);
       for (var c in campaign) {
@@ -114,9 +115,10 @@ class CampaignController extends GetxController implements GetxService {
                 .newVariation! ||
             c.variations!.isEmpty ||
             c.foodVariations!.isNotEmpty) {
-          _itemCampaignList!.add(c);
+          campaigns.add(c);
         }
       }
+      _itemCampaignList = campaigns;
     }
     update();
   }

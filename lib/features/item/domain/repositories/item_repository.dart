@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/api/api_client.dart';
 import 'package:friday_sa/api/local_client.dart';
@@ -135,43 +137,69 @@ class ItemRepository implements ItemRepositoryInterface {
     }
   }
 
-  Future<List<Item>?> _getPopularItemList(
+  Future<List<Item>> _getPopularItemList(
     String type, {
     required DataSourceEnum source,
   }) async {
-    List<Item>? popularItemList;
+    List<Item> popularItemList = [];
     String cacheId =
         '${AppConstants.popularItemUri}?type=$type-${Get.find<SplashController>().module!.id!}';
 
-    switch (source) {
-      case DataSourceEnum.client:
-        Response response = await apiClient.getData(
-          '${AppConstants.popularItemUri}?type=$type',
-        );
-        if (response.statusCode == 200) {
-          popularItemList = [];
-          popularItemList.addAll(ItemModel.fromJson(response.body).items!);
-          LocalClient.organize(
-            DataSourceEnum.client,
-            cacheId,
-            jsonEncode(response.body),
-            apiClient.getHeader(),
+    try {
+      switch (source) {
+        case DataSourceEnum.client:
+          Response response = await apiClient.getData(
+            '${AppConstants.popularItemUri}?type=$type',
           );
-        }
+          if (response.statusCode == 200) {
+            if (response.body is Map<String, dynamic>) {
+              popularItemList = ItemModel.fromJson(response.body).items ?? [];
+            } else if (response.body is List<dynamic>) {
+              popularItemList = (response.body as List<dynamic>)
+                  .map((item) => Item.fromJson(item))
+                  .toList();
+            }
 
-      case DataSourceEnum.local:
-        String? cacheResponseData = await LocalClient.organize(
-          DataSourceEnum.local,
-          cacheId,
-          null,
-          null,
-        );
-        if (cacheResponseData != null) {
-          popularItemList = [];
-          popularItemList.addAll(
-            ItemModel.fromJson(jsonDecode(cacheResponseData)).items!,
+            LocalClient.organize(
+              DataSourceEnum.client,
+              cacheId,
+              jsonEncode(response.body),
+              apiClient.getHeader(),
+            );
+          }
+          break;
+
+        case DataSourceEnum.local:
+          String? cacheResponseData = await LocalClient.organize(
+            DataSourceEnum.local,
+            cacheId,
+            null,
+            null,
           );
-        }
+          if (cacheResponseData != null && cacheResponseData.isNotEmpty) {
+            final dynamic decodedData = jsonDecode(cacheResponseData);
+
+            if (decodedData is Map<String, dynamic>) {
+              // Case 1: Wrapped response { "items": [...] }
+              final itemModel = ItemModel.fromJson(decodedData);
+              popularItemList = itemModel.items ?? [];
+            } else if (decodedData is List<dynamic>) {
+              // Case 2: Direct array of items [ {...}, {...} ]
+              popularItemList = decodedData
+                  .map<Item>(
+                    (itemJson) =>
+                        Item.fromJson(itemJson as Map<String, dynamic>),
+                  )
+                  .toList();
+            }
+            // else: decodedData is neither Map nor List, so popularItemList remains empty
+          }
+          break;
+      }
+    } catch (e) {
+      // Log error if needed
+      print('Error in _getPopularItemList: $e');
+      // Return empty list on error
     }
 
     return popularItemList;
@@ -201,15 +229,16 @@ class ItemRepository implements ItemRepositoryInterface {
         }
 
       case DataSourceEnum.local:
-        String? cacheResponseData = await LocalClient.organize(
-          DataSourceEnum.local,
-          cacheId,
-          null,
-          null,
-        );
-        if (cacheResponseData != null) {
-          itemModel = ItemModel.fromJson(jsonDecode(cacheResponseData));
-        }
+        return null;
+      // String? cacheResponseData = await LocalClient.organize(
+      //   DataSourceEnum.local,
+      //   cacheId,
+      //   null,
+      //   null,
+      // );
+      // if (cacheResponseData != null) {
+      //   itemModel = ItemModel.fromJson(jsonDecode(cacheResponseData));
+      // }
     }
 
     return itemModel;
