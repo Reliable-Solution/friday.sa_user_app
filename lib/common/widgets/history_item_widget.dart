@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:friday_sa/features/language/controllers/language_controller.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/common/models/transaction_model.dart';
 import 'package:friday_sa/helper/date_converter.dart';
@@ -48,17 +49,26 @@ class HistoryItemWidget extends StatelessWidget {
                               width: Dimensions.paddingSizeExtraSmall,
                             ),
                             Text(
-                              data![index].transactionType == 'order_place' ||
-                                      data![index].transactionType ==
-                                          'partial_payment'
-                                  ? '- ${PriceConverter.convertPrice(data![index].debit! + data![index].adminBonus!)}'
-                                  : '+ ${PriceConverter.convertPrice(data![index].credit! + data![index].adminBonus!)}',
+                              PriceConverter.convertPriceWithSign(
+                                (data![index].transactionType ==
+                                            'order_place' ||
+                                        data![index].transactionType ==
+                                            'partial_payment')
+                                    ? (data![index].debit! +
+                                          data![index].adminBonus!)
+                                    : (data![index].credit! +
+                                          data![index].adminBonus!),
+                                isPositive:
+                                    !(data![index].transactionType ==
+                                            'order_place' ||
+                                        data![index].transactionType ==
+                                            'partial_payment'),
+                              ),
                               style: robotoMedium.copyWith(
                                 fontSize: Dimensions.fontSizeDefault,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              textDirection: TextDirection.ltr,
                             ),
                           ],
                         )
@@ -79,9 +89,9 @@ class HistoryItemWidget extends StatelessWidget {
                               width: Dimensions.paddingSizeExtraSmall,
                             ),
                             Text(
-                              data![index].transactionType == 'point_to_wallet'
-                                  ? '-${data![index].debit!.toStringAsFixed(0)}'
-                                  : '+${data![index].credit!.toStringAsFixed(0)}',
+                              !(Get.find<LocalizationController>().isLtr)
+                                  ? '${data![index].transactionType == 'point_to_wallet' ? data![index].debit!.toStringAsFixed(0) : data![index].credit!.toStringAsFixed(0)} ${data![index].transactionType == 'point_to_wallet' ? '(-)' : '(+)'}'
+                                  : '${data![index].transactionType == 'point_to_wallet' ? '(-)' : '(+)'} ${data![index].transactionType == 'point_to_wallet' ? data![index].debit!.toStringAsFixed(0) : data![index].credit!.toStringAsFixed(0)}',
                               style: robotoMedium.copyWith(
                                 fontSize: Dimensions.fontSizeDefault,
                               ),

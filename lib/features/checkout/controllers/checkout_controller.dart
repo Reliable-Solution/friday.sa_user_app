@@ -688,7 +688,11 @@ class CheckoutController extends GetxController implements GetxService {
         notify: false,
       );
     } else {
-      showCustomSnackBar(message);
+      if (message == 'product unavailable warning') {
+        showCustomSnackBar('product_unavailable_warning'.tr);
+      } else {
+        showCustomSnackBar(message);
+      }
     }
   }
 
