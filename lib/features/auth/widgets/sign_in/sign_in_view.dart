@@ -240,7 +240,9 @@ class _SignInViewState extends State<SignInView> {
     numberWithCountryCode = phoneValid.phone;
 
     if (_formKeyLogin!.currentState!.validate()) {
-      if (!phoneValid.isValid) {
+      if (!authController.acceptLoginTerms) {
+        showCustomSnackBar('please_agree_with_terms_conditions'.tr);
+      } else if (!phoneValid.isValid) {
         showCustomSnackBar('invalid_phone_number'.tr);
       } else {
         authController
@@ -279,6 +281,8 @@ class _SignInViewState extends State<SignInView> {
     );
     numberWithCountryCode = phoneValid.phone;
 
+
+    print("===> Phone Number : ${numberWithCountryCode}");
     if (_formKeyLogin!.currentState!.validate()) {
       String isPhone = ValidateCheck.getValidPhone(
         authController.countryDialCode + _phoneController.text.trim(),
@@ -287,6 +291,8 @@ class _SignInViewState extends State<SignInView> {
 
       if (isPhone != "" && !phoneValid.isValid) {
         showCustomSnackBar('invalid_phone_number'.tr);
+      } else if (!authController.acceptLoginTerms) {
+        showCustomSnackBar('please_agree_with_terms_conditions'.tr);
       } else {
         authController
             .login(
@@ -446,7 +452,7 @@ class _SignInViewState extends State<SignInView> {
               number: countryDialCode + phone,
               email: null,
               token: '',
-              fromSignUp: true,
+              fromSignUp: false,
               fromForgetPassword: false,
               loginType: CentralizeLoginType.otp.name,
               password: '',
@@ -458,7 +464,7 @@ class _SignInViewState extends State<SignInView> {
               countryDialCode + phone,
               null,
               '',
-              RouteHelper.signUp,
+              RouteHelper.signIn,
               null,
               CentralizeLoginType.otp.name,
             ),

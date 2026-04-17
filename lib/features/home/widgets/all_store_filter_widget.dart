@@ -25,7 +25,7 @@ class AllStoreFilterWidget extends StatelessWidget {
               top: Dimensions.paddingSizeSmall,
             ),
             child: ResponsiveHelper.isDesktop(context)
-                ? Row(
+                ?  Row(
                     children: [
                       Expanded(
                         child: Column(

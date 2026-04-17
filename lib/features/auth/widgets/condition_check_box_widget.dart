@@ -12,39 +12,50 @@ class ConditionCheckBoxWidget extends StatelessWidget {
     super.key,
     this.forDeliveryMan = false,
     this.forSignUp = true,
+    this.forLogin = false,
   });
   final bool forDeliveryMan;
   final bool forSignUp;
+  final bool forLogin;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        forDeliveryMan
+        forLogin || forDeliveryMan
             ? GetBuilder<DeliverymanRegistrationController>(
                 builder: (dmRegController) {
                   return GetBuilder<AuthController>(
                     builder: (authController) {
                       return Checkbox(
-                        activeColor: Theme.of(context).primaryColor,
+                        activeColor: Colors.black,
                         visualDensity: const VisualDensity(
                           horizontal: -4,
                           vertical: -4,
                         ),
-                        value: forSignUp
-                            ? authController.acceptTerms
-                            : dmRegController.acceptTerms,
-                        onChanged: (bool? isChecked) => forSignUp
-                            ? authController.toggleTerms()
-                            : dmRegController.toggleTerms(),
+                        side: BorderSide(color: Colors.black.withOpacity(0.4), width: 1.5),
+                        checkColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                        ),
+                        value: forLogin
+                            ? authController.acceptLoginTerms
+                            : forSignUp
+                                ? authController.acceptTerms
+                                : dmRegController.acceptTerms,
+                        onChanged: (bool? isChecked) => forLogin
+                            ? authController.toggleLoginTerms()
+                            : forSignUp
+                                ? authController.toggleTerms()
+                                : dmRegController.toggleTerms(),
                       );
                     },
                   );
                 },
               )
             : const SizedBox(),
-        forDeliveryMan
+        forLogin || forDeliveryMan
             ? const SizedBox()
             : Text(
                 '* ',
@@ -57,9 +68,7 @@ class ConditionCheckBoxWidget extends StatelessWidget {
             text: TextSpan(
               children: [
                 TextSpan(
-                  text: forDeliveryMan
-                      ? 'i_agree_with_all_the'.tr
-                      : 'i_agree_with_all_the'.tr,
+                  text: 'i_agree_with_all_the'.tr,
                   style: robotoRegular.copyWith(
                     color: forDeliveryMan
                         ? Theme.of(context).textTheme.bodyMedium!.color
