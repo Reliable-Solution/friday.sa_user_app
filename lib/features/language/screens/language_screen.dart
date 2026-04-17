@@ -37,23 +37,14 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
         builder: (localizationController) {
           return ResponsiveHelper.isDesktop(context)
               ? const WebLanguageScreen()
-              : Column(
+              : SafeArea(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 40),
-                    const Align(
-                      alignment: Alignment.center,
-                      child: CustomAssetImageWidget(
-                        Images.languageBg,
-                        height: 210,
-                        width: 210,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: Dimensions.paddingSizeLarge,
-                      ),
+                      ).copyWith(top: 20),
                       child: Text(
                         'choose_your_language'.tr,
                         style: robotoBold.copyWith(
@@ -84,11 +75,75 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
                             horizontal: Dimensions.paddingSizeLarge,
                           ),
                           itemBuilder: (context, index) {
-                            return LanguageCardWidget(
-                              languageModel:
-                                  localizationController.languages[index],
-                              localizationController: localizationController,
-                              index: index,
+                            final isSelected =
+                                localizationController.selectedLanguageIndex ==
+                                index;
+                            final language =
+                                localizationController.languages[index];
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  localizationController.setSelectLanguageIndex(
+                                    index,
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? Theme.of(context).primaryColor
+                                          : Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium!
+                                                .color!
+                                                .withValues(alpha: 0.6),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    spacing: 10,
+                                    children: [
+                                      Icon(
+                                        isSelected
+                                            ? Icons.radio_button_on
+                                            : Icons.radio_button_off_outlined,
+                                        color: isSelected
+                                            ? Theme.of(context).primaryColor
+                                            : Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .color!
+                                                  .withValues(alpha: 0.6),
+                                      ),
+                                      Image.asset(
+                                        language.imageUrl!,
+                                        width: 25,
+                                        height: 25,
+                                      ),
+                                      Text(
+                                        language.languageName ?? '',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: isSelected
+                                              ? FontWeight.w500
+                                              : FontWeight.w400,
+                                          color: isSelected
+                                              ? null
+                                              : Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium!
+                                                    .color!
+                                                    .withValues(alpha: 0.6),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             );
                           },
                         ),
@@ -131,7 +186,9 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
                               if (widget.fromMenu) {
                                 Navigator.pop(context);
                               } else {
-                                Get.offNamed(RouteHelper.getOnBoardingRoute());
+                                Get.offNamed(
+                                  RouteHelper.getCountryRoute('splash'),
+                                );
                               }
                             } else {
                               showCustomSnackBar('select_a_language'.tr);
@@ -141,7 +198,8 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
                       ),
                     ),
                   ],
-                );
+                ),
+              );
         },
       ),
     );

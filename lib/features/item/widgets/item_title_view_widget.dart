@@ -306,7 +306,6 @@ class ItemTitleViewWidget extends StatelessWidget {
                               child: Text(
                                 '${PriceConverter.convertPrice(startingPrice)}'
                                 '${endingPrice != null ? ' - ${PriceConverter.convertPrice(endingPrice)}' : ''}',
-                                textDirection: TextDirection.ltr,
                                 style: robotoRegular.copyWith(
                                   color: Theme.of(context).disabledColor,
                                   decoration: TextDecoration.lineThrough,
@@ -322,7 +321,6 @@ class ItemTitleViewWidget extends StatelessWidget {
                         style: robotoBold.copyWith(
                           fontSize: Dimensions.fontSizeLarge,
                         ),
-                        textDirection: TextDirection.ltr,
                       ),
                     ],
                   ),
@@ -485,14 +483,12 @@ class ItemTitleViewWidget extends StatelessWidget {
                                   color: Theme.of(context).primaryColor,
                                   fontSize: Dimensions.fontSizeLarge,
                                 ),
-                                textDirection: TextDirection.ltr,
                               ),
                               const SizedBox(height: 5),
                               discount! > 0
                                   ? Text(
                                       '${PriceConverter.convertPrice(startingPrice)}'
                                       '${endingPrice != null ? ' - ${PriceConverter.convertPrice(endingPrice)}' : ''}',
-                                      textDirection: TextDirection.ltr,
                                       style: robotoRegular.copyWith(
                                         color: Theme.of(context).hintColor,
                                         decoration: TextDecoration.lineThrough,
