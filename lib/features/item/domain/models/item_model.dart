@@ -12,8 +12,10 @@ class ItemModel {
   });
 
   ItemModel.fromJson(Map<String, dynamic> json) {
-    totalSize = json['total_size'];
-    limit = json['limit'].toString();
+    totalSize = json['total_size'] != null
+        ? int.parse(json['total_size'].toString())
+        : null;
+    limit = json['limit']?.toString();
     offset =
         (json['offset'] != null && json['offset'].toString().trim().isNotEmpty)
         ? int.parse(json['offset'].toString())
@@ -52,6 +54,7 @@ class ItemModel {
       });
     }
   }
+
   int? totalSize;
   String? limit;
   int? offset;
@@ -165,18 +168,24 @@ class Item {
         choiceOptions!.add(ChoiceOptions.fromJson(v));
       });
     }
-    price = json['price'].toDouble();
-    tax = json['tax']?.toDouble();
-    discount = json['discount'].toDouble();
+    price = json['price'] != null ? double.parse(json['price'].toString()) : 0;
+    tax = json['tax'] != null ? double.parse(json['tax'].toString()) : 0;
+    discount = json['discount'] != null
+        ? double.parse(json['discount'].toString())
+        : 0;
     discountType = json['discount_type'];
     availableTimeStarts = json['available_time_starts'];
     availableTimeEnds = json['available_time_ends'];
     storeId = json['store_id'];
     storeName = json['store_name'];
     zoneId = json['zone_id'];
-    storeDiscount = json['store_discount'].toDouble();
+    storeDiscount = json['store_discount'] != null
+        ? double.parse(json['store_discount'].toString())
+        : 0;
     scheduleOrder = json['schedule_order'];
-    avgRating = json['avg_rating'].toDouble();
+    avgRating = json['avg_rating'] != null
+        ? double.parse(json['avg_rating'].toString())
+        : 0;
     ratingCount = json['rating_count'];
     moduleId = json['module_id'];
     moduleType = json['module_type'];
