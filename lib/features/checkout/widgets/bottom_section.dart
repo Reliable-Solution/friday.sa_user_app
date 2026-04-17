@@ -266,7 +266,6 @@ class BottomSection extends StatelessWidget {
                         Text(
                           PriceConverter.convertPrice(subTotal),
                           style: robotoMedium,
-                          textDirection: TextDirection.ltr,
                         ),
                       ],
                     )
@@ -279,10 +278,14 @@ class BottomSection extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('discount'.tr, style: robotoRegular),
-                        Text(
-                          '(-) ${PriceConverter.convertPrice(discount)}',
-                          style: robotoRegular,
-                          textDirection: TextDirection.ltr,
+                        Row(
+                          children: [
+                            Text('\u{200E}(-) ', style: robotoRegular),
+                            PriceConverter.convertAnimationPrice(
+                              discount,
+                              textStyle: robotoRegular,
+                            ),
+                          ],
                         ),
                       ],
                     )
@@ -304,10 +307,17 @@ class BottomSection extends StatelessWidget {
                                       color: Theme.of(context).primaryColor,
                                     ),
                                   )
-                                : Text(
-                                    '(-) ${PriceConverter.convertPrice(couponController.discount)}',
-                                    style: robotoRegular,
-                                    textDirection: TextDirection.ltr,
+                                : Row(
+                                    children: [
+                                      Text(
+                                        '\u{200E}(-) ',
+                                        style: robotoRegular,
+                                      ),
+                                      PriceConverter.convertAnimationPrice(
+                                        couponController.discount,
+                                        textStyle: robotoRegular,
+                                      ),
+                                    ],
                                   ),
                           ],
                         ),
@@ -322,10 +332,14 @@ class BottomSection extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('referral_discount'.tr, style: robotoRegular),
-                            Text(
-                              '(-) ${PriceConverter.convertPrice(referralDiscount)}',
-                              style: robotoRegular,
-                              textDirection: TextDirection.ltr,
+                            Row(
+                              children: [
+                                Text('\u{200E}(-) ', style: robotoRegular),
+                                PriceConverter.convertAnimationPrice(
+                                  referralDiscount,
+                                  textStyle: robotoRegular,
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -341,11 +355,17 @@ class BottomSection extends StatelessWidget {
                           '${'vat_tax'.tr} ${taxIncluded ? 'tax_included'.tr : ''} ($taxPercent%)',
                           style: robotoRegular,
                         ),
-                        Text(
-                          (taxIncluded ? '' : '(+) ') +
-                              PriceConverter.convertPrice(tax),
-                          style: robotoRegular,
-                          textDirection: TextDirection.ltr,
+                        Row(
+                          children: [
+                            Text(
+                              taxIncluded ? '' : '\u{200E}(+) ',
+                              style: robotoRegular,
+                            ),
+                            PriceConverter.convertAnimationPrice(
+                              tax,
+                              textStyle: robotoRegular,
+                            ),
+                          ],
                         ),
                       ],
                     )
@@ -360,10 +380,14 @@ class BottomSection extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('delivery_man_tips'.tr, style: robotoRegular),
-                        Text(
-                          '(+) ${PriceConverter.convertPrice(checkoutController.tips)}',
-                          style: robotoRegular,
-                          textDirection: TextDirection.ltr,
+                        Row(
+                          children: [
+                            Text('\u{200E}(+) ', style: robotoRegular),
+                            PriceConverter.convertAnimationPrice(
+                              checkoutController.tips,
+                              textStyle: robotoRegular,
+                            ),
+                          ],
                         ),
                       ],
                     )
@@ -384,10 +408,14 @@ class BottomSection extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('extra_packaging'.tr, style: robotoRegular),
-                        Text(
-                          '(+) ${PriceConverter.convertPrice(checkoutController.store!.extraPackagingAmount)}',
-                          style: robotoRegular,
-                          textDirection: TextDirection.ltr,
+                        Row(
+                          children: [
+                            Text('\u{200E}(+) ', style: robotoRegular),
+                            PriceConverter.convertAnimationPrice(
+                              checkoutController.store!.extraPackagingAmount,
+                              textStyle: robotoRegular,
+                            ),
+                          ],
                         ),
                       ],
                     )
@@ -426,10 +454,17 @@ class BottomSection extends StatelessWidget {
                                       color: Theme.of(context).primaryColor,
                                     ),
                                   )
-                                : Text(
-                                    '(+) ${PriceConverter.convertPrice(deliveryCharge)}',
-                                    style: robotoRegular,
-                                    textDirection: TextDirection.ltr,
+                                : Row(
+                                    children: [
+                                      Text(
+                                        '\u{200E}(+) ',
+                                        style: robotoRegular,
+                                      ),
+                                      PriceConverter.convertAnimationPrice(
+                                        deliveryCharge,
+                                        textStyle: robotoRegular,
+                                      ),
+                                    ],
                                   ),
                           ],
                         );
@@ -455,10 +490,16 @@ class BottomSection extends StatelessWidget {
                               .additionalChargeName!,
                           style: robotoRegular,
                         ),
-                        Text(
-                          '(+) ${PriceConverter.convertPrice(Get.find<SplashController>().configModel!.additionCharge)}',
-                          style: robotoRegular,
-                          textDirection: TextDirection.ltr,
+                        Row(
+                          children: [
+                            Text('\u{200E}(+) ', style: robotoRegular),
+                            PriceConverter.convertAnimationPrice(
+                              Get.find<SplashController>()
+                                  .configModel!
+                                  .additionCharge,
+                              textStyle: robotoRegular,
+                            ),
+                          ],
                         ),
                       ],
                     )
@@ -473,10 +514,16 @@ class BottomSection extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('paid_by_wallet'.tr, style: robotoRegular),
-                        Text(
-                          '(-) ${PriceConverter.convertPrice(Get.find<ProfileController>().userInfoModel!.walletBalance)}',
-                          style: robotoRegular,
-                          textDirection: TextDirection.ltr,
+                        Row(
+                          children: [
+                            Text('\u{200E}"(-) ', style: robotoRegular),
+                            PriceConverter.convertAnimationPrice(
+                              Get.find<ProfileController>()
+                                  .userInfoModel!
+                                  .walletBalance,
+                              textStyle: robotoRegular,
+                            ),
+                          ],
                         ),
                       ],
                     )

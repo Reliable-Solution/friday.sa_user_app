@@ -367,14 +367,11 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                                 fontSize:
                                                     Dimensions.fontSizeLarge,
                                               ),
-                                              textDirection: TextDirection.ltr,
                                             ),
                                             price > priceWithDiscount
                                                 ? Text(
                                                     '${PriceConverter.convertPrice(startingPrice)}'
                                                     '${endingPrice != null ? ' - ${PriceConverter.convertPrice(endingPrice)}' : ''}',
-                                                    textDirection:
-                                                        TextDirection.ltr,
                                                     style: robotoMedium
                                                         .copyWith(
                                                           color: Theme.of(
@@ -1017,18 +1014,35 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                         children: [
                                           QuantityButton(
                                             onTap: () {
-                                              if (itemController.quantity! >
-                                                  1) {
-                                                itemController.setQuantity(
-                                                  false,
-                                                  stock,
-                                                  widget.item!.quantityLimit,
-                                                  getxSnackBar: true,
-                                                );
+                                              if (itemController.cartIndex != -1 || (widget.cartIndex != null && widget.cartIndex != -1)) {
+                                                if (itemController.quantity! > 1) {
+                                                  itemController.setQuantity(
+                                                    false,
+                                                    stock,
+                                                    widget.item!.quantityLimit,
+                                                    getxSnackBar: true,
+                                                  );
+                                                } else {
+                                                  int index = itemController.cartIndex != -1 ? itemController.cartIndex : (widget.cartIndex ?? -1);
+                                                  if (index != -1) {
+                                                    Get.find<CartController>().removeFromCart(index, item: widget.item);
+                                                  }
+                                                  Get.back();
+                                                }
+                                              } else {
+                                                if (itemController.quantity! > 0) {
+                                                  itemController.setQuantity(
+                                                    false,
+                                                    stock,
+                                                    widget.item!.quantityLimit,
+                                                    getxSnackBar: true,
+                                                  );
+                                                }
                                               }
                                             },
                                             isIncrement: false,
                                             fromSheet: true,
+                                            showRemoveIcon: itemController.quantity == 1,
                                           ),
                                           Text(
                                             itemController.quantity.toString(),
@@ -1087,15 +1101,7 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                                             -1)
                                                   ? 'update_in_cart'.tr
                                                   : 'add_to_cart'.tr,
-                                              onPressed:
-                                                  (Get.find<SplashController>()
-                                                          .configModel!
-                                                          .moduleConfig!
-                                                          .module!
-                                                          .stock! &&
-                                                      stock! <= 0)
-                                                  ? null
-                                                  : () async {
+                                              onPressed: (stock! > 0 && (itemController.cartIndex != -1 || itemController.quantity! > 0)) ? () async {
                                                       String? invalid;
                                                       if (_newVariation) {
                                                         for (
@@ -1414,7 +1420,7 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                                           }
                                                         }
                                                       }
-                                                    },
+                                                    } : null,
                                             );
                                           },
                                         ),
@@ -1609,7 +1615,6 @@ class AddonView extends StatelessWidget {
                           : 'free'.tr,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      textDirection: TextDirection.ltr,
                       style: itemController.addOnActiveList[index]
                           ? robotoMedium.copyWith(
                               fontSize: Dimensions.fontSizeSmall,
@@ -2074,10 +2079,9 @@ class NewVariationView extends StatelessWidget {
                                   const Spacer(),
                                   showOriginalPrice
                                       ? Text(
-                                          '+${PriceConverter.convertPrice(item!.foodVariations![index].variationValues![i].optionPrice)}',
+                                          PriceConverter.convertPriceWithSign(item!.foodVariations![index].variationValues![i].optionPrice, isPositive: true),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          textDirection: TextDirection.ltr,
                                           style: robotoRegular.copyWith(
                                             fontSize:
                                                 Dimensions.fontSizeExtraSmall,
@@ -2095,10 +2099,9 @@ class NewVariationView extends StatelessWidget {
                                         : 0,
                                   ),
                                   Text(
-                                    '+${PriceConverter.convertPrice(item!.foodVariations![index].variationValues![i].optionPrice, discount: discount, discountType: discountType, isFoodVariation: true)}',
+                                    PriceConverter.convertPriceWithSign(item!.foodVariations![index].variationValues![i].optionPrice, discount: discount, discountType: discountType, isFoodVariation: true, isPositive: true),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    textDirection: TextDirection.ltr,
                                     style:
                                         itemController
                                             .selectedVariations[index][i]!
