@@ -255,11 +255,15 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen> {
                               )
                             : const SizedBox(),
                         Expanded(
-                          child: SingleChildScrollView(
-                            controller: scrollController,
-                            physics: const BouncingScrollPhysics(),
-                            child: FooterView(
-                              child: SizedBox(
+                          child: RefreshIndicator(
+                            onRefresh: () async {
+                              await _loadData(context, true);
+                            },
+                            child: SingleChildScrollView(
+                              controller: scrollController,
+                              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                              child: FooterView(
+                                child: SizedBox(
                                 width: Dimensions.webMaxWidth,
                                 child: Column(
                                   children: [
@@ -380,6 +384,7 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen> {
                               ),
                             ),
                           ),
+                          ),
                         ),
                         ResponsiveHelper.isDesktop(context)
                             ? const SizedBox()
@@ -398,6 +403,7 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen> {
       ),
     );
   }
+
 
   void openDialog(BuildContext context, String imageUrl) => showDialog(
     context: context,
@@ -477,7 +483,10 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       (order.orderStatus == 'pending' &&
                               order.paymentStatus == 'unpaid' &&
                               order.paymentMethod == 'digital_payment' &&
-                              _isCashOnDeliveryActive!)
+                              _isCashOnDeliveryActive! &&
+                              (order.store != null
+                                  ? order.store!.cashPaymentPermission == 1
+                                  : true))
                           ? Expanded(
                               child: CustomButton(
                                 buttonText: 'switch_to_cod'.tr,
@@ -530,8 +539,8 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                     .orderDetails?[0]
                                                     .isGuest ==
                                                 1
-                                        ? true
-                                        : false)))
+                                         ? true
+                                         : false)))
                           ? Expanded(
                               child: Padding(
                                 padding: ResponsiveHelper.isDesktop(context)
@@ -641,7 +650,10 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen> {
               )
             : const SizedBox(),
         (order.orderStatus == 'failed' &&
-                Get.find<SplashController>().configModel!.cashOnDelivery!)
+                Get.find<SplashController>().configModel!.cashOnDelivery! &&
+                (order.store != null
+                    ? order.store!.cashPaymentPermission == 1
+                    : true))
             ? Center(
                 child: Container(
                   width: Dimensions.webMaxWidth,

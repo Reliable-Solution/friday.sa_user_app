@@ -106,6 +106,7 @@ class CatSubCategoryWidget extends StatelessWidget {
                           child: SizedBox(
                             height: 30,
                             child: ListView.builder(
+                              controller: storeController.subCatScrollController,
                               scrollDirection: Axis.horizontal,
                               itemCount: storeController.isSubCatLoad
                                   ? 10

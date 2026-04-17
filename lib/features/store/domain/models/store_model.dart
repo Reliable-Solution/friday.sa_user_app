@@ -1,3 +1,5 @@
+import 'package:friday_sa/features/category/domain/models/category_model.dart';
+
 class StoreModel {
   StoreModel({this.totalSize, this.limit, this.offset, this.stores});
 
@@ -6,8 +8,8 @@ class StoreModel {
     limit = json['limit'].toString();
     offset =
         (json['offset'] != null && json['offset'].toString().trim().isNotEmpty)
-            ? int.parse(json['offset'].toString())
-            : null;
+        ? int.parse(json['offset'].toString())
+        : null;
     if (json['stores'] != null) {
       stores = [];
       json['stores'].forEach((v) {
@@ -85,6 +87,9 @@ class Store {
     this.storeBusinessModel,
     this.distance,
     this.storeOpeningTime,
+    this.categories,
+    this.cashPaymentPermission,
+    this.digitalPaymentPermission,
   });
 
   Store.fromJson(Map<String, dynamic> json) {
@@ -96,8 +101,9 @@ class Store {
     latitude = json['latitude'];
     longitude = json['longitude'];
     address = json['address'];
-    minimumOrder =
-        json['minimum_order'] == null ? 0 : json['minimum_order']?.toDouble();
+    minimumOrder = json['minimum_order'] == null
+        ? 0
+        : json['minimum_order']?.toDouble();
     currency = json['currency'];
     freeDelivery = json['free_delivery'];
     coverPhotoFullUrl = json['cover_photo_full_url'] ?? '';
@@ -124,10 +130,12 @@ class Store {
     nonVeg = json['non_veg'];
     moduleId = json['module_id'];
     orderPlaceToScheduleInterval = json['order_place_to_schedule_interval'];
-    categoryIds =
-        json['category_ids'] != null ? json['category_ids'].cast<int>() : [];
-    discount =
-        json['discount'] != null ? Discount.fromJson(json['discount']) : null;
+    categoryIds = json['category_ids'] != null
+        ? json['category_ids'].cast<int>()
+        : [];
+    discount = json['discount'] != null
+        ? Discount.fromJson(json['discount'])
+        : null;
     if (json['schedules'] != null) {
       schedules = <Schedules>[];
       json['schedules'].forEach((v) {
@@ -162,6 +170,14 @@ class Store {
     storeBusinessModel = json['store_business_model'];
     distance = json['distance']?.toDouble();
     storeOpeningTime = json['current_opening_time'];
+    if (json['category_details'] != null) {
+      categories = <CategoryModel>[];
+      json['category_details'].forEach((v) {
+        categories!.add(CategoryModel.fromJson(v));
+      });
+    }
+    cashPaymentPermission = json['cash_payment_permission'];
+    digitalPaymentPermission = json['digital_payment_permission'];
   }
   int? id;
   String? name;
@@ -185,6 +201,7 @@ class Store {
   int? zoneId;
   int? selfDeliverySystem;
   bool? posSystem;
+
   num? minimumShippingCharge;
   num? maximumShippingCharge;
   num? perKmShippingCharge;
@@ -214,6 +231,9 @@ class Store {
   String? storeBusinessModel;
   num? distance;
   String? storeOpeningTime;
+  List<CategoryModel>? categories;
+  int? cashPaymentPermission;
+  int? digitalPaymentPermission;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -275,6 +295,11 @@ class Store {
     }
     data['store_business_model'] = storeBusinessModel;
     data['distance'] = distance;
+    if (categories != null) {
+      data['category_details'] = categories!.map((v) => v.toJson()).toList();
+    }
+    // data['cash_payment_permission'] = cashPaymentPermission;
+    // data['digital_payment_permission'] = digitalPaymentPermission;
     return data;
   }
 }

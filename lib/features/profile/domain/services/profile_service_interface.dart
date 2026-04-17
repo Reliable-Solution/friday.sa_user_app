@@ -14,5 +14,5 @@ abstract class ProfileServiceInterface {
   );
   Future<ResponseModel> changePassword(UserInfoModel userInfoModel);
   Future<Response> deleteUser();
-  Future<XFile?> pickImageFromGallery();
+  Future<XFile?> pickImage(ImageSource source);
 }

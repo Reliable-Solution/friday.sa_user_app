@@ -191,8 +191,8 @@ class ProfileController extends GetxController implements GetxService {
     _userInfoModel!.userInfo = user;
   }
 
-  Future<void> pickImage() async {
-    _pickedFile = await profileServiceInterface.pickImageFromGallery();
+  Future<void> pickImage(ImageSource source) async {
+    _pickedFile = await profileServiceInterface.pickImage(source);
     update();
   }
 

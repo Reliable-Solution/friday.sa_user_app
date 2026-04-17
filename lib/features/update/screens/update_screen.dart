@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/images.dart';
@@ -7,6 +9,9 @@ import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+
+import '../../../helper/route_helper.dart';
+import '../../notification/domain/models/notification_body_model.dart';
 
 class UpdateScreen extends StatefulWidget {
   const UpdateScreen({super.key, required this.isUpdate});

@@ -34,6 +34,9 @@ class AuthController extends GetxController implements GetxService {
   bool _acceptTerms = true;
   bool get acceptTerms => _acceptTerms;
 
+  bool _acceptLoginTerms = false;
+  bool get acceptLoginTerms => _acceptLoginTerms;
+
   bool _isActiveRememberMe = false;
   bool get isActiveRememberMe => _isActiveRememberMe;
 
@@ -213,6 +216,11 @@ class AuthController extends GetxController implements GetxService {
 
   void toggleTerms() {
     _acceptTerms = !_acceptTerms;
+    update();
+  }
+
+  void toggleLoginTerms() {
+    _acceptLoginTerms = !_acceptLoginTerms;
     update();
   }
 
@@ -414,5 +422,14 @@ class AuthController extends GetxController implements GetxService {
         showCustomSnackBar('timed_out_please_try_again_after_few_minutes'.tr);
       },
     );
+  }
+
+  Future<ResponseModel> removeCustomerByPhone(String phone) async {
+    _isLoading = true;
+    update();
+    ResponseModel responseModel = await authServiceInterface.removeCustomerByPhone(phone);
+    _isLoading = false;
+    update();
+    return responseModel;
   }
 }
