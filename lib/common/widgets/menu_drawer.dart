@@ -217,7 +217,7 @@ class MenuDrawerState extends State<MenuDrawer>
           if (AuthHelper.isLoggedIn()) {
             Get.dialog(
               ConfirmationDialog(
-                icon: Images.support,
+                icon: Images.logOut,
                 description: 'are_you_sure_to_logout'.tr,
                 isLogOut: true,
                 onYesPressed: () async {

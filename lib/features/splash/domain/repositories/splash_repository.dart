@@ -6,6 +6,7 @@ import 'package:friday_sa/api/local_client.dart';
 import 'package:friday_sa/common/enums/data_source_enum.dart';
 import 'package:friday_sa/common/models/response_model.dart';
 import 'package:friday_sa/api/api_client.dart';
+import 'package:friday_sa/api/dio_client.dart';
 import 'package:friday_sa/features/language/domain/models/country_model.dart';
 import 'package:friday_sa/features/splash/domain/models/landing_model.dart';
 import 'dart:convert';
@@ -16,8 +17,13 @@ import 'package:get/get.dart';
 import 'package:friday_sa/features/splash/domain/repositories/splash_repository_interface.dart';
 
 class SplashRepository implements SplashRepositoryInterface {
-  SplashRepository({required this.apiClient, required this.sharedPreferences});
+  SplashRepository({
+    required this.apiClient,
+    required this.sharedPreferences,
+    required this.dioClient,
+  });
   final ApiClient apiClient;
+  final DioClient dioClient;
   final SharedPreferences sharedPreferences;
 
   @override
@@ -189,6 +195,15 @@ class SplashRepository implements SplashRepositoryInterface {
       addressModel?.latitude,
       addressModel?.longitude,
     );
+    dioClient.updateHeader(
+      sharedPreferences.getString(AppConstants.token),
+      addressModel?.zoneIds,
+      addressModel?.areaIds,
+      sharedPreferences.getString(AppConstants.languageCode),
+      storeCategoryID,
+      addressModel?.latitude,
+      addressModel?.longitude,
+    );
   }
 
   @override
@@ -251,6 +266,15 @@ class SplashRepository implements SplashRepositoryInterface {
       debugPrint('Did not get shared Preferences address . Note: $e');
     }
     apiClient.updateHeader(
+      sharedPreferences.getString(AppConstants.token),
+      addressModel?.zoneIds,
+      addressModel?.areaIds,
+      sharedPreferences.getString(AppConstants.languageCode),
+      module?.id,
+      addressModel?.latitude,
+      addressModel?.longitude,
+    );
+    dioClient.updateHeader(
       sharedPreferences.getString(AppConstants.token),
       addressModel?.zoneIds,
       addressModel?.areaIds,
