@@ -43,6 +43,7 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
     super.initState();
 
     _tabController = TabController(length: 2, initialIndex: 0, vsync: this);
+    Get.find<CategoryController>().mainScrollController = scrollController;
     Get.find<CategoryController>().getSubCategoryList(
       widget.categoryID,
       storeId: widget.storeID,
@@ -67,13 +68,13 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
           }
           Get.find<CategoryController>().showBottomLoader();
           Get.find<CategoryController>().getCategoryItemList(
-            Get.find<CategoryController>().subCategoryIndex == 0
-                ? widget.categoryID
-                : Get.find<CategoryController>()
+            (Get.find<CategoryController>().subCategoryIndex != -1 && Get.find<CategoryController>().subCategoryList != null && Get.find<CategoryController>().subCategoryList!.isNotEmpty)
+                ? Get.find<CategoryController>()
                       .subCategoryList![Get.find<CategoryController>()
                           .subCategoryIndex]
                       .id
-                      .toString(),
+                      .toString()
+                : widget.categoryID,
             Get.find<CategoryController>().offset + 1,
             Get.find<CategoryController>().type,
             false,
@@ -94,13 +95,13 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
           }
           Get.find<CategoryController>().showBottomLoader();
           Get.find<CategoryController>().getCategoryStoreList(
-            Get.find<CategoryController>().subCategoryIndex == 0
-                ? widget.categoryID
-                : Get.find<CategoryController>()
+            (Get.find<CategoryController>().subCategoryIndex != -1 && Get.find<CategoryController>().subCategoryList != null && Get.find<CategoryController>().subCategoryList!.isNotEmpty)
+                ? Get.find<CategoryController>()
                       .subCategoryList![Get.find<CategoryController>()
                           .subCategoryIndex]
                       .id
-                      .toString(),
+                      .toString()
+                : widget.categoryID,
             Get.find<CategoryController>().offset + 1,
             Get.find<CategoryController>().type,
             false,
@@ -196,13 +197,9 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
                               onSubmitted: (String query) {
                                 catController.searchData(
                                   query,
-                                  catController.subCategoryIndex == 0
-                                      ? widget.categoryID
-                                      : catController
-                                            .subCategoryList![catController
-                                                .subCategoryIndex]
-                                            .id
-                                            .toString(),
+                                  (catController.subCategoryIndex != -1 && catController.subCategoryList != null && catController.subCategoryList!.isNotEmpty)
+                                  ? catController.subCategoryList![catController.subCategoryIndex].id.toString()
+                                  : widget.categoryID,
                                   catController.type,
                                 );
                               },
@@ -257,39 +254,27 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
                         onSelected: (String type) {
                           if (catController.isSearching) {
                             catController.searchData(
-                              catController.subCategoryIndex == 0
-                                  ? widget.categoryID
-                                  : catController
-                                        .subCategoryList![catController
-                                            .subCategoryIndex]
-                                        .id
-                                        .toString(),
+                              (catController.subCategoryIndex != -1 && catController.subCategoryList != null && catController.subCategoryList!.isNotEmpty)
+                                      ? catController.subCategoryList![catController.subCategoryIndex].id.toString()
+                                      : widget.categoryID,
                               '1',
                               type,
                             );
                           } else {
                             if (catController.isStore) {
                               catController.getCategoryStoreList(
-                                catController.subCategoryIndex == 0
-                                    ? widget.categoryID
-                                    : catController
-                                          .subCategoryList![catController
-                                              .subCategoryIndex]
-                                          .id
-                                          .toString(),
+                                (catController.subCategoryIndex != -1 && catController.subCategoryList != null && catController.subCategoryList!.isNotEmpty)
+                                    ? catController.subCategoryList![catController.subCategoryIndex].id.toString()
+                                    : widget.categoryID,
                                 1,
                                 type,
                                 true,
                               );
                             } else {
                               catController.getCategoryItemList(
-                                catController.subCategoryIndex == 0
-                                    ? widget.categoryID
-                                    : catController
-                                          .subCategoryList![catController
-                                              .subCategoryIndex]
-                                          .id
-                                          .toString(),
+                                (catController.subCategoryIndex != -1 && catController.subCategoryList != null && catController.subCategoryList!.isNotEmpty)
+                                    ? catController.subCategoryList![catController.subCategoryIndex].id.toString()
+                                    : widget.categoryID,
                                 1,
                                 type,
                                 true,
@@ -323,6 +308,7 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
                                               Dimensions.paddingSizeExtraSmall,
                                         ),
                                         child: ListView.builder(
+                                          controller: catController.subCatScrollController,
                                           key: scaffoldKey,
                                           scrollDirection: Axis.horizontal,
                                           itemCount: catController
@@ -458,13 +444,9 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
                                         if (catController.isSearching) {
                                           catController.searchData(
                                             catController.searchText,
-                                            catController.subCategoryIndex == 0
-                                                ? widget.categoryID
-                                                : catController
-                                                      .subCategoryList![catController
-                                                          .subCategoryIndex]
-                                                      .id
-                                                      .toString(),
+                                            (catController.subCategoryIndex != -1 && catController.subCategoryList != null && catController.subCategoryList!.isNotEmpty)
+                                                  ? catController.subCategoryList![catController.subCategoryIndex].id.toString()
+                                                  : widget.categoryID,
                                             catController.type,
                                           );
                                         } else {
@@ -573,6 +555,7 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
                                     vertical: Dimensions.paddingSizeExtraSmall,
                                   ),
                                   child: ListView.builder(
+                                    controller: catController.subCatScrollController,
                                     key: scaffoldKey,
                                     scrollDirection: Axis.horizontal,
                                     itemCount:
@@ -693,7 +676,7 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
                                   if (catController.isSearching) {
                                     catController.searchData(
                                       catController.searchText,
-                                      catController.subCategoryIndex == 0
+                                      (catController.subCategoryIndex != -1 && catController.subCategoryList != null && catController.subCategoryList!.isNotEmpty)
                                           ? widget.categoryID
                                           : catController
                                                 .subCategoryList![catController
@@ -705,7 +688,7 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
                                   } else {
                                     if (_tabController!.index == 1) {
                                       catController.getCategoryStoreList(
-                                        catController.subCategoryIndex == 0
+                                        (catController.subCategoryIndex != -1 && catController.subCategoryList != null && catController.subCategoryList!.isNotEmpty)
                                             ? widget.categoryID
                                             : catController
                                                   .subCategoryList![catController
@@ -718,7 +701,7 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
                                       );
                                     } else {
                                       catController.getCategoryItemList(
-                                        catController.subCategoryIndex == 0
+                                        (catController.subCategoryIndex != -1 && catController.subCategoryList != null && catController.subCategoryList!.isNotEmpty)
                                             ? widget.categoryID
                                             : catController
                                                   .subCategoryList![catController

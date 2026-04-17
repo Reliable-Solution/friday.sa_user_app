@@ -486,7 +486,7 @@ class OrderCalculationWidget extends StatelessWidget {
                                   )
                                 : const SizedBox(),
                             SizedBox(height: extraPackagingAmount > 0 ? 10 : 0),
-                            Row(
+                            order.orderType != 'take_away' ? Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
@@ -510,7 +510,7 @@ class OrderCalculationWidget extends StatelessWidget {
                                         ),
                                       ),
                               ],
-                            ),
+                            ) : const SizedBox(),
                           ],
                         ),
                 ],

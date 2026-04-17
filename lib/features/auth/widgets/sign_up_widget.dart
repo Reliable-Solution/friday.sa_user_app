@@ -57,6 +57,10 @@ class SignUpWidgetState extends State<SignUpWidget> {
     _countryDialCode = CountryCode.fromCountryCode(
       Get.find<SplashController>().configModel!.country!,
     ).dialCode;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(_phoneFocus);
+    });
   }
 
   @override
@@ -102,7 +106,7 @@ class SignUpWidgetState extends State<SignUpWidget> {
                         padding: const EdgeInsets.symmetric(
                           vertical: Dimensions.paddingSizeLarge,
                         ),
-                        child: Image.asset(Images.logo, width: 125),
+                        child: Image.asset(Images.splashLogo, width: 125),
                       )
                           : const SizedBox(),
                       isDesktop

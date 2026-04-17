@@ -138,7 +138,8 @@ class _ItemsViewState extends State<ItemsView> {
                                         .showRestaurantText!
                                     ? 'no_restaurant_available'.tr
                                     : 'no_store_available'.tr
-                              : 'no_item_available'.tr),
+                              :
+                              'no_item_available'.tr),
                     )
             : GridView.builder(
                 key: UniqueKey(),

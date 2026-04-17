@@ -21,6 +21,8 @@ import 'package:friday_sa/util/app_constants.dart';
 import 'package:friday_sa/util/messages.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -28,6 +30,8 @@ import 'package:friday_sa/features/home/widgets/cookies_view.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'helper/get_di.dart' as di;
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 
 String currentAppVersion = '1.0.0';
 
@@ -50,6 +54,8 @@ Future<void> main() async {
 
   print('loading version');
   await initAppVersion();
+  await initializeDateFormatting();
+
 
   print("object 1");
 
@@ -60,17 +66,16 @@ Future<void> main() async {
   setPathUrlStrategy();
   print("object 3");
 
-  /*///Pass all uncaught "fatal" errors from the framework to Crashlytics
+  ///Pass all uncaught "fatal" errors from the framework to Crashlytics
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
-
 
   ///Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
-  };*/
+  };
 
   if (GetPlatform.isWeb) {
     print("object 4");
@@ -90,7 +95,7 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
         apiKey: "AIzaSyBiaAgyPtZTzn6HVHz_Iu_LogP_1S_hFp4",
-        appId: "1:326903081702:android:71f20efc57e57ae536e927",
+        appId: "1:821750624287:android:537e4e47920afb8614652a",
         messagingSenderId: "821750624287",
         projectId: "am-mart-vendor-app",
         storageBucket: "am-mart-vendor-app.firebasestorage.app",
@@ -126,6 +131,14 @@ Future<void> main() async {
       version: "v15.0",
     );
   }
+
+  /// Testing ke liye niche ki line uncomment karein (Only for testing!)
+  /// Thoda delay diya hai taaki report upload ho sake
+  // Future.delayed(const Duration(seconds: 10), () async {
+  //   print("!!! TRIGGERING TEST CRASH NOW !!!");
+  //   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  //   FirebaseCrashlytics.instance.crash();
+  // });
 
   runApp(MyApp(languages: languages, body: body));
 }
@@ -204,6 +217,11 @@ class _MyAppState extends State<MyApp> {
                         title: AppConstants.appName,
                         debugShowCheckedModeBanner: false,
                         navigatorKey: Get.key,
+                        navigatorObservers: [
+                          FirebaseAnalyticsObserver(
+                            analytics: FirebaseAnalytics.instance,
+                          ),
+                        ],
                         scrollBehavior: const MaterialScrollBehavior().copyWith(
                           dragDevices: {
                             PointerDeviceKind.mouse,

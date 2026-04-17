@@ -7,6 +7,7 @@ import 'package:friday_sa/api/api_client.dart';
 import 'package:friday_sa/features/address/domain/models/address_model.dart';
 import 'package:friday_sa/util/app_constants.dart';
 
+
 class AddressHelper {
   static Future<bool> saveUserAddressInSharedPref(AddressModel address) async {
     SharedPreferences sharedPreferences = Get.find<SharedPreferences>();

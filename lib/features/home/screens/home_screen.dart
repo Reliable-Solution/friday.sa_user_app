@@ -54,15 +54,16 @@ class HomeScreen extends StatefulWidget {
   final bool isLoad;
 
   static Future<void> loadData(bool reload, {bool fromModule = false}) async {
-    Get.find<LocationController>().syncZoneData();
+    Get.find<LocationController>().syncZoneData();  
     Get.find<FlashSaleController>().setEmptyFlashSale(fromModule: fromModule);
     //debugPrint('------------call from home');
     // await Get.find<CartController>().getCartDataOnline();
     if (AuthHelper.isLoggedIn()) {
-      Get.find<StoreController>().getVisitAgainStoreList(
+        Get.find<StoreController>().getVisitAgainStoreList(
         fromModule: fromModule,
       );
     }
+
 
     if (Get.find<SplashController>().module != null &&
         !Get.find<SplashController>()
@@ -262,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bool showMobileModule =
             !ResponsiveHelper.isDesktop(context) &&
             splashController.module == null &&
-            splashController.configModel!.module == null;
+            splashController.configModel?.module == null;
         // bool isParcel = splashController.module != null && splashController.configModel!.moduleConfig!.module!.isParcel!;
         bool isParcel =
             splashController.module != null &&
@@ -416,53 +417,52 @@ class _HomeScreenState extends State<HomeScreen> {
                                           children: [
                                             (splashController.module != null &&
                                                     splashController
-                                                            .configModel!
-                                                            .module ==
+                                                            .configModel?.module ==
                                                         null &&
                                                     splashController
                                                             .moduleList !=
                                                         null &&
                                                     splashController
-                                                            .moduleList!
-                                                            .length !=
+                                                            .moduleList?.length !=
                                                         1)
-                                                ? InkWell(
-                                                    onTap: () {
-                                                      splashController
-                                                          .removeModule();
-                                                      Get.find<
-                                                            StoreController
-                                                          >()
-                                                          .resetStoreData();
-                                                    },
-                                                    child: CircleAvatar(
-                                                      child: CustomImage(
-                                                        image: splashController
-                                                            .module!
-                                                            .iconFullUrl!,
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).cardColor,
-                                                        height: 25,
-                                                        width: 25,
+                                                ? IgnorePointer(
+                                              ignoring: true,
+                                                  child: InkWell(
+                                                      onTap: () {
+                                                        splashController
+                                                            .removeModule();
+                                                        Get.find<
+                                                              StoreController
+                                                            >()
+                                                            .resetStoreData();
+                                                      },
+                                                      child: CircleAvatar(
+                                                        child: CustomImage(
+                                                          image: splashController
+                                                              .module
+                                                              ?.iconFullUrl ?? '',
+                                                          color: Theme.of(
+                                                            context,
+                                                          ).cardColor,
+                                                          height: 25,
+                                                          width: 25,
+                                                        ),
                                                       ),
                                                     ),
-                                                  )
+                                                )
                                                 : const SizedBox(),
                                             SizedBox(
                                               width:
                                                   (splashController.module !=
                                                           null &&
                                                       splashController
-                                                              .configModel!
-                                                              .module ==
+                                                              .configModel?.module ==
                                                           null &&
                                                       splashController
                                                               .moduleList !=
                                                           null &&
                                                       splashController
-                                                              .moduleList!
-                                                              .length !=
+                                                              .moduleList?.length !=
                                                           1)
                                                   ? Dimensions.paddingSizeSmall
                                                   : 0,
@@ -556,6 +556,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                               ),
                                             ),
+                                            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                                             InkWell(
                                               child: GetBuilder<NotificationController>(
                                                 builder: (notificationController) {
@@ -601,6 +602,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 RouteHelper.getNotificationRoute(),
                                               ),
                                             ),
+                                            if (splashController.module != null &&
+                                                splashController.configModel?.module == null &&
+                                                splashController.moduleList != null &&
+                                                splashController.moduleList?.length != 1)
+                                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                            if (splashController.module != null &&
+                                                splashController.configModel?.module == null &&
+                                                splashController.moduleList != null &&
+                                                splashController.moduleList?.length != 1)
+                                              InkWell(
+                                                onTap: () {
+                                                  splashController.removeModule();
+                                                  Get.find<StoreController>().resetStoreData();
+                                                },
+                                                borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                                                  decoration: const BoxDecoration(
+                                                    boxShadow: [BoxShadow(spreadRadius: -2,blurRadius: 02)],
+                                                    color: Colors.white,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.arrow_back,
+                                                    size: 22,
+                                                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                                                  ),
+                                                ),
+                                              ),
                                           ],
                                         ),
                                       ),
@@ -702,10 +732,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   Get.find<
                                                                             SplashController
                                                                           >()
-                                                                          .configModel!
-                                                                          .moduleConfig!
-                                                                          .module!
-                                                                          .showRestaurantText!
+                                                                          .configModel
+                                                                          ?.moduleConfig
+                                                                          ?.module
+                                                                          ?.showRestaurantText ?? false
                                                                       ? 'search_food_or_restaurant'
                                                                             .tr
                                                                       : 'search_item_or_store'

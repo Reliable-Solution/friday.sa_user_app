@@ -12,7 +12,6 @@ import 'package:friday_sa/helper/route_helper.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/images.dart';
 import 'package:friday_sa/util/styles.dart';
-import 'package:friday_sa/common/widgets/cart_snackbar.dart';
 import 'package:friday_sa/common/widgets/confirmation_dialog.dart';
 import 'package:friday_sa/common/widgets/custom_button.dart';
 import 'package:friday_sa/common/widgets/custom_image.dart';
@@ -641,7 +640,7 @@ class DetailsWebViewWidget extends StatelessWidget {
                                                         .moduleConfig!
                                                         .module!
                                                         .stock! ||
-                                                    stock! > 0)
+                                                    (stock! > 0 && (itemController.cartIndex != -1 || itemController.quantity! > 0)))
                                                 ? () async {
                                                     if (itemController
                                                             .item!
@@ -707,7 +706,7 @@ class DetailsWebViewWidget extends StatelessWidget {
                                                                           .item,
                                                                       null,
                                                                     );
-                                                                showCartSnackBar();
+                                                                //showCartSnackBar();
                                                               }
                                                             });
                                                           },
@@ -731,7 +730,7 @@ class DetailsWebViewWidget extends StatelessWidget {
                                                                           .item,
                                                                       null,
                                                                     );
-                                                                showCartSnackBar();
+                                                                //showCartSnackBar();
                                                               }
                                                             });
                                                       } else {
@@ -741,7 +740,7 @@ class DetailsWebViewWidget extends StatelessWidget {
                                                             )
                                                             .then((success) {
                                                               if (success) {
-                                                                showCartSnackBar();
+                                                                //showCartSnackBar();
                                                               }
                                                             });
                                                       }

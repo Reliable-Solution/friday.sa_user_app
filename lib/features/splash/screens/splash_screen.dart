@@ -39,9 +39,7 @@ class SplashScreenState extends State<SplashScreen> {
     _onConnectivityChanged = Connectivity().onConnectivityChanged.listen((
       List<ConnectivityResult> result,
     ) {
-      bool isConnected =
-          result.contains(ConnectivityResult.wifi) ||
-          result.contains(ConnectivityResult.mobile);
+      bool isConnected = result.isNotEmpty && !result.contains(ConnectivityResult.none);
 
       if (!firstTime) {
         isConnected

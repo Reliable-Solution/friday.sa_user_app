@@ -36,7 +36,7 @@ class Images {
   static const String logOut = 'assets/image/log_out.png';
   static const String location = 'assets/image/location.png';
   static const String policy = 'assets/image/policy.png';
-  static const String support = 'assets/image/support.png';
+  static const String support = 'assets/image/log_out.png';
   static const String terms = 'assets/image/terms.png';
   static const String emptyBox = 'assets/image/empty_box.png';
   static const String emptyCart = 'assets/image/empty_cart.png';
@@ -51,6 +51,7 @@ class Images {
   static const String deliveryLocation = 'assets/image/delivery_location.png';
   static const String forgot = 'assets/image/forgot.png';
   static const String pickMarker = 'assets/image/pick_marker.png';
+  static const String pickMarkerBack = 'assets/image/pick_marker_back.png';
   static const String tracking = 'assets/image/tracking.png';
   static const String myLocationMarker = 'assets/image/my_location_marker.png';
   static const String userMarker = 'assets/image/user_marker.png';

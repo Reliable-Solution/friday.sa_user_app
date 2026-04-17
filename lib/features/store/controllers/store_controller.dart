@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -98,6 +99,9 @@ class StoreController extends GetxController implements GetxService {
   String get searchType => _searchType;
 
   String _searchText = '';
+  final ScrollController _subCatScrollController = ScrollController();
+  ScrollController get subCatScrollController => _subCatScrollController;
+  ScrollController? mainScrollController;
 
   String get searchText => _searchText;
 
@@ -143,16 +147,19 @@ class StoreController extends GetxController implements GetxService {
 
   num getRestaurantDistance(LatLng storeLatLng) {
     num distance = 0;
-    distance =
-        Geolocator.distanceBetween(
+    try {
+      final userAddress = AddressHelper.getUserAddressFromSharedPref();
+      if (userAddress?.latitude != null && userAddress?.longitude != null) {
+        distance = Geolocator.distanceBetween(
           storeLatLng.latitude,
           storeLatLng.longitude,
-          double.parse(AddressHelper.getUserAddressFromSharedPref()!.latitude!),
-          double.parse(
-            AddressHelper.getUserAddressFromSharedPref()!.longitude!,
-          ),
-        ) /
-        1000;
+          double.parse(userAddress!.latitude!),
+          double.parse(userAddress!.longitude!),
+        ) / 1000;
+      }
+    } catch (e) {
+      debugPrint('Distance calculation error: $e');
+    }
     return distance;
   }
 
@@ -581,20 +588,19 @@ class StoreController extends GetxController implements GetxService {
         _store = storeDetails;
         Get.find<CheckoutController>().initializeTimeSlot(_store!);
         if (!fromCart && slug.isEmpty) {
-          Get.find<CheckoutController>().getDistanceInKM(
-            LatLng(
-              double.parse(
-                AddressHelper.getUserAddressFromSharedPref()!.latitude!,
+          final userAddress = AddressHelper.getUserAddressFromSharedPref();
+          if (userAddress?.latitude != null && userAddress?.longitude != null && _store?.latitude != null && _store?.longitude != null) {
+            Get.find<CheckoutController>().getDistanceInKM(
+              LatLng(
+                double.parse(userAddress!.latitude!),
+                double.parse(userAddress.longitude!),
               ),
-              double.parse(
-                AddressHelper.getUserAddressFromSharedPref()!.longitude!,
+              LatLng(
+                double.parse(_store!.latitude!),
+                double.parse(_store!.longitude!),
               ),
-            ),
-            LatLng(
-              double.parse(_store!.latitude!),
-              double.parse(_store!.longitude!),
-            ),
-          );
+            );
+          }
         }
         if (slug.isNotEmpty) {
           await Get.find<LocationController>().setStoreAddressToUserAddress(
@@ -655,6 +661,7 @@ class StoreController extends GetxController implements GetxService {
     update();
   }
 
+
   Future<void> getStoreItemList(
     int? storeID,
     int offset,
@@ -668,11 +675,12 @@ class StoreController extends GetxController implements GetxService {
         update();
       }
     }
+
     final catId =
         (_store != null &&
             _store!.categoryIds!.isNotEmpty &&
             _categoryIndex != -1)
-        ? (_subCategoryIndex != -1 && _subCategoryList.isNotEmpty && _subCategoryIndex != 0)
+        ? (_subCategoryIndex != -1 && _subCategoryList.isNotEmpty)
               ? _subCategoryList[_subCategoryIndex].id
               : (_categoryList.isEmpty ? 0 : _categoryList[_categoryIndex].id)
         : 0;
@@ -726,11 +734,9 @@ class StoreController extends GetxController implements GetxService {
             type,
             (_store != null &&
                     _store!.categoryIds!.isNotEmpty &&
-                    _categoryIndex != 0)
-                ? _subCategoryIndex != 0
-                      ? _subCategoryList.isEmpty
-                            ? 0
-                            : _subCategoryList[_subCategoryIndex].id
+                    _categoryIndex != -1)
+                ? (_subCategoryIndex != -1 && _subCategoryList.isNotEmpty)
+                      ? _subCategoryList[_subCategoryIndex].id
                       : _categoryList.isEmpty
                       ? 0
                       : _categoryList[_categoryIndex].id
@@ -771,6 +777,13 @@ class StoreController extends GetxController implements GetxService {
       getStoreItemList(_store!.id, 1, Get.find<StoreController>().type, false);
     }
     update();
+    if (mainScrollController != null && mainScrollController!.hasClients) {
+      mainScrollController!.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   bool isSubCatLoad = false;
@@ -788,6 +801,18 @@ class StoreController extends GetxController implements GetxService {
         _storeItemModel = null;
       }
       update();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_subCatScrollController.hasClients) {
+          _subCatScrollController.jumpTo(0);
+        }
+        if (mainScrollController != null && mainScrollController!.hasClients) {
+          mainScrollController!.animateTo(
+            0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
       Get.find<CategoryController>()
           .getSubCategoryList(
             _categoryList[_categoryIndex].id?.toString() ?? "0",
@@ -897,4 +922,39 @@ class StoreController extends GetxController implements GetxService {
       Share.share(shareUrl);
     }
   }
+
+  Future<void> getStoreData(int? storeId, bool fromModule, String slug) async {
+    if (isSearching) {
+      changeSearchStatus(isUpdate: false);
+    }
+
+    hideAnimation();
+    Store? storeDetails = await getStoreDetails(
+      Store(id: storeId),
+      fromModule,
+      slug: slug,
+    );
+
+    if (storeDetails != null) {
+      showButtonAnimation();
+      if (mainScrollController != null) {
+        Get.find<CategoryController>().mainScrollController =
+            mainScrollController;
+      }
+      await Get.find<CategoryController>().getStoreCategoryList(
+        true,
+        storeId: storeId!.toString(),
+      );
+      setCategoryList();
+      setCategoryIndex(0);
+      if (Get.find<CategoryController>().categoryList?.isEmpty ?? true) {
+        getStoreItemList(storeId ?? store?.id, 1, 'all', false);
+      }
+    }
+
+    getStoreBannerList(storeId ?? store?.id);
+    getRestaurantRecommendedItemList(storeId ?? store?.id, false);
+    update();
+  }
 }
+

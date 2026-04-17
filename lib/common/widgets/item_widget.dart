@@ -94,6 +94,14 @@ class ItemWidget extends StatelessWidget {
       );
     }
 
+
+    bool isFoodModule = Get.find<SplashController>().module != null &&
+        Get.find<SplashController>().module!.moduleType == 'food';
+    if (isFoodModule) {
+      isAvailable = true;
+    }
+
+
     return Stack(
       children: [
         Container(

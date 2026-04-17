@@ -25,6 +25,7 @@ import 'package:friday_sa/common/widgets/footer_view.dart';
 import 'package:friday_sa/common/widgets/not_logged_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
@@ -96,7 +97,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   @override
   Widget build(BuildContext context) {
     bool isLoggedIn = Get.find<AuthController>().isLoggedIn();
-    return Scaffold(
+    return
+      Scaffold(
       appBar: ResponsiveHelper.isDesktop(context) ? const WebMenuBar() : null,
       endDrawer: const MenuDrawer(),
       endDrawerEnableOpenDragGesture: false,
@@ -178,7 +180,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     left: 0,
                     child: InkWell(
                       onTap: () =>
-                          profileController.pickImage(),
+                          _pickImage(profileController),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(
@@ -542,7 +544,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               top: 0,
                               left: 0,
                               child: InkWell(
-                                onTap: () => profileController.pickImage(),
+                                onTap: () => _pickImage(profileController),
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Colors.black.withValues(alpha: 0.3),
@@ -799,5 +801,91 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         fromButton: fromButton,
       );
     }
+  }
+
+
+
+  void _pickImage(ProfileController profileController) {
+    if (ResponsiveHelper.isDesktop(context)) {
+      profileController.pickImage(ImageSource.gallery);
+    } else {
+      Get.bottomSheet(
+        Container(
+          padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(Dimensions.radiusExtraLarge),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 4,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).disabledColor.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                ),
+              ),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _imagePickerOption(
+                    icon: Icons.photo_library,
+                    label: 'gallery'.tr,
+                    onTap: () {
+                      Get.back();
+                      profileController.pickImage(ImageSource.gallery);
+                    },
+                  ),
+                  _imagePickerOption(
+                    icon: Icons.camera_alt,
+                    label: 'camera'.tr,
+                    onTap: () {
+                      Get.back();
+                      profileController.pickImage(ImageSource.camera);
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _imagePickerOption({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+            ),
+            child: Icon(
+              icon,
+              color: Theme.of(context).primaryColor,
+              size: 30,
+            ),
+          ),
+          const SizedBox(height: Dimensions.paddingSizeSmall),
+          Text(
+            label,
+            style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+          ),
+        ],
+      ),);
   }
 }

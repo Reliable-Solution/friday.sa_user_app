@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:friday_sa/common/enums/data_source_enum.dart';
 import 'package:friday_sa/features/category/domain/models/category_model.dart';
 import 'package:friday_sa/features/item/domain/models/item_model.dart';
@@ -61,6 +62,9 @@ class CategoryController extends GetxController implements GetxService {
 
   int _offset = 1;
   int get offset => _offset;
+  final ScrollController _subCatScrollController = ScrollController();
+  ScrollController get subCatScrollController => _subCatScrollController;
+  ScrollController? mainScrollController;
 
   void clearCategoryList() {
     _categoryList = null;
@@ -171,6 +175,14 @@ class CategoryController extends GetxController implements GetxService {
     String? storeId,
   }) async {
     _subCategoryIndex = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_subCatScrollController.hasClients) {
+        _subCatScrollController.jumpTo(0);
+      }
+      if (mainScrollController != null && mainScrollController!.hasClients) {
+        mainScrollController!.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+      }
+    });
     _subCategoryList = null;
     _categoryItemList = null;
     List<CategoryModel>? subCategoryList = await categoryServiceInterface
@@ -179,7 +191,7 @@ class CategoryController extends GetxController implements GetxService {
     if (subCategoryList != null) {
       _subCategoryList = [];
       _subCategoryList!.addAll(subCategoryList);
-      getCategoryItemList(categoryID, 1, 'all', false);
+      getCategoryItemList(subCategoryList.isNotEmpty ? subCategoryList[0].id.toString() : categoryID, 1, 'all', false);
     }
     return _subCategoryList;
   }
@@ -188,22 +200,26 @@ class CategoryController extends GetxController implements GetxService {
     _subCategoryIndex = index;
     if (_isStore) {
       getCategoryStoreList(
-        _subCategoryIndex == 0
-            ? categoryID
-            : _subCategoryList![index].id.toString(),
+        (_subCategoryIndex != -1 && _subCategoryList != null && _subCategoryList!.isNotEmpty)
+            ? _subCategoryList![index].id.toString()
+            : categoryID,
         1,
         _type,
         true,
       );
     } else {
       getCategoryItemList(
-        _subCategoryIndex == 0
-            ? categoryID
-            : _subCategoryList![index].id.toString(),
+        (_subCategoryIndex != -1 && _subCategoryList != null && _subCategoryList!.isNotEmpty)
+            ? _subCategoryList![index].id.toString()
+            : categoryID,
         1,
         _type,
         true,
       );
+    }
+    update();
+    if (mainScrollController != null && mainScrollController!.hasClients) {
+      mainScrollController!.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
     }
   }
 

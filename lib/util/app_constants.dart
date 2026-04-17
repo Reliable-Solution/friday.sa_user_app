@@ -14,17 +14,11 @@ class AppConstants {
   static const String webHostedUrl = 'http://172.105.39.242/testing/';
   static const bool useReactWebsite = false;
 
-  static String baseUrl = 'https://friday.sa';
-  static String mainUrl = 'https://friday.sa';
-  //
-  // static String baseUrl = 'http://172.105.39.242/testing';
-  // static String mainUrl = 'http://172.105.39.242/testing';
+  // static String baseUrl = 'https://friday.sa';
+  // static String mainUrl = 'https://friday.sa';
 
-  // static String baseUrl = 'http://172.105.39.242/testing';
-  // static String mainUrl = 'http://172.105.39.242/testing';
-
-  // static String baseUrl = 'http://172.235.25.239';
-  // static String mainUrl = 'http://172.235.25.239';
+  static String baseUrl = 'http://172.235.25.239';
+  static String mainUrl = 'http://172.235.25.239';
 
   static const String countryList = '/api/v1/base-url/list';
   static String cardUrl = 'https://dcard.topfixhub.com';
@@ -187,6 +181,8 @@ class AppConstants {
   static const String personalInformationUri = '/api/v1/auth/update-info';
   static const String firebaseResetPassword =
       '/api/v1/auth/firebase-reset-password';
+  static const String removeCustomerByPhoneUri =
+      '/api/v1/remove-customer-by-phone';
 
   ///Subscription
   static const String businessPlanUri = '/api/v1/vendor/business_plan';
@@ -382,10 +378,3 @@ class AppConstants {
   //taxi seats..
   static List<String> seats = ['1-4', '5-8', '9-13', '14+'];
 }
-
-
-
-
-
-
-

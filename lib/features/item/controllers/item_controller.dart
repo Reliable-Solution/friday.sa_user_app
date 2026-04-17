@@ -16,12 +16,12 @@ import 'package:friday_sa/helper/route_helper.dart';
 import 'package:friday_sa/helper/string_extension.dart';
 import 'package:friday_sa/util/app_constants.dart';
 import 'package:friday_sa/util/images.dart';
-import 'package:friday_sa/common/widgets/cart_snackbar.dart';
 import 'package:friday_sa/common/widgets/confirmation_dialog.dart';
 import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 import 'package:friday_sa/common/widgets/item_bottom_sheet.dart';
 import 'package:friday_sa/features/item/screens/item_details_screen.dart';
 import 'package:friday_sa/features/item/domain/services/item_service_interface.dart';
+import 'package:friday_sa/features/store/controllers/store_controller.dart';
 
 class ItemController extends GetxController implements GetxService {
   ItemController({required this.itemServiceInterface});
@@ -498,7 +498,7 @@ class ItemController extends GetxController implements GetxService {
           item.choiceOptions,
         );
       }
-      _quantity = 1;
+      _quantity = 0;
       _addOnActiveList.addAll(
         itemServiceInterface.initializeAddonActiveList(item.addOns),
       );
@@ -555,7 +555,11 @@ class ItemController extends GetxController implements GetxService {
         item.addOns,
       );
     } else {
-      _quantity = 1;
+      if(_quantity == 1) {
+        _quantity = 1;
+      } else {
+        _quantity = 0;
+      }
     }
     if (notify) {
       update();
@@ -590,7 +594,7 @@ class ItemController extends GetxController implements GetxService {
 
   void setCartVariationIndex(int index, int i, Item? item) {
     _variationIndex![index] = i;
-    _quantity = 1;
+    _quantity = 0;
     setExistInCart(item, _selectedVariations);
     update();
   }
@@ -681,19 +685,19 @@ class ItemController extends GetxController implements GetxService {
   String? getDiscountType(Item item) =>
       item.storeDiscount == 0 ? item.discountType : 'percent';
 
-  void navigateToItemPage(
+  Future<void> navigateToItemPage(
     Item? item,
     BuildContext context, {
     bool inStore = false,
     bool isCampaign = false,
-  }) {
+  }) async {
     if (Get.find<SplashController>()
             .configModel!
             .moduleConfig!
             .module!
             .showRestaurantText! ||
         item!.moduleType == 'food') {
-      ResponsiveHelper.isMobile(context)
+      await (ResponsiveHelper.isMobile(context)
           ? Get.bottomSheet(
               ItemBottomSheet(
                 item: item,
@@ -711,9 +715,9 @@ class ItemController extends GetxController implements GetxService {
                   isCampaign: isCampaign,
                 ),
               ),
-            );
+            ));
     } else {
-      Get.toNamed(
+      await Get.toNamed(
         RouteHelper.getItemDetailsRoute(item.id, inStore),
         arguments: ItemDetailsScreen(
           item: item,
@@ -722,6 +726,9 @@ class ItemController extends GetxController implements GetxService {
         ),
       );
     }
+    /*if (inStore) {
+      Get.find<StoreController>().getStoreData(item!.storeId, false, '');
+    }*/
   }
 
   void itemDirectlyAddToCart(
@@ -807,7 +814,7 @@ class ItemController extends GetxController implements GetxService {
                 if (success) {
                   await Get.find<CartController>().addToCartOnline(onlineCart);
                   Get.back();
-                  showCartSnackBar();
+                  //showCartSnackBar();
                 }
               });
             },
@@ -816,7 +823,7 @@ class ItemController extends GetxController implements GetxService {
         );
       } else {
         Get.find<CartController>().addToCartOnline(onlineCart);
-        showCartSnackBar();
+        //showCartSnackBar();
       }
     } else if (Get.find<SplashController>()
             .configModel!

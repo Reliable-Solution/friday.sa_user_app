@@ -13,6 +13,7 @@ import 'package:friday_sa/util/app_constants.dart';
 
 // class SplashRouteHelper{
 
+
 Future<void> route({NotificationBodyModel? body}) async {
   try {
     String minimumVersion = _getMinimumVersion() ?? "0";
@@ -95,6 +96,12 @@ void _forNotificationRouteProcess(NotificationBodyModel? notificationBody) {
         Get.toNamed(RouteHelper.getLoyaltyRoute(fromNotification: true)),
     NotificationType.general: () =>
         Get.toNamed(RouteHelper.getNotificationRoute(fromNotification: true)),
+    NotificationType.trip: () => Get.toNamed(
+      RouteHelper.getOrderDetailsRoute(
+        notificationBody!.orderId,
+        fromNotification: true,
+      ),
+    ),
   };
 
   notificationActions[notificationType]?.call();
@@ -117,7 +124,7 @@ Future<void> _forLoggedInUserRouteProcess() async {
 
 void _newlyRegisteredRouteProcess() {
   if (AppConstants.languages.length > 1) {
-    Get.offNamed(RouteHelper.getCountryRoute('splash'));
+    Get.offNamed(RouteHelper.getLanguageRoute('splash'));
   } else {
     Get.offNamed(RouteHelper.getOnBoardingRoute());
   }

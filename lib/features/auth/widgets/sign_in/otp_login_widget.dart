@@ -42,6 +42,7 @@ class OtpLoginWidget extends StatelessWidget {
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Align(
                 alignment: Alignment.topLeft,
@@ -77,34 +78,37 @@ class OtpLoginWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: InkWell(
-                  onTap: () => authController.toggleRememberMe(),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: Checkbox(
-                          side: BorderSide(color: Theme.of(context).hintColor),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          activeColor: Theme.of(context).primaryColor,
-                          value: authController.isActiveRememberMe,
-                          onChanged: (bool? isChecked) =>
-                              authController.toggleRememberMe(),
-                        ),
+              InkWell(
+                onTap: () => authController.toggleRememberMe(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Checkbox(
+                      activeColor: Colors.black,
+                      visualDensity: const VisualDensity(
+                        horizontal: -4,
+                        vertical: -4,
                       ),
-                      const SizedBox(width: Dimensions.paddingSizeSmall),
-                      Text('remember_me'.tr, style: robotoRegular),
-                    ],
-                  ),
+                      side: BorderSide(
+                        color: Colors.black.withOpacity(0.4),
+                        width: 1.5,
+                      ),
+                      checkColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(Dimensions.radiusSmall),
+                      ),
+                      value: authController.isActiveRememberMe,
+                      onChanged: (bool? isChecked) =>
+                          authController.toggleRememberMe(),
+                    ),
+                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                    Text('remember_me'.tr, style: robotoRegular),
+                  ],
                 ),
               ),
-              const SizedBox(height: Dimensions.paddingSizeLarge),
-              const ConditionCheckBoxWidget(forSignUp: true),
+              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+              const ConditionCheckBoxWidget(forLogin: true, forSignUp: false),
               const SizedBox(height: Dimensions.paddingSizeLarge),
               CustomButton(
                 buttonText: 'login'.tr,

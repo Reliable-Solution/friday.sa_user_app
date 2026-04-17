@@ -13,6 +13,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:dio/dio.dart' as dio;
+import 'package:friday_sa/api/curl_logger_interceptor.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class ApiClient extends GetxService {
   static final Map<String, int> _apiPerformance = {};
@@ -74,6 +76,7 @@ class ApiClient extends GetxService {
       addressModel?.latitude,
       addressModel?.longitude,
     );
+    _dio.interceptors.add(CurlLoggerInterceptor());
   }
 
   Future<Response> getCardData(
@@ -82,15 +85,14 @@ class ApiClient extends GetxService {
     Map<String, String>? headers,
     bool handleError = true,
   }) async {
+    if (!(await _hasNetwork())) {
+      Response response = Response(statusCode: 1, statusText: noInternetMessage);
+      ApiChecker.checkApi(response);
+      return response;
+    }
     try {
       final usedHeaders = headers ?? _mainHeaders;
       final fullUrl = AppConstants.cardUrl + uri;
-
-      printCurl(
-        "GET",
-        Uri.parse(fullUrl).replace(queryParameters: query),
-        usedHeaders,
-      );
 
       final stopwatch = Stopwatch()..start();
       dio.Response response = await _dio.get(
@@ -115,7 +117,7 @@ class ApiClient extends GetxService {
   final String appBaseUrl;
   final SharedPreferences sharedPreferences;
   static final String noInternetMessage = 'connection_to_api_server_failed'.tr;
-  final int timeoutInSeconds = 10;
+  final int timeoutInSeconds = 30;
 
   String? token;
   late Map<String, String> _mainHeaders;
@@ -158,34 +160,6 @@ class ApiClient extends GetxService {
     return header;
   }
 
-  void printCurl(
-    String method,
-    Uri uri,
-    Map<String, String> headers, [
-    dynamic body,
-  ]) {
-    final curl = StringBuffer("curl --location --request $method '$uri'");
-
-    headers.forEach((key, value) {
-      curl.write(" --header '$key: $value'");
-    });
-
-    if (body != null) {
-      if (body is Map && body.isNotEmpty) {
-        curl.write(" --data-raw '${jsonEncode(body)}'");
-      } else if (body is String && body.isNotEmpty) {
-        curl.write(" --data-raw '$body'");
-      }
-    }
-
-    debugPrint(
-      '\n\u001b[36m==================== POSTMAN cURL START ====================\u001b[0m',
-    );
-    debugPrint('\u001b[36m${curl.toString()}\u001b[0m');
-    debugPrint(
-      '\u001b[36m===================== POSTMAN cURL END =====================\u001b[0m\n',
-    );
-  }
 
   Map<String, String> getHeader() => _mainHeaders;
 
@@ -196,18 +170,15 @@ class ApiClient extends GetxService {
     Map<String, String>? headers,
     bool handleError = true,
   }) async {
+    if (!(await _hasNetwork())) {
+      Response response = Response(statusCode: 1, statusText: noInternetMessage);
+      ApiChecker.checkApi(response);
+      return response;
+    }
     try {
       final requestHeaders = headers ?? _mainHeaders;
       final fullUrl = (baseUrl ?? appBaseUrl) + uri;
 
-      printCurl(
-        "GET",
-        Uri.parse(fullUrl).replace(queryParameters: query),
-        requestHeaders,
-      );
-
-      // When custom headers are passed, temporarily clear Dio's default
-      // headers to prevent merging (e.g., old moduleId leaking through).
       Map<String, dynamic>? savedHeaders;
       if (headers != null) {
         savedHeaders = Map<String, dynamic>.from(_dio.options.headers);
@@ -220,9 +191,18 @@ class ApiClient extends GetxService {
         queryParameters: query,
         options: dio.Options(headers: requestHeaders),
       );
+
+      if (response.statusCode == 500) {
+        debugPrint('====> Retrying API due to 500 error: $uri');
+        await Future.delayed(const Duration(milliseconds: 1000));
+        response = await _dio.get(
+          fullUrl,
+          queryParameters: query,
+          options: dio.Options(headers: requestHeaders),
+        );
+      }
       stopwatch.stop();
 
-      // Restore default headers
       if (savedHeaders != null) {
         _dio.options.headers = savedHeaders;
       }
@@ -245,11 +225,14 @@ class ApiClient extends GetxService {
     int? timeout,
     bool handleError = true,
   }) async {
+    if (!(await _hasNetwork())) {
+      Response response = Response(statusCode: 1, statusText: noInternetMessage);
+      ApiChecker.checkApi(response);
+      return response;
+    }
     try {
       final requestHeaders = headers ?? _mainHeaders;
       final fullUrl = appBaseUrl + uri;
-
-      printCurl("POST", Uri.parse(fullUrl), requestHeaders, body);
 
       final stopwatch = Stopwatch()..start();
       dio.Response response = await _dio.post(
@@ -257,6 +240,16 @@ class ApiClient extends GetxService {
         data: body,
         options: dio.Options(headers: requestHeaders),
       );
+
+      if (response.statusCode == 500) {
+        debugPrint('====> Retrying API due to 500 error: $uri');
+        await Future.delayed(const Duration(milliseconds: 1000));
+        response = await _dio.post(
+          fullUrl,
+          data: body,
+          options: dio.Options(headers: requestHeaders),
+        );
+      }
       stopwatch.stop();
 
       return handleDioResponse(
@@ -277,6 +270,11 @@ class ApiClient extends GetxService {
     Map<String, String>? headers,
     bool handleError = true,
   }) async {
+    if (!(await _hasNetwork())) {
+      Response response = Response(statusCode: 1, statusText: noInternetMessage);
+      ApiChecker.checkApi(response);
+      return response;
+    }
     try {
       final requestHeaders = headers ?? _mainHeaders;
       final fullUrl = appBaseUrl + uri;
@@ -309,8 +307,6 @@ class ApiClient extends GetxService {
         }
       }
 
-      printCurl("POST (Multipart)", Uri.parse(fullUrl), requestHeaders, body);
-
       final stopwatch = Stopwatch()..start();
       dio.Response response = await _dio.post(
         fullUrl,
@@ -336,11 +332,14 @@ class ApiClient extends GetxService {
     Map<String, String>? headers,
     bool handleError = true,
   }) async {
+    if (!(await _hasNetwork())) {
+      Response response = Response(statusCode: 1, statusText: noInternetMessage);
+      ApiChecker.checkApi(response);
+      return response;
+    }
     try {
       final requestHeaders = headers ?? _mainHeaders;
       final fullUrl = appBaseUrl + uri;
-
-      printCurl("PUT", Uri.parse(fullUrl), requestHeaders, body);
 
       final stopwatch = Stopwatch()..start();
       dio.Response response = await _dio.put(
@@ -348,6 +347,16 @@ class ApiClient extends GetxService {
         data: body,
         options: dio.Options(headers: requestHeaders),
       );
+
+      if (response.statusCode == 500) {
+        debugPrint('====> Retrying API due to 500 error: $uri');
+        await Future.delayed(const Duration(milliseconds: 1000));
+        response = await _dio.put(
+          fullUrl,
+          data: body,
+          options: dio.Options(headers: requestHeaders),
+        );
+      }
       stopwatch.stop();
 
       return handleDioResponse(
@@ -367,11 +376,14 @@ class ApiClient extends GetxService {
     dynamic body,
     bool handleError = true,
   }) async {
+    if (!(await _hasNetwork())) {
+      Response response = Response(statusCode: 1, statusText: noInternetMessage);
+      ApiChecker.checkApi(response);
+      return response;
+    }
     try {
       final requestHeaders = headers ?? _mainHeaders;
       final fullUrl = appBaseUrl + uri;
-
-      printCurl("DELETE", Uri.parse(fullUrl), requestHeaders, body);
 
       final stopwatch = Stopwatch()..start();
       dio.Response response = await _dio.delete(
@@ -379,6 +391,16 @@ class ApiClient extends GetxService {
         data: body,
         options: dio.Options(headers: requestHeaders),
       );
+
+      if (response.statusCode == 500) {
+        debugPrint('====> Retrying API due to 500 error: $uri');
+        await Future.delayed(const Duration(milliseconds: 1000));
+        response = await _dio.delete(
+          fullUrl,
+          data: body,
+          options: dio.Options(headers: requestHeaders),
+        );
+      }
       stopwatch.stop();
 
       return handleDioResponse(
@@ -390,6 +412,16 @@ class ApiClient extends GetxService {
     } catch (e) {
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
+  }
+
+  Future<bool> _hasNetwork() async {
+    List<ConnectivityResult> result = await Connectivity().checkConnectivity();
+    if (result.contains(ConnectivityResult.none)) {
+      await Future.delayed(const Duration(milliseconds: 1000));
+      result = await Connectivity().checkConnectivity();
+    }
+    bool isConnected = result.isNotEmpty && !result.contains(ConnectivityResult.none);
+    return isConnected;
   }
 
   Response handleDioResponse(
@@ -427,6 +459,7 @@ class ApiClient extends GetxService {
     debugPrint(
       '$color$tag====> API Response: [${response0.statusCode}] $uri ${duration != null ? '($duration ms)' : ''}\u001b[0m',
     );
+    debugPrint('Response Body: ${response.data}');
 
     if (response0.statusCode != 200 &&
         response0.body != null &&
@@ -453,10 +486,13 @@ class ApiClient extends GetxService {
       if (response0.statusCode == 200) {
         return response0;
       } else {
-        ApiChecker.checkApi(response0);
+        ApiChecker.checkApi(response0, duration: duration);
         return const Response();
       }
     } else {
+      if (response0.statusCode == 1 || response0.statusCode == 0 || (duration != null && duration > 10000)) {
+        ApiChecker.checkApi(response0, duration: duration);
+      }
       return response0;
     }
   }

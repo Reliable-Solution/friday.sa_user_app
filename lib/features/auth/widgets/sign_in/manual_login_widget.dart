@@ -143,10 +143,14 @@ class ManualLoginWidget extends StatelessWidget {
                         height: 24,
                         width: 24,
                         child: Checkbox(
-                          side: BorderSide(color: Theme.of(context).hintColor),
+                          side: BorderSide(color: Colors.black.withOpacity(0.4), width: 1.5),
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
-                          activeColor: Theme.of(context).primaryColor,
+                          activeColor: Colors.black,
+                          checkColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                          ),
                           value: authController.isActiveRememberMe,
                           onChanged: (bool? isChecked) =>
                               authController.toggleRememberMe(),
@@ -172,7 +176,7 @@ class ManualLoginWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: Dimensions.paddingSizeLarge),
-            const ConditionCheckBoxWidget(forSignUp: true),
+            const ConditionCheckBoxWidget(forLogin: true, forSignUp: false),
             const SizedBox(height: Dimensions.paddingSizeExtraLarge),
             CustomButton(
               height: isDesktop ? 50 : null,
@@ -372,12 +376,17 @@ class ManualLoginWidget extends StatelessWidget {
                             height: 24,
                             width: 24,
                             child: Checkbox(
-                              side: BorderSide(
-                                color: Theme.of(context).hintColor,
-                              ),
+                                side: BorderSide(
+                                  color: Colors.black.withOpacity(0.4),
+                                  width: 1.5,
+                                ),
                               materialTapTargetSize:
                                   MaterialTapTargetSize.shrinkWrap,
-                              activeColor: Theme.of(context).primaryColor,
+                              activeColor: Colors.black,
+                              checkColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                              ),
                               value: authController.isActiveRememberMe,
                               onChanged: (bool? isChecked) =>
                                   authController.toggleRememberMe(),
@@ -418,7 +427,7 @@ class ManualLoginWidget extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: Dimensions.paddingSizeLarge),
-                const ConditionCheckBoxWidget(forSignUp: true),
+                const ConditionCheckBoxWidget(forLogin: true, forSignUp: false),
                 const SizedBox(height: Dimensions.paddingSizeExtraLarge),
                 CustomButton(
                   buttonText: 'login'.tr,

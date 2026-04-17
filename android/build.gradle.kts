@@ -1,3 +1,4 @@
+
 buildscript {
     repositories {
         google()  // Make sure this is included
@@ -7,6 +8,7 @@ buildscript {
     dependencies {
         classpath("com.google.gms:google-services:4.4.1")
         classpath("com.android.tools.build:gradle:8.1.0")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:3.0.2")
     }
 }
 

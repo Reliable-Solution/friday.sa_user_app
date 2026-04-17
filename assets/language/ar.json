@@ -1,5 +1,5 @@
 {
-"connection_to_api_server_failed": "فشل الاتصال بخادم API بسبب مشكلة في الاتصال بالإنترنت",
+  "connection_to_api_server_failed": "حدث خطأ ما",
 "select_language": "اختر اللغة",
 "save": "حفظ",
 "select_a_language": "اختر لغة",
@@ -17,6 +17,7 @@
 "no_card_found": "لم يتم العثور على بطاقة",
 "add_digital_card": "أضف بطاقتك DCard",
 "sign_in": "تسجيل الدخول",
+"please_agree_with_terms_conditions": "يرجى الموافقة على الشروط والأحكام",
 "sign_up": "تسجيل",
 "email": "البريد الإلكتروني",
 "password": "كلمة المرور",
@@ -64,6 +65,8 @@
 "new_password": "كلمة المرور الجديدة",
 "reset_password": "إعادة تعيين كلمة المرور",
 "cancel": "إلغاء",
+"cancel_registration": "إلغاء التسجيل",
+"general": "عام",
 "history": "الطلبات السابقة",
 "clear_all": "مسح الكل",
 "suggestions": "الاقتراحات",
@@ -166,6 +169,7 @@
 "label_as": "تسمية العنوان",
 "save_location": "حفظ الموقع",
 "pick_address": "اختر العنوان",
+"pick": "أختر",
 "are_you_sure_to_reset": "هل أنت متأكد أنك تريد إعادة التعيين؟",
 "if_you_change_location": "لديك بعض المنتجات في سلة التسوق. إذا قمت بتغيير موقعك، فسيتم إعادة تعيين سلة التسوق والبيانات الأخرى المرتبطة بموقع التوصيل الحالي.",
 "if_you_change_category": "لديك بعض المنتجات في سلة التسوق. إذا قمت بتغيير القسم، فسيتم إعادة تعيين سلة التسوق والبيانات الأخرى المرتبطة بالقسم الحالي.",
@@ -1560,5 +1564,11 @@
 "channelId": "معرّف القناة",
 "unableToDeleteThisControllerData": "تعذّر حذف بيانات وحدة التحكم هذه",
   "we_ve_sent_a_verification_code_capital": "لقد أرسلنا رمز التحقق إلى",
-  "whatsapp_message_capital": "عبر رسالة واتساب"
+  "whatsapp_message_capital": "عبر رسالة واتساب",
+  "please_upload_lower_size_file": "يرجى رفع ملف بحجم أقل",
+  "slow_internet_connection": "اتصال إنترنت بطيء",
+  "it_seems_your_internet_is_slow": "يبدو أن اتصالك بالإنترنت بطيء. يرجى التحقق من اتصالك أو المحاولة مرة أخرى.",
+  "slow_connection": "اتصال بطيء",
+  "no_internet_connection_description": "يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.",
+  "product_unavailable_warning": "هذا المنتج غير متوفر حالياً"
 }

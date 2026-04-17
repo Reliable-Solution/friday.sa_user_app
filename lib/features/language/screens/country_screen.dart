@@ -171,7 +171,7 @@ class _CountryScreenState extends State<CountryScreen> {
                                     );
                                   } else {
                                     Get.offAllNamed(
-                                      RouteHelper.getLanguageRoute(widget.page),
+                                      RouteHelper.getOnBoardingRoute(),
                                     );
                                   }
                                 },

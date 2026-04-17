@@ -71,9 +71,9 @@ class ProfileBgWidget extends StatelessWidget {
               ),
             ),
             backButton
-                ? Positioned(
+                ? PositionedDirectional(
                     top: MediaQuery.of(context).padding.top,
-                    left: 10,
+                    start: 10,
                     child: IconButton(
                       icon: Icon(
                         Icons.arrow_back_ios,

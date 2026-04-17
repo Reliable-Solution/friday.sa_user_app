@@ -88,6 +88,8 @@ class Store {
     this.distance,
     this.storeOpeningTime,
     this.categories,
+    this.cashPaymentPermission,
+    this.digitalPaymentPermission,
   });
 
   Store.fromJson(Map<String, dynamic> json) {
@@ -174,6 +176,8 @@ class Store {
         categories!.add(CategoryModel.fromJson(v));
       });
     }
+    cashPaymentPermission = json['cash_payment_permission'];
+    digitalPaymentPermission = json['digital_payment_permission'];
   }
   int? id;
   String? name;
@@ -228,6 +232,8 @@ class Store {
   num? distance;
   String? storeOpeningTime;
   List<CategoryModel>? categories;
+  int? cashPaymentPermission;
+  int? digitalPaymentPermission;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -292,6 +298,8 @@ class Store {
     if (categories != null) {
       data['category_details'] = categories!.map((v) => v.toJson()).toList();
     }
+    // data['cash_payment_permission'] = cashPaymentPermission;
+    // data['digital_payment_permission'] = digitalPaymentPermission;
     return data;
   }
 }

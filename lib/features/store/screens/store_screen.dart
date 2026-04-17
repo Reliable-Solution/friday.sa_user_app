@@ -30,7 +30,7 @@ import 'package:friday_sa/common/widgets/veg_filter_widget.dart';
 import 'package:friday_sa/common/widgets/web_item_view.dart';
 import 'package:friday_sa/common/widgets/web_item_widget.dart';
 import 'package:friday_sa/common/widgets/web_menu_bar.dart';
-import 'package:friday_sa/features/checkout/screens/checkout_screen.dart';
+
 import 'package:friday_sa/features/search/widgets/custom_check_box_widget.dart';
 import 'package:friday_sa/features/store/widgets/customizable_space_bar_widget.dart';
 import 'package:friday_sa/features/store/widgets/store_banner_widget.dart';
@@ -63,8 +63,24 @@ class _StoreScreenState extends State<StoreScreen> {
   @override
   void initState() {
     super.initState();
-
+    Get.find<StoreController>().mainScrollController = scrollController;
     initDataCall();
+
+    scrollController.addListener(() {
+      if (scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (Get.find<StoreController>().showFavButton) {
+          Get.find<StoreController>().changeFavVisibility();
+          Get.find<StoreController>().hideAnimation();
+        }
+      } else {
+        if (!Get.find<StoreController>().showFavButton) {
+          Get.find<StoreController>().changeFavVisibility();
+          Get.find<StoreController>().showButtonAnimation();
+        }
+      }
+    });
+
   }
 
   @override
@@ -88,6 +104,8 @@ class _StoreScreenState extends State<StoreScreen> {
         )
         .then((value) {
           Get.find<StoreController>().showButtonAnimation();
+          Get.find<CategoryController>().mainScrollController =
+              scrollController;
           Get.find<CategoryController>()
               .getStoreCategoryList(true, storeId: widget.store!.id!.toString())
               .then((value) async {
@@ -112,21 +130,6 @@ class _StoreScreenState extends State<StoreScreen> {
       widget.store!.id ?? Get.find<StoreController>().store!.id,
       false,
     );
-
-    scrollController.addListener(() {
-      if (scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        if (Get.find<StoreController>().showFavButton) {
-          Get.find<StoreController>().changeFavVisibility();
-          Get.find<StoreController>().hideAnimation();
-        }
-      } else {
-        if (!Get.find<StoreController>().showFavButton) {
-          Get.find<StoreController>().changeFavVisibility();
-          Get.find<StoreController>().showButtonAnimation();
-        }
-      }
-    });
   }
 
   @override
@@ -145,13 +148,16 @@ class _StoreScreenState extends State<StoreScreen> {
                   storeController.store!.name != null) {
                 store = storeController.store;
               }
-
               return (storeController.store != null &&
-                      storeController.store!.name != null)
-                  ? CustomScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      controller: scrollController,
-                      slivers: [
+                  storeController.store!.name != null)
+              ? RefreshIndicator(
+                      onRefresh: () async {
+                        await initDataCall();
+                      },
+                      child: CustomScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        controller: scrollController,
+                        slivers: [
                         ResponsiveHelper.isDesktop(context)
                             ? SliverToBoxAdapter(
                                 child: Container(
@@ -299,10 +305,8 @@ class _StoreScreenState extends State<StoreScreen> {
                                                     decoration: BoxDecoration(
                                                       color: Theme.of(context)
                                                           .primaryColor
-                                                          .withValues(
-                                                            alpha:
-                                                                1 -
-                                                                scrollingRate,
+                                                          .withOpacity(
+                                                            1 - scrollingRate,
                                                           ),
                                                       borderRadius:
                                                           const BorderRadius.vertical(
@@ -667,6 +671,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                                             .paddingSizeSmall,
                                                       ),
 
+
                                                       // AppConstants.webHostedUrl.isNotEmpty ? InkWell(
                                                       //   onTap: () {
                                                       //     storeController.shareStore();
@@ -715,10 +720,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                   child: Center(
                                     child: SizedBox(
                                       width: Dimensions.webMaxWidth,
-                                      height:
-                                          ResponsiveHelper.isDesktop(context)
-                                          ? 325
-                                          : 125,
+                                      height: ResponsiveHelper.isDesktop(context) ? 325 : 125,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -1659,13 +1661,14 @@ class _StoreScreenState extends State<StoreScreen> {
                                 ),
                               ),
                       ],
-                    )
+                    ),
+                  )
                   : const StoreDetailsScreenShimmerWidget();
             },
           );
         },
       ),
-      floatingActionButton: GetBuilder<StoreController>(
+      /*floatingActionButton: GetBuilder<StoreController>(
         builder: (storeController) {
           return Visibility(
             visible:
@@ -1717,7 +1720,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       ),
                     ),
                   ),
-                  const CircleAvatar(radius: 120),
+                  // const CircleAvatar(radius: 12),
                   InkWell(
                     onTap: () => Get.toNamed(
                       RouteHelper.getCheckoutRoute(
@@ -1744,6 +1747,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         Images.prescriptionIcon,
                         height: 25,
                         width: 25,
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),
@@ -1752,7 +1756,7 @@ class _StoreScreenState extends State<StoreScreen> {
             ),
           );
         },
-      ),
+      ),*/
       bottomNavigationBar: GetBuilder<CartController>(
         builder: (cartController) {
           return cartController.cartList.isNotEmpty &&

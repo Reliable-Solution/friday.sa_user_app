@@ -13,6 +13,7 @@ plugins {
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -46,8 +47,8 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 45
-        versionName = "2.2.11"
+        versionCode = 50
+        versionName = "2.2.16"
     }
 
     buildTypes {
@@ -65,7 +66,10 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.1.5")
-    implementation ("com.google.firebase:firebase-messaging:25.0.1")
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-messaging")
     implementation ("com.facebook.android:facebook-android-sdk:latest.release")
 }
 
