@@ -456,7 +456,12 @@ class AuthRepository implements AuthRepositoryInterface {
   }
 
   @override
-  Future update(Map<String, dynamic> body, int? id) {
+  Future<Response> update(Map<String, dynamic> body, int? id) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Response> removeCustomerByPhone(String phone) async {
+    return await apiClient.postData(AppConstants.removeCustomerByPhoneUri, {"phone": phone});
   }
 }

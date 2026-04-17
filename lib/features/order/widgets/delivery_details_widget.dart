@@ -16,7 +16,7 @@ class DeliveryDetailsWidget extends StatelessWidget {
         Icon(
           from ? Icons.store : Icons.location_on,
           size: 28,
-          color: from ? Colors.blue : Theme.of(context).primaryColor,
+          color: Theme.of(context).primaryColor,
         ),
         const SizedBox(width: Dimensions.paddingSizeSmall),
         Expanded(
