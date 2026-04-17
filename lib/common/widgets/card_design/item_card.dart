@@ -346,7 +346,6 @@ class ItemCard extends StatelessWidget {
                                               decoration:
                                                   TextDecoration.lineThrough,
                                             ),
-                                            textDirection: TextDirection.ltr,
                                           )
                                         : const SizedBox(),
 
@@ -358,7 +357,6 @@ class ItemCard extends StatelessWidget {
                                         discount: discount,
                                         discountType: discountType,
                                       ),
-                                      textDirection: TextDirection.ltr,
                                       style: robotoMedium,
                                     ),
 

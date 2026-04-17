@@ -45,7 +45,7 @@ class SignUpWidgetState extends State<SignUpWidget> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _referCodeController = TextEditingController();
   String? _countryDialCode;
   GlobalKey<FormState>? _formKeySignUp;
@@ -57,6 +57,10 @@ class SignUpWidgetState extends State<SignUpWidget> {
     _countryDialCode = CountryCode.fromCountryCode(
       Get.find<SplashController>().configModel!.country!,
     ).dialCode;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(_phoneFocus);
+    });
   }
 
   @override
@@ -68,9 +72,9 @@ class SignUpWidgetState extends State<SignUpWidget> {
         width: context.width > 700 ? 700 : context.width,
         decoration: context.width > 700
             ? BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-              )
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+        )
             : null,
         padding: EdgeInsets.symmetric(
           horizontal: isDesktop ? Dimensions.paddingSizeDefault : 0,
@@ -82,12 +86,12 @@ class SignUpWidgetState extends State<SignUpWidget> {
               children: [
                 isDesktop
                     ? Align(
-                        alignment: Alignment.topRight,
-                        child: IconButton(
-                          onPressed: Get.back,
-                          icon: const Icon(Icons.clear),
-                        ),
-                      )
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    onPressed: Get.back,
+                    icon: const Icon(Icons.clear),
+                  ),
+                )
                     : const SizedBox(),
                 Padding(
                   padding: EdgeInsets.all(
@@ -99,304 +103,312 @@ class SignUpWidgetState extends State<SignUpWidget> {
                     children: [
                       isDesktop
                           ? Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: Dimensions.paddingSizeLarge,
-                              ),
-                              child: Image.asset(Images.logo, width: 125),
-                            )
+                        padding: const EdgeInsets.symmetric(
+                          vertical: Dimensions.paddingSizeLarge,
+                        ),
+                        child: Image.asset(Images.splashLogo, width: 125),
+                      )
                           : const SizedBox(),
                       isDesktop
                           ? Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                'sign_up'.tr,
-                                style: robotoBold.copyWith(
-                                  fontSize: Dimensions.fontSizeExtraLarge,
-                                ),
-                              ),
-                            )
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          'sign_up'.tr,
+                          style: robotoBold.copyWith(
+                            fontSize: Dimensions.fontSizeExtraLarge,
+                          ),
+                        ),
+                      )
                           : const SizedBox(),
                       SizedBox(
                         height: isDesktop
                             ? Dimensions.paddingSizeExtraLarge
                             : Dimensions.paddingSizeSmall,
                       ),
+
+                      // Row(
+                      //   crossAxisAlignment: CrossAxisAlignment.start,
+                      //   children: [
+                      //     Expanded(
+                      //       child: CustomTextField(
+                      //         titleText: 'ex_jhon'.tr,
+                      //         labelText: 'user_name'.tr,
+                      //         showLabelText: true,
+                      //         required: true,
+                      //         controller: _nameController,
+                      //         focusNode: _nameFocus,
+                      //         nextFocus: isDesktop
+                      //             ? _referCodeFocus
+                      //             : _phoneFocus,
+                      //         inputType: TextInputType.name,
+                      //         capitalization: TextCapitalization.words,
+                      //         prefixIcon: CupertinoIcons.person_alt_circle_fill,
+                      //         validator: (value) =>
+                      //             ValidateCheck.validateEmptyText(
+                      //               value,
+                      //               "please_enter_your_name".tr,
+                      //             ),
+                      //       ),
+                      //     ),
+                      //     SizedBox(
+                      //       width:
+                      //           Get.find<SplashController>()
+                      //                       .configModel!
+                      //                       .refEarningStatus ==
+                      //                   1 &&
+                      //               isDesktop
+                      //           ? Dimensions.paddingSizeSmall
+                      //           : 0,
+                      //     ),
+                      //     (Get.find<SplashController>()
+                      //                     .configModel!
+                      //                     .refEarningStatus ==
+                      //                 1 &&
+                      //             isDesktop)
+                      //         ? Expanded(
+                      //             child: CustomTextField(
+                      //               titleText: 'refer_code'.tr,
+                      //               labelText: 'refer_code'.tr,
+                      //               showLabelText: true,
+                      //               controller: _referCodeController,
+                      //               focusNode: _referCodeFocus,
+                      //               nextFocus: isDesktop
+                      //                   ? _emailFocus
+                      //                   : _phoneFocus,
+                      //               inputType: TextInputType.text,
+                      //               capitalization: TextCapitalization.words,
+                      //               prefixImage: Images.referCode,
+                      //               divider: false,
+                      //               prefixSize: 14,
+                      //             ),
+                      //           )
+                      //         : const SizedBox(),
+                      //   ],
+                      // ),
+                      // SizedBox(
+                      //   height: isDesktop
+                      //       ? Dimensions.paddingSizeExtraLarge
+                      //       : Dimensions.paddingSizeLarge,
+                      // ),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: CustomTextField(
-                              titleText: 'ex_jhon'.tr,
-                              labelText: 'user_name'.tr,
-                              showLabelText: true,
-                              required: true,
-                              controller: _nameController,
-                              focusNode: _nameFocus,
-                              nextFocus: isDesktop
-                                  ? _referCodeFocus
-                                  : _phoneFocus,
-                              inputType: TextInputType.name,
-                              capitalization: TextCapitalization.words,
-                              prefixIcon: CupertinoIcons.person_alt_circle_fill,
-                              validator: (value) =>
-                                  ValidateCheck.validateEmptyText(
-                                    value,
-                                    "please_enter_your_name".tr,
-                                  ),
-                            ),
-                          ),
-                          SizedBox(
-                            width:
-                                Get.find<SplashController>()
-                                            .configModel!
-                                            .refEarningStatus ==
-                                        1 &&
-                                    isDesktop
-                                ? Dimensions.paddingSizeSmall
-                                : 0,
-                          ),
-                          (Get.find<SplashController>()
-                                          .configModel!
-                                          .refEarningStatus ==
-                                      1 &&
-                                  isDesktop)
-                              ? Expanded(
-                                  child: CustomTextField(
-                                    titleText: 'refer_code'.tr,
-                                    labelText: 'refer_code'.tr,
-                                    showLabelText: true,
-                                    controller: _referCodeController,
-                                    focusNode: _referCodeFocus,
-                                    nextFocus: isDesktop
-                                        ? _emailFocus
-                                        : _phoneFocus,
-                                    inputType: TextInputType.text,
-                                    capitalization: TextCapitalization.words,
-                                    prefixImage: Images.referCode,
-                                    divider: false,
-                                    prefixSize: 14,
-                                  ),
-                                )
-                              : const SizedBox(),
-                        ],
-                      ),
-                      SizedBox(
-                        height: isDesktop
-                            ? Dimensions.paddingSizeExtraLarge
-                            : Dimensions.paddingSizeLarge,
-                      ),
-                      Row(
-                        children: [
-                          isDesktop
-                              ? Expanded(
-                                  child: CustomTextField(
-                                    titleText: 'enter_email'.tr,
-                                    labelText: 'email'.tr,
-                                    showLabelText: true,
-                                    required: true,
-                                    controller: _emailController,
-                                    focusNode: _emailFocus,
-                                    nextFocus: isDesktop
-                                        ? _phoneFocus
-                                        : _passwordFocus,
-                                    inputType: TextInputType.emailAddress,
-                                    prefixIcon: CupertinoIcons.mail_solid,
-                                    validator: ValidateCheck.validateEmail,
-                                  ),
-                                )
-                              : const SizedBox(),
-                          SizedBox(
-                            width: isDesktop ? Dimensions.paddingSizeSmall : 0,
-                          ),
-                          Expanded(
-                            child: CustomTextField(
-                              titleText: 'xxx-xxx-xxxxx'.tr,
-                              labelText: 'phone'.tr,
-                              showLabelText: true,
-                              required: true,
-                              controller: _phoneController,
-                              focusNode: _phoneFocus,
-                              nextFocus: isDesktop
-                                  ? _passwordFocus
-                                  : _emailFocus,
-                              inputType: TextInputType.phone,
-                              isPhone: true,
-                              onCountryChanged: (CountryCode countryCode) {
-                                _countryDialCode = countryCode.dialCode;
-                              },
-                              countryDialCode: _countryDialCode != null
-                                  ? CountryCode.fromCountryCode(
-                                      Get.find<SplashController>()
-                                          .configModel!
-                                          .country!,
-                                    ).code
-                                  : Get.find<LocalizationController>()
-                                        .locale
-                                        .countryCode,
-                              validator: (value) =>
-                                  ValidateCheck.validateEmptyText(
-                                    value,
-                                    "please_enter_phone_number".tr,
-                                  ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: isDesktop
-                            ? Dimensions.paddingSizeExtraLarge
-                            : Dimensions.paddingSizeLarge,
-                      ),
-                      !isDesktop
-                          ? CustomTextField(
-                              labelText: 'email'.tr,
-                              titleText: 'enter_email'.tr,
-                              showLabelText: true,
-                              required: true,
-                              controller: _emailController,
-                              focusNode: _emailFocus,
-                              nextFocus: _passwordFocus,
-                              inputType: TextInputType.emailAddress,
-                              prefixIcon: CupertinoIcons.mail_solid,
-                              validator: ValidateCheck.validateEmail,
-                              divider: false,
-                            )
-                          : const SizedBox(),
-                      SizedBox(
-                        height: !isDesktop ? Dimensions.paddingSizeLarge : 0,
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              children: [
-                                CustomTextField(
-                                  titleText: '8+characters'.tr,
-                                  labelText: 'password'.tr,
-                                  showLabelText: true,
-                                  required: true,
-                                  controller: _passwordController,
-                                  focusNode: _passwordFocus,
-                                  nextFocus: _confirmPasswordFocus,
-                                  inputType: TextInputType.visiblePassword,
-                                  prefixIcon: Icons.lock,
-                                  isPassword: true,
-                                  validator: (value) =>
-                                      ValidateCheck.validateEmptyText(
-                                        value,
-                                        "please_enter_password".tr,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: isDesktop ? Dimensions.paddingSizeSmall : 0,
-                          ),
-                          isDesktop
-                              ? Expanded(
-                                  child: CustomTextField(
-                                    titleText: '8+characters'.tr,
-                                    labelText: 'confirm_password'.tr,
-                                    showLabelText: true,
-                                    required: true,
-                                    controller: _confirmPasswordController,
-                                    focusNode: _confirmPasswordFocus,
-                                    nextFocus:
-                                        Get.find<SplashController>()
-                                                .configModel!
-                                                .refEarningStatus ==
-                                            1
-                                        ? _referCodeFocus
-                                        : null,
-                                    inputAction:
-                                        Get.find<SplashController>()
-                                                .configModel!
-                                                .refEarningStatus ==
-                                            1
-                                        ? TextInputAction.next
-                                        : TextInputAction.done,
-                                    inputType: TextInputType.visiblePassword,
-                                    prefixIcon: Icons.lock,
-                                    isPassword: true,
-                                    onSubmit: (text) => (GetPlatform.isWeb)
-                                        ? _register(
-                                            authController,
-                                            _countryDialCode!,
-                                          )
-                                        : null,
-                                    validator: (value) =>
-                                        ValidateCheck.validateConfirmPassword(
-                                          value,
-                                          _passwordController.text,
-                                        ),
-                                  ),
-                                )
-                              : const SizedBox(),
-                        ],
-                      ),
-                      SizedBox(
-                        height: isDesktop
-                            ? Dimensions.paddingSizeExtraLarge
-                            : Dimensions.paddingSizeLarge,
-                      ),
-                      !isDesktop
-                          ? CustomTextField(
-                              titleText: '8+characters'.tr,
-                              labelText: 'confirm_password'.tr,
-                              showLabelText: true,
-                              required: true,
-                              controller: _confirmPasswordController,
-                              focusNode: _confirmPasswordFocus,
-                              nextFocus:
+                          //     isDesktop
+                          //         ? Expanded(
+                          //             child: CustomTextField(
+                          //               titleText: 'enter_email'.tr,
+                          //               labelText: 'email'.tr,
+                          //               showLabelText: true,
+                          //               required: true,
+                          //               controller: _emailController,
+                          //               focusNode: _emailFocus,
+                          //               nextFocus: isDesktop
+                          //                   ? _phoneFocus
+                          //                   : _passwordFocus,
+                          //               inputType: TextInputType.emailAddress,
+                          //               prefixIcon: CupertinoIcons.mail_solid,
+                          //               validator: ValidateCheck.validateEmail,
+                          //             ),
+                          //           )
+                          //         : const SizedBox(),
+                          //     SizedBox(
+                          //       width: isDesktop ? Dimensions.paddingSizeSmall : 0,
+                          //     ),
+                          Directionality(
+                            textDirection: TextDirection.ltr, // or determine dynamically based on language
+
+                            child: Expanded(
+                              child: CustomTextField(
+                                titleText: 'xxx-xxx-xxxxx'.tr,
+                                labelText: 'phone'.tr,
+                                showLabelText: true,
+                                required: true,
+                                controller: _phoneController,
+
+                                focusNode: _phoneFocus,
+                                nextFocus: isDesktop
+                                    ? _passwordFocus
+                                    : _emailFocus,
+                                inputType: TextInputType.phone,
+                                isPhone: true,
+                                forceLTR: true,
+
+                                onCountryChanged: (CountryCode countryCode) {
+                                  _countryDialCode = countryCode.dialCode;
+                                },
+                                countryDialCode: _countryDialCode != null
+                                    ? CountryCode.fromCountryCode(
                                   Get.find<SplashController>()
-                                          .configModel!
-                                          .refEarningStatus ==
-                                      1
-                                  ? _referCodeFocus
-                                  : null,
-                              inputAction:
-                                  Get.find<SplashController>()
-                                          .configModel!
-                                          .refEarningStatus ==
-                                      1
-                                  ? TextInputAction.next
-                                  : TextInputAction.done,
-                              inputType: TextInputType.visiblePassword,
-                              prefixIcon: Icons.lock,
-                              isPassword: true,
-                              onSubmit: (text) => (GetPlatform.isWeb)
-                                  ? _register(authController, _countryDialCode!)
-                                  : null,
-                              validator: (value) =>
-                                  ValidateCheck.validateConfirmPassword(
-                                    value,
-                                    _passwordController.text,
-                                  ),
-                            )
-                          : const SizedBox(),
-                      SizedBox(
-                        height: !isDesktop ? Dimensions.paddingSizeLarge : 0,
-                      ),
-                      (Get.find<SplashController>()
                                       .configModel!
-                                      .refEarningStatus ==
-                                  1 &&
-                              !isDesktop)
+                                      .country!,
+                                ).code
+                                    : Get.find<LocalizationController>()
+                                    .locale
+                                    .countryCode,
+                                validator: (value) =>
+                                    ValidateCheck.validateEmptyText(
+                                      value,
+                                      "please_enter_phone_number".tr,
+                                    ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: isDesktop
+                            ? Dimensions.paddingSizeExtraLarge
+                            : Dimensions.paddingSizeLarge,
+                      ),
+                      // !isDesktop
+                      //     ? CustomTextField(
+                      //         labelText: 'email'.tr,
+                      //         titleText: 'enter_email'.tr,
+                      //         showLabelText: true,
+                      //         required: true,
+                      //         controller: _emailController,
+                      //         focusNode: _emailFocus,
+                      //         nextFocus: _passwordFocus,
+                      //         inputType: TextInputType.emailAddress,
+                      //         prefixIcon: CupertinoIcons.mail_solid,
+                      //         validator: ValidateCheck.validateEmail,
+                      //         divider: false,
+                      //       )
+                      //     : const SizedBox(),
+                      // SizedBox(
+                      //   height: !isDesktop ? Dimensions.paddingSizeLarge : 0,
+                      // ),
+                      // Row(
+                      //   crossAxisAlignment: CrossAxisAlignment.start,
+                      //   children: [
+                      //     Expanded(
+                      //       child: Column(
+                      //         children: [
+                      //           CustomTextField(
+                      //             titleText: '8+characters'.tr,
+                      //             labelText: 'password'.tr,
+                      //             showLabelText: true,
+                      //             required: true,
+                      //             controller: _passwordController,
+                      //             focusNode: _passwordFocus,
+                      //             nextFocus: _confirmPasswordFocus,
+                      //             inputType: TextInputType.visiblePassword,
+                      //             prefixIcon: Icons.lock,
+                      //             isPassword: true,
+                      //             validator: (value) =>
+                      //                 ValidateCheck.validateEmptyText(
+                      //                   value,
+                      //                   "please_enter_password".tr,
+                      //                 ),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //     SizedBox(
+                      //       width: isDesktop ? Dimensions.paddingSizeSmall : 0,
+                      //     ),
+                      //     isDesktop
+                      //         ? Expanded(
+                      //             child: CustomTextField(
+                      //               titleText: '8+characters'.tr,
+                      //               labelText: 'confirm_password'.tr,
+                      //               showLabelText: true,
+                      //               required: true,
+                      //               controller: _confirmPasswordController,
+                      //               focusNode: _confirmPasswordFocus,
+                      //               nextFocus:
+                      //                   Get.find<SplashController>()
+                      //                           .configModel!
+                      //                           .refEarningStatus ==
+                      //                       1
+                      //                   ? _referCodeFocus
+                      //                   : null,
+                      //               inputAction:
+                      //                   Get.find<SplashController>()
+                      //                           .configModel!
+                      //                           .refEarningStatus ==
+                      //                       1
+                      //                   ? TextInputAction.next
+                      //                   : TextInputAction.done,
+                      //               inputType: TextInputType.visiblePassword,
+                      //               prefixIcon: Icons.lock,
+                      //               isPassword: true,
+                      //               onSubmit: (text) => (GetPlatform.isWeb)
+                      //                   ? _register(
+                      //                       authController,
+                      //                       _countryDialCode!,
+                      //                     )
+                      //                   : null,
+                      //               validator: (value) =>
+                      //                   ValidateCheck.validateConfirmPassword(
+                      //                     value,
+                      //                     _passwordController.text,
+                      //                   ),
+                      //             ),
+                      //           )
+                      //         : const SizedBox(),
+                      //   ],
+                      // ),
+                      // SizedBox(
+                      //   height: isDesktop
+                      //       ? Dimensions.paddingSizeExtraLarge
+                      //       : Dimensions.paddingSizeLarge,
+                      // ),
+                      // !isDesktop
+                      //     ? CustomTextField(
+                      //         titleText: '8+characters'.tr,
+                      //         labelText: 'confirm_password'.tr,
+                      //         showLabelText: true,
+                      //         required: true,
+                      //         controller: _confirmPasswordController,
+                      //         focusNode: _confirmPasswordFocus,
+                      //         nextFocus:
+                      //             Get.find<SplashController>()
+                      //                     .configModel!
+                      //                     .refEarningStatus ==
+                      //                 1
+                      //             ? _referCodeFocus
+                      //             : null,
+                      //         inputAction:
+                      //             Get.find<SplashController>()
+                      //                     .configModel!
+                      //                     .refEarningStatus ==
+                      //                 1
+                      //             ? TextInputAction.next
+                      //             : TextInputAction.done,
+                      //         inputType: TextInputType.visiblePassword,
+                      //         prefixIcon: Icons.lock,
+                      //         isPassword: true,
+                      //         onSubmit: (text) => (GetPlatform.isWeb)
+                      //             ? _register(authController, _countryDialCode!)
+                      //             : null,
+                      //         validator: (value) =>
+                      //             ValidateCheck.validateConfirmPassword(
+                      //               value,
+                      //               _passwordController.text,
+                      //             ),
+                      //       )
+                      //     : const SizedBox(),
+                      // SizedBox(
+                      //   height: !isDesktop ? Dimensions.paddingSizeLarge : 0,
+                      // ),
+                      (Get.find<SplashController>()
+                          .configModel!
+                          .refEarningStatus ==
+                          1 &&
+                          !isDesktop)
                           ? CustomTextField(
-                              titleText: 'refer_code'.tr,
-                              labelText: 'refer_code'.tr,
-                              showLabelText: true,
-                              controller: _referCodeController,
-                              focusNode: _referCodeFocus,
-                              inputAction: TextInputAction.done,
-                              inputType: TextInputType.text,
-                              capitalization: TextCapitalization.words,
-                              prefixImage: Images.referCode,
-                              divider: false,
-                              prefixSize: 14,
-                            )
+                        titleText: 'refer_code'.tr,
+                        labelText: 'refer_code'.tr,
+                        showLabelText: true,
+                        controller: _referCodeController,
+                        focusNode: _referCodeFocus,
+                        inputAction: TextInputAction.done,
+                        inputType: TextInputType.text,
+                        capitalization: TextCapitalization.words,
+                        prefixImage: Images.referCode,
+                        divider: false,
+                        prefixSize: 14,
+                      )
                           : const SizedBox(),
                       SizedBox(
                         height: isDesktop ? 0 : Dimensions.paddingSizeLarge,
@@ -443,29 +455,29 @@ class SignUpWidgetState extends State<SignUpWidget> {
                               onTap: authController.isLoading
                                   ? null
                                   : () {
-                                      if (isDesktop) {
-                                        Get.back();
-                                        Get.dialog(
-                                          const Center(
-                                            child: AuthDialogWidget(
-                                              exitFromApp: false,
-                                              backFromThis: false,
-                                            ),
-                                          ),
-                                        );
-                                      } else {
-                                        if (Get.currentRoute ==
-                                            RouteHelper.signUp) {
-                                          Get.back();
-                                        } else {
-                                          Get.toNamed(
-                                            RouteHelper.getSignInRoute(
-                                              RouteHelper.signUp,
-                                            ),
-                                          );
-                                        }
-                                      }
-                                    },
+                                if (isDesktop) {
+                                  Get.back();
+                                  Get.dialog(
+                                    const Center(
+                                      child: AuthDialogWidget(
+                                        exitFromApp: false,
+                                        backFromThis: false,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  if (Get.currentRoute ==
+                                      RouteHelper.signUp) {
+                                    Get.back();
+                                  } else {
+                                    Get.toNamed(
+                                      RouteHelper.getSignInRoute(
+                                        RouteHelper.signUp,
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
                               child: Padding(
                                 padding: const EdgeInsets.all(
                                   Dimensions.paddingSizeExtraSmall,
@@ -493,9 +505,9 @@ class SignUpWidgetState extends State<SignUpWidget> {
   }
 
   Future<void> _register(
-    AuthController authController,
-    String countryCode,
-  ) async {
+      AuthController authController,
+      String countryCode,
+      ) async {
     SignUpBodyModel? signUpModel = await _prepareSignUpBody(countryCode);
 
     if (signUpModel == null) {
@@ -615,30 +627,35 @@ class SignUpWidgetState extends State<SignUpWidget> {
     numberWithCountryCode = phoneValid.phone;
 
     if (_formKeySignUp!.currentState!.validate()) {
-      if (name.isEmpty) {
-        showCustomSnackBar('please_enter_your_name'.tr);
-      } else if (email.isEmpty) {
-        showCustomSnackBar('enter_email_address'.tr);
-      } else if (!GetUtils.isEmail(email)) {
-        showCustomSnackBar('enter_a_valid_email_address'.tr);
-      } else if (number.isEmpty) {
+      // if (name.isEmpty) {
+      //   showCustomSnackBar('please_enter_your_name'.tr);
+      // }
+      // else if (email.isEmpty) {
+      //   showCustomSnackBar('enter_email_address'.tr);
+      // }
+      // else if (!GetUtils.isEmail(email)) {
+      //   showCustomSnackBar('enter_a_valid_email_address'.tr);
+      // }
+      if (number.isEmpty) {
         showCustomSnackBar('enter_phone_number'.tr);
       } else if (!phoneValid.isValid) {
         showCustomSnackBar('invalid_phone_number'.tr);
-      } else if (password.isEmpty) {
-        showCustomSnackBar('enter_password'.tr);
-      } else if (password.length < 8) {
-        showCustomSnackBar('password_should_be_8_characters'.tr);
-      } else if (password != confirmPassword) {
-        showCustomSnackBar('confirm_password_does_not_matched'.tr);
-      } else if (referCode.isNotEmpty && referCode.length != 10) {
+      }
+      // else if (password.isEmpty) {
+      //   showCustomSnackBar('enter_password'.tr);
+      // } else if (password.length < 8) {
+      //   showCustomSnackBar('password_should_be_8_characters'.tr);
+      // } else if (password != confirmPassword) {
+      //   showCustomSnackBar('confirm_password_does_not_matched'.tr);
+      // }
+      else if (referCode.isNotEmpty && referCode.length != 10) {
         showCustomSnackBar('invalid_refer_code'.tr);
       } else {
         SignUpBodyModel signUpBody = SignUpBodyModel(
-          name: name,
-          email: email,
+          // name: name,
+          // email: email,
           phone: numberWithCountryCode,
-          password: password,
+          // password: password,
           refCode: referCode,
         );
         return signUpBody;

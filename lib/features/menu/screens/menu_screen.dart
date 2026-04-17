@@ -190,7 +190,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 right: Dimensions.paddingSizeDefault,
                               ),
                               child: Text(
-                                'geneal'.tr,
+                                'general'.tr,
                                 style: robotoMedium.copyWith(
                                   fontSize: Dimensions.fontSizeDefault,
                                   color: Theme.of(

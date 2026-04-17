@@ -41,41 +41,43 @@ class BannerController extends GetxController implements GetxService {
     BannerModel? bannerModel = await bannerServiceInterface
         .getFeaturedBannerList();
     if (bannerModel != null) {
-      _featuredBannerList = [];
-      _featuredBannerDataList = [];
+      List<String?> featuredBannerList = [];
+      List<dynamic> featuredBannerDataList = [];
 
       List<int?> moduleIdList = bannerServiceInterface.moduleIdList();
 
       for (var campaign in bannerModel.campaigns!) {
-        if (_featuredBannerList!.contains(campaign.imageFullUrl)) {
-          _featuredBannerList!.add(
+        if (featuredBannerList.contains(campaign.imageFullUrl)) {
+          featuredBannerList.add(
             '${campaign.imageFullUrl}${bannerModel.campaigns!.indexOf(campaign)}',
           );
         } else {
-          _featuredBannerList!.add(campaign.imageFullUrl);
+          featuredBannerList.add(campaign.imageFullUrl);
         }
-        _featuredBannerDataList!.add(campaign);
+        featuredBannerDataList.add(campaign);
       }
       for (var banner in bannerModel.banners!) {
-        if (_featuredBannerList!.contains(banner.imageFullUrl)) {
-          _featuredBannerList!.add(
+        if (featuredBannerList.contains(banner.imageFullUrl)) {
+          featuredBannerList.add(
             '${banner.imageFullUrl}${bannerModel.banners!.indexOf(banner)}',
           );
         } else {
-          _featuredBannerList!.add(banner.imageFullUrl);
+          featuredBannerList.add(banner.imageFullUrl);
         }
         if (banner.item != null &&
             moduleIdList.contains(banner.item!.moduleId)) {
-          _featuredBannerDataList!.add(banner.item);
+          featuredBannerDataList.add(banner.item);
         } else if (banner.store != null &&
             moduleIdList.contains(banner.store!.moduleId)) {
-          _featuredBannerDataList!.add(banner.store);
+          featuredBannerDataList.add(banner.store);
         } else if (banner.type == 'default') {
-          _featuredBannerDataList!.add(banner.link);
+          featuredBannerDataList.add(banner.link);
         } else {
-          _featuredBannerDataList!.add(null);
+          featuredBannerDataList.add(null);
         }
       }
+      _featuredBannerList = featuredBannerList;
+      _featuredBannerDataList = featuredBannerDataList;
     }
     update();
   }
@@ -116,37 +118,39 @@ class BannerController extends GetxController implements GetxService {
 
   _prepareBanner(BannerModel? bannerModel) async {
     if (bannerModel != null) {
-      _bannerImageList = [];
-      _bannerDataList = [];
+      List<String?>? bannerImageList = [];
+      List<dynamic>? bannerDataList = [];
       for (var campaign in bannerModel.campaigns!) {
-        if (_bannerImageList!.contains(campaign.imageFullUrl)) {
-          _bannerImageList!.add(
+        if (bannerImageList.contains(campaign.imageFullUrl)) {
+          bannerImageList.add(
             '${campaign.imageFullUrl}${bannerModel.campaigns!.indexOf(campaign)}',
           );
         } else {
-          _bannerImageList!.add(campaign.imageFullUrl);
+          bannerImageList.add(campaign.imageFullUrl);
         }
-        _bannerDataList!.add(campaign);
+        bannerDataList.add(campaign);
       }
       for (var banner in bannerModel.banners!) {
-        if (_bannerImageList!.contains(banner.imageFullUrl)) {
-          _bannerImageList!.add(
+        if (bannerImageList.contains(banner.imageFullUrl)) {
+          bannerImageList.add(
             '${banner.imageFullUrl}${bannerModel.banners!.indexOf(banner)}',
           );
         } else {
-          _bannerImageList!.add(banner.imageFullUrl);
+          bannerImageList.add(banner.imageFullUrl);
         }
 
         if (banner.item != null) {
-          _bannerDataList!.add(banner.item);
+          bannerDataList.add(banner.item);
         } else if (banner.store != null) {
-          _bannerDataList!.add(banner.store);
+          bannerDataList.add(banner.store);
         } else if (banner.type == 'default') {
-          _bannerDataList!.add(banner.link);
+          bannerDataList.add(banner.link);
         } else {
-          _bannerDataList!.add(null);
+          bannerDataList.add(null);
         }
       }
+      _bannerImageList = bannerImageList;
+      _bannerDataList = bannerDataList;
     }
     update();
   }
@@ -218,6 +222,7 @@ class BannerController extends GetxController implements GetxService {
 
   Future<void> getPromotionalBannerList(bool reload) async {
     if (_promotionalBanner == null || reload) {
+      _promotionalBanner = null;
       PromotionalBanner? promotionalBanner = await bannerServiceInterface
           .getPromotionalBannerList();
       if (promotionalBanner != null) {

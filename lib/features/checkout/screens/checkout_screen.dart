@@ -427,9 +427,13 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                     )
                                   : const SizedBox(),
                               Expanded(
-                                child: SingleChildScrollView(
-                                  controller: _scrollController,
-                                  physics: const BouncingScrollPhysics(),
+                                child: RefreshIndicator(
+                                  onRefresh: () async {
+                                    await initCall();
+                                  },
+                                  child: SingleChildScrollView(
+                                    controller: _scrollController,
+                                    physics: const AlwaysScrollableScrollPhysics(),
                                   child: FooterView(
                                     child: SizedBox(
                                       width: Dimensions.webMaxWidth,
@@ -675,6 +679,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                               ],
                                             ),
                                     ),
+                                  ),
                                   ),
                                 ),
                               ),
@@ -1336,7 +1341,8 @@ class CheckoutScreenState extends State<CheckoutScreen> {
         if (zData.id == store.zoneId) {
           isCashOnDeliveryActive =
               zData.cashOnDelivery! &&
-              Get.find<SplashController>().configModel!.cashOnDelivery!;
+              Get.find<SplashController>().configModel!.cashOnDelivery! &&
+              store.cashPaymentPermission == 1;
         }
       }
     }
@@ -1355,7 +1361,8 @@ class CheckoutScreenState extends State<CheckoutScreen> {
         if (zData.id == store.zoneId) {
           isDigitalPaymentActive =
               zData.digitalPayment! &&
-              Get.find<SplashController>().configModel!.digitalPayment!;
+              Get.find<SplashController>().configModel!.digitalPayment! &&
+              store.digitalPaymentPermission == 1;
         }
       }
     }
