@@ -201,12 +201,11 @@ class OrderCalculationWidget extends StatelessWidget {
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
                                 ),
-                                Text(
-                                  '(+) ${order.deliveryCharge}',
-                                  style: robotoRegular.copyWith(
+                                PriceConverter.convertAnimationPrice(
+                                  order.deliveryCharge!,
+                                  textStyle: robotoRegular.copyWith(
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
-                                  textDirection: TextDirection.ltr,
                                 ),
                               ],
                             ),
@@ -220,12 +219,11 @@ class OrderCalculationWidget extends StatelessWidget {
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
                                 ),
-                                Text(
-                                  '(+) ${order.dmTips}',
-                                  style: robotoRegular.copyWith(
+                                PriceConverter.convertAnimationPrice(
+                                  order.dmTips!,
+                                  textStyle: robotoRegular.copyWith(
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
-                                  textDirection: TextDirection.ltr,
                                 ),
                               ],
                             ),
@@ -247,12 +245,11 @@ class OrderCalculationWidget extends StatelessWidget {
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
                                       ),
-                                      Text(
-                                        '(+) ${PriceConverter.convertPrice(order.additionalCharge)}',
-                                        style: robotoRegular.copyWith(
+                                      PriceConverter.convertAnimationPrice(
+                                        order.additionalCharge!,
+                                        textStyle: robotoRegular.copyWith(
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
-                                        textDirection: TextDirection.ltr,
                                       ),
                                     ],
                                   )
@@ -276,7 +273,6 @@ class OrderCalculationWidget extends StatelessWidget {
                                   style: robotoRegular.copyWith(
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
-                                  textDirection: TextDirection.ltr,
                                 ),
                               ],
                             ),
@@ -294,12 +290,11 @@ class OrderCalculationWidget extends StatelessWidget {
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
                                       ),
-                                      Text(
-                                        '(+) ${PriceConverter.convertPrice(addOns)}',
-                                        style: robotoRegular.copyWith(
+                                      PriceConverter.convertAnimationPrice(
+                                        addOns,
+                                        textStyle: robotoRegular.copyWith(
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
-                                        textDirection: TextDirection.ltr,
                                       ),
                                     ],
                                   )
@@ -332,7 +327,6 @@ class OrderCalculationWidget extends StatelessWidget {
                                         style: robotoRegular.copyWith(
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
-                                        textDirection: TextDirection.ltr,
                                       ),
                                     ],
                                   )
@@ -354,12 +348,11 @@ class OrderCalculationWidget extends StatelessWidget {
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
                                 ),
-                                Text(
-                                  '(-) ${PriceConverter.convertPrice(discount)}',
-                                  style: robotoRegular.copyWith(
+                                PriceConverter.convertAnimationPrice(
+                                  discount,
+                                  textStyle: robotoRegular.copyWith(
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
-                                  textDirection: TextDirection.ltr,
                                 ),
                               ],
                             ),
@@ -375,12 +368,11 @@ class OrderCalculationWidget extends StatelessWidget {
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
                                       ),
-                                      Text(
-                                        '(-) ${PriceConverter.convertPrice(couponDiscount)}',
-                                        style: robotoRegular.copyWith(
+                                      PriceConverter.convertAnimationPrice(
+                                        couponDiscount,
+                                        textStyle: robotoRegular.copyWith(
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
-                                        textDirection: TextDirection.ltr,
                                       ),
                                     ],
                                   )
@@ -397,12 +389,11 @@ class OrderCalculationWidget extends StatelessWidget {
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
                                       ),
-                                      Text(
-                                        '(+) ${PriceConverter.convertPrice(referrerBonusAmount)}',
-                                        style: robotoRegular.copyWith(
+                                      PriceConverter.convertAnimationPrice(
+                                        referrerBonusAmount,
+                                        textStyle: robotoRegular.copyWith(
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
-                                        textDirection: TextDirection.ltr,
                                       ),
                                     ],
                                   )
@@ -422,12 +413,11 @@ class OrderCalculationWidget extends StatelessWidget {
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
                                       ),
-                                      Text(
-                                        '(+) ${PriceConverter.convertPrice(order.additionalCharge)}',
-                                        style: robotoRegular.copyWith(
+                                      PriceConverter.convertAnimationPrice(
+                                        order.additionalCharge!,
+                                        textStyle: robotoRegular.copyWith(
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
-                                        textDirection: TextDirection.ltr,
                                       ),
                                     ],
                                   )
@@ -445,12 +435,11 @@ class OrderCalculationWidget extends StatelessWidget {
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
                                 ),
-                                Text(
-                                  '(+) ${PriceConverter.convertPrice(tax)}',
-                                  style: robotoRegular.copyWith(
+                                PriceConverter.convertAnimationPrice(
+                                  tax,
+                                  textStyle: robotoRegular.copyWith(
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
-                                  textDirection: TextDirection.ltr,
                                 ),
                               ],
                             ),
@@ -466,12 +455,11 @@ class OrderCalculationWidget extends StatelessWidget {
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
                                       ),
-                                      Text(
-                                        '(+) ${PriceConverter.convertPrice(dmTips)}',
-                                        style: robotoRegular.copyWith(
+                                      PriceConverter.convertAnimationPrice(
+                                        dmTips,
+                                        textStyle: robotoRegular.copyWith(
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
-                                        textDirection: TextDirection.ltr,
                                       ),
                                     ],
                                   )
@@ -488,18 +476,17 @@ class OrderCalculationWidget extends StatelessWidget {
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
                                       ),
-                                      Text(
-                                        '(+) ${PriceConverter.convertPrice(extraPackagingAmount)}',
-                                        style: robotoRegular.copyWith(
+                                      PriceConverter.convertAnimationPrice(
+                                        extraPackagingAmount,
+                                        textStyle: robotoRegular.copyWith(
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
-                                        textDirection: TextDirection.ltr,
                                       ),
                                     ],
                                   )
                                 : const SizedBox(),
                             SizedBox(height: extraPackagingAmount > 0 ? 10 : 0),
-                            Row(
+                            order.orderType != 'take_away' ? Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
@@ -509,12 +496,11 @@ class OrderCalculationWidget extends StatelessWidget {
                                   ),
                                 ),
                                 deliveryCharge > 0
-                                    ? Text(
-                                        '(+) ${PriceConverter.convertPrice(deliveryCharge)}',
-                                        style: robotoRegular.copyWith(
+                                    ? PriceConverter.convertAnimationPrice(
+                                        deliveryCharge,
+                                        textStyle: robotoRegular.copyWith(
                                           fontSize: Dimensions.fontSizeSmall,
                                         ),
-                                        textDirection: TextDirection.ltr,
                                       )
                                     : Text(
                                         'free'.tr,
@@ -524,7 +510,7 @@ class OrderCalculationWidget extends StatelessWidget {
                                         ),
                                       ),
                               ],
-                            ),
+                            ) : const SizedBox(),
                           ],
                         ),
                 ],
@@ -580,7 +566,6 @@ class OrderCalculationWidget extends StatelessWidget {
                                 ),
                                 Text(
                                   PriceConverter.convertPrice(total),
-                                  textDirection: TextDirection.ltr,
                                   style: robotoMedium.copyWith(
                                     fontSize:
                                         ResponsiveHelper.isDesktop(context)
@@ -654,7 +639,6 @@ class OrderCalculationWidget extends StatelessWidget {
                         ),
                         Text(
                           PriceConverter.convertPrice(total),
-                          textDirection: TextDirection.ltr,
                           style: robotoMedium.copyWith(
                             fontSize: ResponsiveHelper.isDesktop(context)
                                 ? Dimensions.fontSizeSmall

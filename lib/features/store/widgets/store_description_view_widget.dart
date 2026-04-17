@@ -246,7 +246,6 @@ class StoreDescriptionViewWidget extends StatelessWidget {
                                 PriceConverter.convertPrice(
                                   store!.minimumOrder,
                                 ),
-                                textDirection: TextDirection.ltr,
                                 style: robotoMedium.copyWith(
                                   fontSize: Dimensions.fontSizeExtraSmall,
                                   color: Theme.of(context).primaryColor,

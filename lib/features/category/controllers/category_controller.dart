@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:friday_sa/common/enums/data_source_enum.dart';
 import 'package:friday_sa/features/category/domain/models/category_model.dart';
 import 'package:friday_sa/features/item/domain/models/item_model.dart';
@@ -5,6 +6,7 @@ import 'package:friday_sa/features/store/domain/models/store_model.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/features/category/domain/services/category_service_interface.dart';
 import 'package:friday_sa/helper/string_extension.dart';
+import '../../store/controllers/store_controller.dart';
 
 class CategoryController extends GetxController implements GetxService {
   CategoryController({required this.categoryServiceInterface});
@@ -60,6 +62,9 @@ class CategoryController extends GetxController implements GetxService {
 
   int _offset = 1;
   int get offset => _offset;
+  final ScrollController _subCatScrollController = ScrollController();
+  ScrollController get subCatScrollController => _subCatScrollController;
+  ScrollController? mainScrollController;
 
   void clearCategoryList() {
     _categoryList = null;
@@ -101,12 +106,14 @@ class CategoryController extends GetxController implements GetxService {
 
   _prepareCategoryList(List<CategoryModel>? categoryList) {
     if (categoryList != null) {
-      _categoryList = [];
-      _interestSelectedList = [];
-      _categoryList!.addAll(categoryList);
-      for (int i = 0; i < _categoryList!.length; i++) {
-        _interestSelectedList!.add(false);
+      List<CategoryModel> categories = [];
+      List<bool> interestSelectedList = [];
+      categories.addAll(categoryList);
+      for (int i = 0; i < categories.length; i++) {
+        interestSelectedList.add(false);
       }
+      _categoryList = categories;
+      _interestSelectedList = interestSelectedList;
     }
     update();
   }
@@ -120,7 +127,7 @@ class CategoryController extends GetxController implements GetxService {
     List<CategoryModel>? list;
     if (_storeCategoryList.isEmpty || reload || fromRecall) {
       if (reload) {
-        _storeCategoryList = [];
+        // _storeCategoryList = [];
       }
       List<CategoryModel>? storeCategoryList;
       if (dataSource == DataSourceEnum.local) {
@@ -145,6 +152,8 @@ class CategoryController extends GetxController implements GetxService {
             .print;
         list = storeCategoryList;
         _prepareStoreCategoryList(storeCategoryList);
+        Get.find<StoreController>().setCategoryList();
+        Get.find<StoreController>().update();
       }
     }
     return list;
@@ -161,19 +170,28 @@ class CategoryController extends GetxController implements GetxService {
     update();
   }
 
-  Future<List<CategoryModel>?> getSubCategoryList(String? categoryID) async {
+  Future<List<CategoryModel>?> getSubCategoryList(
+    String? categoryID, {
+    String? storeId,
+  }) async {
     _subCategoryIndex = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_subCatScrollController.hasClients) {
+        _subCatScrollController.jumpTo(0);
+      }
+      if (mainScrollController != null && mainScrollController!.hasClients) {
+        mainScrollController!.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+      }
+    });
     _subCategoryList = null;
     _categoryItemList = null;
     List<CategoryModel>? subCategoryList = await categoryServiceInterface
-        .getSubCategoryList(categoryID);
+        .getSubCategoryList(categoryID, storeId: storeId);
+
     if (subCategoryList != null) {
       _subCategoryList = [];
-      // _subCategoryList!.add(
-      //   CategoryModel(id: int.parse(categoryID!), name: 'all'.tr),
-      // );
       _subCategoryList!.addAll(subCategoryList);
-      getCategoryItemList(categoryID, 1, 'all', false);
+      getCategoryItemList(subCategoryList.isNotEmpty ? subCategoryList[0].id.toString() : categoryID, 1, 'all', false);
     }
     return _subCategoryList;
   }
@@ -182,22 +200,26 @@ class CategoryController extends GetxController implements GetxService {
     _subCategoryIndex = index;
     if (_isStore) {
       getCategoryStoreList(
-        _subCategoryIndex == 0
-            ? categoryID
-            : _subCategoryList![index].id.toString(),
+        (_subCategoryIndex != -1 && _subCategoryList != null && _subCategoryList!.isNotEmpty)
+            ? _subCategoryList![index].id.toString()
+            : categoryID,
         1,
         _type,
         true,
       );
     } else {
       getCategoryItemList(
-        _subCategoryIndex == 0
-            ? categoryID
-            : _subCategoryList![index].id.toString(),
+        (_subCategoryIndex != -1 && _subCategoryList != null && _subCategoryList!.isNotEmpty)
+            ? _subCategoryList![index].id.toString()
+            : categoryID,
         1,
         _type,
         true,
       );
+    }
+    update();
+    if (mainScrollController != null && mainScrollController!.hasClients) {
+      mainScrollController!.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
     }
   }
 
