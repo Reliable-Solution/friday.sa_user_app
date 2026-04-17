@@ -1,3 +1,4 @@
+import 'package:friday_sa/common/widgets/custom_loader.dart';
 import 'package:friday_sa/features/auth/controllers/auth_controller.dart';
 import 'package:friday_sa/features/location/controllers/location_controller.dart';
 import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
@@ -142,16 +143,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                               ),
                                         Expanded(
                                           child: CustomButton(
-                                            buttonText:
-                                                onBoardingController
-                                                        .selectedIndex !=
-                                                    2
-                                                ? 'next'.tr
-                                                : 'get_started'.tr,
                                             onPressed: () {
-                                              if (onBoardingController
-                                                      .selectedIndex !=
-                                                  2) {
+                                              if (onBoardingController.selectedIndex != 2) {
                                                 _pageController.nextPage(
                                                   duration: const Duration(
                                                     seconds: 1,
@@ -162,6 +155,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                                 _configureToRouteInitialPage();
                                               }
                                             },
+                                            buttonText: onBoardingController.selectedIndex != 2 ? 'next'.tr : 'get_started'.tr,
                                           ),
                                         ),
                                       ],
@@ -207,18 +201,31 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   Future<void> _configureToRouteInitialPage() async {
-    Get.find<SplashController>().disableIntro();
-    await Get.find<AuthController>().guestLogin();
-    if (AddressHelper.getUserAddressFromSharedPref() != null) {
-      Get.offNamed(RouteHelper.getInitialRoute(fromSplash: true));
-    } else {
-      Get.find<LocationController>()
-          .navigateToLocationScreen(RouteHelper.onBoarding, offNamed: true)
-          .then((v) {
-            _pageController.jumpToPage(
-              Get.find<OnBoardingController>().onBoardingList.length - 2,
-            );
-          });
+    Get.dialog(const CustomLoaderWidget(), barrierDismissible: false);
+    try {
+      Get.find<SplashController>().disableIntro();
+      await Get.find<AuthController>().guestLogin();
+      if (AddressHelper.getUserAddressFromSharedPref() != null) {
+        if (Get.isDialogOpen!) {
+          Get.back();
+        }
+        Get.offNamed(RouteHelper.getInitialRoute(fromSplash: true));
+      } else {
+        Get.find<LocationController>()
+            .navigateToLocationScreen(RouteHelper.onBoarding, offNamed: true)
+            .then((v) {
+              if (Get.isDialogOpen!) {
+                Get.back();
+              }
+              _pageController.jumpToPage(
+                Get.find<OnBoardingController>().onBoardingList.length - 2,
+              );
+            });
+      }
+    } catch (e) {
+      if (Get.isDialogOpen!) {
+        Get.back();
+      }
     }
   }
 }

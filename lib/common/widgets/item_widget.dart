@@ -94,6 +94,14 @@ class ItemWidget extends StatelessWidget {
       );
     }
 
+
+    bool isFoodModule = Get.find<SplashController>().module != null &&
+        Get.find<SplashController>().module!.moduleType == 'food';
+    if (isFoodModule) {
+      isAvailable = true;
+    }
+
+
     return Stack(
       children: [
         Container(
@@ -472,7 +480,6 @@ class ItemWidget extends StatelessWidget {
                                                 fontSize:
                                                     Dimensions.fontSizeSmall,
                                               ),
-                                              textDirection: TextDirection.ltr,
                                             ),
                                             SizedBox(
                                               width: discount! > 0
@@ -494,8 +501,6 @@ class ItemWidget extends StatelessWidget {
                                                       decoration: TextDecoration
                                                           .lineThrough,
                                                     ),
-                                                    textDirection:
-                                                        TextDirection.ltr,
                                                   )
                                                 : const SizedBox(),
                                           ],
