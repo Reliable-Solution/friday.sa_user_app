@@ -47,6 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Get.find<SplashController>().configModel!.customerWalletStatus == 1 ||
         Get.find<SplashController>().configModel!.loyaltyPointStatus == 1;
 
+
     return Scaffold(
       appBar: ResponsiveHelper.isDesktop(context) ? const WebMenuBar() : null,
       endDrawer: const MenuDrawer(),
@@ -478,6 +479,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 ? Dimensions.paddingSizeSmall
                                                 : 0,
                                           ),
+
 
                                           isLoggedIn
                                               ? ProfileButtonWidget(
