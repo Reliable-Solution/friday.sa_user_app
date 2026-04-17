@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../../common/widgets/confirmation_dialog.dart';
+
 class SignInScreen extends StatefulWidget {
   const SignInScreen({
     super.key,
@@ -31,21 +33,34 @@ class SignInScreen extends StatefulWidget {
   SignInScreenState createState() => SignInScreenState();
 }
 
+
 class SignInScreenState extends State<SignInScreen> {
   bool _canExit = GetPlatform.isWeb ? true : false;
+
+  Future<bool> _onBackPressed() async {
+    Get.dialog(ConfirmationDialog(
+      icon: Images.warning,
+      title: 'are_you_sure'.tr,
+      description: 'are_you_sure_to_go_back'.tr,
+      onYesPressed: () {
+        Get.back();
+        Get.back();
+      },
+    ));
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: Navigator.canPop(context),
+      canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
         if (widget.fromNotification ||
             widget.fromResetPassword ||
             widget.fromCountry) {
           if (widget.fromCountry) {
-            Get.offAllNamed(
-              RouteHelper.getInitialRoute(fromSplash: true, isLoad: true),
-            );
+            Get.back();
           } else {
             Navigator.pushNamed(context, RouteHelper.getInitialRoute());
           }
@@ -77,7 +92,7 @@ class SignInScreenState extends State<SignInScreen> {
             });
           }
         } else {
-          return;
+          _onBackPressed();
         }
       },
       child: Scaffold(
@@ -95,12 +110,7 @@ class SignInScreenState extends State<SignInScreen> {
                         widget.fromResetPassword ||
                         widget.fromCountry) {
                       if (widget.fromCountry) {
-                        Get.offAllNamed(
-                          RouteHelper.getInitialRoute(
-                            fromSplash: true,
-                            isLoad: true,
-                          ),
-                        );
+                        Get.back();
                       } else {
                         Navigator.pushNamed(
                           context,
@@ -108,7 +118,7 @@ class SignInScreenState extends State<SignInScreen> {
                         );
                       }
                     } else {
-                      Get.back();
+                      _onBackPressed();
                     }
                   },
                   icon: Icon(

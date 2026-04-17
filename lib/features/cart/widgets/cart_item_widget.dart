@@ -39,6 +39,7 @@ class CartItemWidget extends StatelessWidget {
     );
     String? variationText = _setupVariationText(cart: cart);
     String addOnText = _setupAddonsText(cart: cart) ?? '';
+    bool isOutOfStock = Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && cart.item!.stock! <= 0;
 
     num? discount = cart.item!.storeDiscount == 0
         ? cart.item!.discount
@@ -153,7 +154,7 @@ class CartItemWidget extends StatelessWidget {
                             fit: BoxFit.cover,
                           ),
                         ),
-                        isAvailable
+                        (isAvailable && !isOutOfStock)
                             ? const SizedBox()
                             : Positioned(
                                 top: 0,
@@ -169,7 +170,9 @@ class CartItemWidget extends StatelessWidget {
                                     color: Colors.black.withValues(alpha: 0.6),
                                   ),
                                   child: Text(
-                                    'not_available_now_break'.tr,
+                                    isOutOfStock
+                                        ? 'out_of_stock'.tr
+                                        : 'not_available_now_break'.tr,
                                     textAlign: TextAlign.center,
                                     style: robotoRegular.copyWith(
                                       color: Colors.white,
@@ -308,7 +311,6 @@ class CartItemWidget extends StatelessWidget {
                                 style: robotoBold.copyWith(
                                   fontSize: Dimensions.fontSizeSmall,
                                 ),
-                                textDirection: TextDirection.ltr,
                               ),
                               SizedBox(
                                 width: discount! > 0
@@ -319,7 +321,6 @@ class CartItemWidget extends StatelessWidget {
                                   ? Text(
                                       '${PriceConverter.convertPrice(startingPrice)}'
                                       '${endingPrice != null ? ' - ${PriceConverter.convertPrice(endingPrice)}' : ''}',
-                                      textDirection: TextDirection.ltr,
                                       style: robotoRegular.copyWith(
                                         color: Theme.of(context).disabledColor,
                                         decoration: TextDecoration.lineThrough,

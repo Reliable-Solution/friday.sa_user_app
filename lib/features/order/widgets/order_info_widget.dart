@@ -1006,8 +1006,9 @@ class OrderInfoWidget extends StatelessWidget {
                                               },
                                               child: Image.asset(
                                                 Images.chatOrderDetails,
-                                                height: 20,
-                                                width: 20,
+                                                height: 25,
+                                                width: 25,
+                                                matchTextDirection: true,
                                               ),
                                             )
                                           : const SizedBox(),
@@ -1323,8 +1324,9 @@ class OrderInfoWidget extends StatelessWidget {
                                     },
                                     child: Image.asset(
                                       Images.chatOrderDetails,
-                                      height: 20,
-                                      width: 20,
+                                      height: 25,
+                                      width: 25,
+                                      matchTextDirection: true,
                                     ),
                                   )
                                 : const SizedBox(),
