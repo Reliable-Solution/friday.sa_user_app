@@ -487,11 +487,11 @@ class _CartScreenState extends State<CartScreen> {
                                                           'variations'.tr,
                                                           style: robotoRegular,
                                                         ),
-                                                        Text(
-                                                          '(+) ${PriceConverter.convertPrice(cartController.variationPrice)}',
-                                                          style: robotoRegular,
-                                                          textDirection:
-                                                              TextDirection.ltr,
+                                                        PriceConverter.convertAnimationPrice(
+                                                          cartController
+                                                              .variationPrice,
+                                                          textStyle:
+                                                              robotoRegular,
                                                         ),
                                                       ],
                                                     )
@@ -510,20 +510,11 @@ class _CartScreenState extends State<CartScreen> {
                                                     style: robotoRegular,
                                                   ),
                                                   storeController.store != null
-                                                      ? Row(
-                                                          children: [
-                                                            Text(
-                                                              '(-)',
-                                                              style:
-                                                                  robotoRegular,
-                                                            ),
-                                                            PriceConverter.convertAnimationPrice(
-                                                              cartController
-                                                                  .itemDiscountPrice,
-                                                              textStyle:
-                                                                  robotoRegular,
-                                                            ),
-                                                          ],
+                                                      ? PriceConverter.convertAnimationPrice(
+                                                          cartController
+                                                              .itemDiscountPrice,
+                                                          textStyle:
+                                                              robotoRegular,
                                                         )
                                                       : Text(
                                                           'calculating'.tr,
@@ -556,20 +547,10 @@ class _CartScreenState extends State<CartScreen> {
                                                           'addons'.tr,
                                                           style: robotoRegular,
                                                         ),
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              '(+)',
-                                                              style:
-                                                                  robotoRegular,
-                                                            ),
-                                                            PriceConverter.convertAnimationPrice(
-                                                              cartController
-                                                                  .addOns,
-                                                              textStyle:
-                                                                  robotoRegular,
-                                                            ),
-                                                          ],
+                                                        PriceConverter.convertAnimationPrice(
+                                                          cartController.addOns,
+                                                          textStyle:
+                                                              robotoRegular,
                                                         ),
                                                       ],
                                                     )
@@ -824,10 +805,9 @@ class _CartScreenState extends State<CartScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('variations'.tr, style: robotoRegular),
-                                    Text(
-                                      '(+) ${PriceConverter.convertPrice(cartController.variationPrice)}',
-                                      style: robotoRegular,
-                                      textDirection: TextDirection.ltr,
+                                    PriceConverter.convertAnimationPrice(
+                                      cartController.variationPrice,
+                                      textStyle: robotoRegular,
                                     ),
                                   ],
                                 )
@@ -838,14 +818,9 @@ class _CartScreenState extends State<CartScreen> {
                             children: [
                               Text('discount'.tr, style: robotoRegular),
                               storeController.store != null
-                                  ? Row(
-                                      children: [
-                                        Text('(-)', style: robotoRegular),
-                                        PriceConverter.convertAnimationPrice(
-                                          cartController.itemDiscountPrice,
-                                          textStyle: robotoRegular,
-                                        ),
-                                      ],
+                                  ? PriceConverter.convertAnimationPrice(
+                                      cartController.itemDiscountPrice,
+                                      textStyle: robotoRegular,
                                     )
                                   : Text(
                                       'calculating'.tr,
@@ -876,10 +851,9 @@ class _CartScreenState extends State<CartScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('addons'.tr, style: robotoRegular),
-                                    Text(
-                                      '(+) ${PriceConverter.convertPrice(cartController.addOns)}',
-                                      style: robotoRegular,
-                                      textDirection: TextDirection.ltr,
+                                    PriceConverter.convertAnimationPrice(
+                                      cartController.addOns,
+                                      textStyle: robotoRegular,
                                     ),
                                   ],
                                 )
@@ -1166,7 +1140,6 @@ class CheckoutButton extends StatelessWidget {
                                 style: robotoMedium.copyWith(
                                   color: Theme.of(context).primaryColor,
                                 ),
-                                textDirection: TextDirection.ltr,
                               ),
                             if (isPercentage)
                               const SizedBox(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:friday_sa/features/store/controllers/store_controller.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
 import 'package:friday_sa/features/store/controllers/store_controller.dart';
