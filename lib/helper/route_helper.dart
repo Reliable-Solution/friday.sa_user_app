@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'package:flutter/foundation.dart';
 import 'package:friday_sa/features/auth/controllers/auth_controller.dart';
 import 'package:friday_sa/features/auth/screens/new_user_setup_screen.dart';
 import 'package:friday_sa/features/brands/screens/brands_product_screen.dart';
@@ -85,6 +87,9 @@ import 'package:friday_sa/features/update/screens/update_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/features/wallet/screens/wallet_screen.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
+import '../main.dart';
 
 class RouteHelper {
   static const String initial = '/';
@@ -324,10 +329,10 @@ class RouteHelper {
 
   static String getCategoryRoute() => categories;
 
-  static String getCategoryItemRoute(int? id, String name) {
+  static String getCategoryItemRoute(int? id, String name, {int? storeId}) {
     List<int> encoded = utf8.encode(name);
     String data = base64Encode(encoded);
-    return '$categoryItem?id=$id&name=$data';
+    return '$categoryItem?id=$id&name=$data${storeId != null ? '&store_id=$storeId' : ''}';
   }
 
   static String getPopularItemRoute(bool isPopular, bool isSpecial) =>
@@ -902,6 +907,7 @@ class RouteHelper {
           CategoryItemScreen(
             categoryID: Get.parameters['id'],
             categoryName: data,
+            storeID: Get.parameters['store_id'],
           ),
         );
       },
@@ -1287,42 +1293,105 @@ class RouteHelper {
     AccessLocationScreen? locationScreen,
     bool byPuss = false,
   }) {
-    String? minimumVersion = "0";
-    if (GetPlatform.isAndroid) {
-      minimumVersion =
-          Get.find<SplashController>().configModel!.appMinimumVersionAndroid;
-    } else if (GetPlatform.isIOS) {
-      minimumVersion =
-          Get.find<SplashController>().configModel!.appMinimumVersionIos;
-    }
-    return (isHigherVersion(minimumVersion.toString()) && !GetPlatform.isWeb)
-        ? const UpdateScreen(isUpdate: true)
-        : Get.find<SplashController>().configModel!.maintenanceMode!
-        ? const UpdateScreen(isUpdate: false)
-        : (AddressHelper.getUserAddressFromSharedPref() == null && !byPuss)
-        ? AccessLocationScreen(
+    try {
+      final splashController = Get.find<SplashController>();
+      final configModel = splashController.configModel;
+
+      if (configModel == null) {
+        return navigateTo; // Config not loaded yet, proceed to requested screen
+      }
+
+      String? minimumVersion = "0";
+      if (GetPlatform.isAndroid) {
+        minimumVersion = configModel.appMinimumVersionAndroid;
+      } else if (GetPlatform.isIOS) {
+        minimumVersion = configModel.appMinimumVersionIos;
+      }
+
+      // Check for required update
+      if (isHigherVersion(minimumVersion ?? "0") && !GetPlatform.isWeb) {
+        return const UpdateScreen(isUpdate: true);
+      }
+
+      // Check for maintenance mode
+      if (configModel.maintenanceMode == true) {
+        return const UpdateScreen(isUpdate: false);
+      }
+
+      // Check for address
+      if (!byPuss) {
+        try {
+          AddressModel? address = AddressHelper.getUserAddressFromSharedPref();
+          if (address == null) {
+            return AccessLocationScreen(
+              fromSignUp: false,
+              fromHome: false,
+              route: Get.currentRoute,
+            );
+          }
+        } catch (e) {
+          debugPrint('getRoute address error: $e');
+          return AccessLocationScreen(
             fromSignUp: false,
             fromHome: false,
             route: Get.currentRoute,
-          )
-        : navigateTo;
+          );
+        }
+      }
+
+      return navigateTo;
+    } catch (e) {
+      debugPrint('getRoute error: $e');
+      return navigateTo;
+    }
   }
 }
 
-bool isHigherVersion(String storeVersion) {
-  final store = int.tryParse(storeVersion.replaceAll('.', '')) ?? 0;
-  final storeV = storeVersion.split('.');
-  final appV = AppConstants.appVersion.split('.');
-  "appVersion $appV == store $store = storeVersion $storeVersion".print;
-  for (
-    var i = 0;
-    i < (storeV.length > appV.length ? storeV.length : appV.length);
-    i++
-  ) {
-    final store = i < storeV.length ? (int.tryParse(storeV[i]) ?? 0) : 0;
-    final app = i < appV.length ? (int.tryParse(appV[i]) ?? 0) : 0;
-    if (store < app) return false;
-    if (store > app) return true;
+// bool isHigherVersion(String storeVersion) {
+//   final store = int.tryParse(storeVersion.replaceAll('.', '')) ?? 0;
+//   final storeV = storeVersion.split('.');
+//   final appV = AppConstants.appVersion.split('.');
+//   "appVersion $appV == store $store = storeVersion $storeVersion".print;
+//   for (
+//     var i = 0;
+//     i < (storeV.length > appV.length ? storeV.length : appV.length);
+//     i++
+//   ) {
+//     final store = i < storeV.length ? (int.tryParse(storeV[i]) ?? 0) : 0;
+//     final app = i < appV.length ? (int.tryParse(appV[i]) ?? 0) : 0;
+//     if (store < app) return false;
+//     if (store > app) return true;
+//   }
+//   return false;
+// }
+
+bool isHigherVersion(String minimumVersion) {
+  // Use the global currentAppVersion
+  String appVersion = currentAppVersion;
+
+  List<int> minParts = minimumVersion.split('.').map((e) {
+    return int.tryParse(e.trim()) ?? 0;
+  }).toList();
+
+  List<int> appParts = appVersion.split('.').map((e) {
+    return int.tryParse(e.trim()) ?? 0;
+  }).toList();
+
+  int maxLength = minParts.length > appParts.length
+      ? minParts.length
+      : appParts.length;
+
+  for (int i = 0; i < maxLength; i++) {
+    int minPart = i < minParts.length ? minParts[i] : 0;
+    int appPart = i < appParts.length ? appParts[i] : 0;
+
+    if (minPart > appPart) {
+      return true; // Minimum required > current → need update
+    }
+    if (minPart < appPart) {
+      return false; // Current is higher → no need to update
+    }
   }
-  return false;
+
+  return false; // Versions are equal → no forced update
 }
