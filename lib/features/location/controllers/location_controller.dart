@@ -818,8 +818,8 @@ class LocationController extends GetxController implements GetxService {
 
   Future<void> setMarkerIcon() async {
     markerIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(size: Size(48, 48)),
-      Images.pickMarker,
+      const ImageConfiguration(size: Size(80, 80)),
+      Images.pickMarkerBack,
     );
   }
 

@@ -12,7 +12,6 @@ import 'package:friday_sa/helper/route_helper.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/images.dart';
 import 'package:friday_sa/util/styles.dart';
-import 'package:friday_sa/common/widgets/cart_snackbar.dart';
 import 'package:friday_sa/common/widgets/confirmation_dialog.dart';
 import 'package:friday_sa/common/widgets/custom_app_bar.dart';
 import 'package:friday_sa/common/widgets/custom_button.dart';
@@ -443,38 +442,29 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                                     .isLoading
                                                                 ? null
                                                                 : () {
-                                                                    if (itemController
-                                                                            .cartIndex !=
-                                                                        -1) {
-                                                                      if (cartController
-                                                                              .cartList[itemController.cartIndex]
-                                                                              .quantity! >
-                                                                          1) {
+                                                                    if (itemController.cartIndex != -1) {
+                                                                      if (cartController.cartList[itemController.cartIndex].quantity! > 1) {
                                                                         cartController.setQuantity(
                                                                           false,
-                                                                          itemController
-                                                                              .cartIndex,
+                                                                          itemController.cartIndex,
                                                                           stock,
-                                                                          cartController
-                                                                              .cartList[itemController.cartIndex]
-                                                                              .quantity,
+                                                                          cartController.cartList[itemController.cartIndex].quantity,
                                                                         );
+                                                                      } else {
+                                                                        cartController.removeFromCart(itemController.cartIndex, item: itemController.item);
+                                                                        Get.back();
                                                                       }
                                                                     } else {
-                                                                      if (itemController
-                                                                              .quantity! >
-                                                                          1) {
+                                                                      if (itemController.quantity! > 0) {
                                                                         itemController.setQuantity(
                                                                           false,
                                                                           stock,
-                                                                          itemController
-                                                                              .item!
-                                                                              .quantityLimit,
+                                                                          itemController.item!.quantityLimit,
                                                                         );
                                                                       }
                                                                     }
                                                                   },
-                                                            child: const Padding(
+                                                            child: Padding(
                                                               padding: EdgeInsets.symmetric(
                                                                 horizontal:
                                                                     Dimensions
@@ -485,6 +475,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                               child: Icon(
                                                                 Icons.remove,
                                                                 size: 20,
+                                                                color: (itemController.cartIndex == -1 && itemController.quantity == 0)
+                                                                    ? Theme.of(context).disabledColor
+                                                                    : Colors.black,
                                                               ),
                                                             ),
                                                           ),
@@ -538,7 +531,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                                     Dimensions
                                                                         .paddingSizeSmall,
                                                                 vertical: Dimensions
-                                                                    .paddingSizeExtraSmall,
+                                                                        .paddingSizeExtraSmall,
                                                               ),
                                                               child: Icon(
                                                                 Icons.add,
@@ -585,8 +578,6 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                           )
                                                         : priceWithAddons,
                                                   ),
-                                                  textDirection:
-                                                      TextDirection.ltr,
                                                   style: robotoBold.copyWith(
                                                     color: Theme.of(
                                                       context,
@@ -821,7 +812,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                     .moduleConfig!
                                                     .module!
                                                     .stock! ||
-                                                stock! > 0)
+                                                (stock! > 0 && (itemController.cartIndex != -1 || itemController.quantity! > 0)))
                                             ? () async {
                                                 if (!Get.find<
                                                           SplashController
@@ -898,7 +889,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                                           .item,
                                                                       null,
                                                                     );
-                                                                showCartSnackBar();
+                                                                //showCartSnackBar();
                                                               }
                                                             });
                                                           },
@@ -922,7 +913,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                                           .item,
                                                                       null,
                                                                     );
-                                                                showCartSnackBar();
+                                                                //showCartSnackBar();
                                                                 _key.currentState!
                                                                     .shake();
                                                               }
@@ -934,7 +925,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                             )
                                                             .then((success) {
                                                               if (success) {
-                                                                showCartSnackBar();
+                                                                //showCartSnackBar();
                                                                 _key.currentState!
                                                                     .shake();
                                                               }
@@ -1051,7 +1042,10 @@ class QuantityButton extends StatelessWidget {
                     stock,
                     quantityLimit,
                   );
-                } else if (isIncrement && quantity! > 0) {
+                } else if (!isIncrement && quantity! == 1) {
+                  Get.find<CartController>().removeFromCart(cartIndex);
+                  Get.back();
+                } else if (isIncrement && quantity! >= 0) {
                   if (quantity! < stock! ||
                       !Get.find<SplashController>()
                           .configModel!
@@ -1069,13 +1063,13 @@ class QuantityButton extends StatelessWidget {
                   }
                 }
               } else {
-                if (!isIncrement && quantity! > 1) {
+                if (!isIncrement && quantity! > 0) {
                   Get.find<ItemController>().setQuantity(
                     false,
                     stock,
                     quantityLimit,
                   );
-                } else if (isIncrement && quantity! > 0) {
+                } else if (isIncrement && quantity! >= 0) {
                   if (quantity! < stock! ||
                       !Get.find<SplashController>()
                           .configModel!
@@ -1098,18 +1092,14 @@ class QuantityButton extends StatelessWidget {
         width: 30,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: (quantity! == 1 && !isIncrement) || cartController.isLoading
+          color: (quantity! == 0 && !isIncrement) || cartController.isLoading
               ? Theme.of(context).disabledColor
               : Theme.of(context).primaryColor,
         ),
         child: Center(
           child: Icon(
             isIncrement ? Icons.add : Icons.remove,
-            color: isIncrement
-                ? Colors.white
-                : quantity! == 1
-                ? Colors.black
-                : Colors.white,
+            color: Colors.white,
             size: isCartWidget ? 26 : 20,
           ),
         ),
