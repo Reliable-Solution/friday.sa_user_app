@@ -197,7 +197,7 @@ class _WebNewHomeScreenState extends State<WebNewHomeScreen> {
                       (isPharmacy || isShop)
                           ? const MiddleSectionMultipleBannerViewWidget()
                           : isFood
-                          ? const WebBestReviewItemViewWidget()
+                          ? const SizedBox()
                           : const WebBestStoreNearbyViewWidget(),
 
                       isPharmacy
@@ -251,8 +251,8 @@ class _WebNewHomeScreenState extends State<WebNewHomeScreen> {
                               isShop: false,
                             )
                           : isShop
-                          ? const WebBestReviewItemViewWidget()
-                          : const WebBestReviewItemViewWidget(),
+                          ? const SizedBox()
+                          : const SizedBox(),
 
                       isPharmacy
                           ? const WebCommonConditionViewWidget()

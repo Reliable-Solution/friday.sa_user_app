@@ -1,11 +1,28 @@
 import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
 import 'package:get/get.dart';
-import 'package:friday_sa/util/styles.dart';
+
+import '../features/language/controllers/language_controller.dart';
+import '../features/splash/controllers/splash_controller.dart';
+import '../util/styles.dart';
 
 class PriceConverter {
+  /// Helper method to check if current language is Arabic
+  static bool _isArabicLanguage() {
+    try {
+      if (Get.isRegistered<LocalizationController>()) {
+        return Get.find<LocalizationController>().locale.languageCode
+            .startsWith('ar');
+      } else if (Get.locale != null) {
+        return Get.locale!.languageCode.startsWith('ar');
+      }
+    } catch (e) {
+      // Fallback to false if any error occurs
+    }
+    return false;
+  }
+
   static String convertPrice(
     num? price, {
     num? discount,
@@ -22,18 +39,70 @@ class PriceConverter {
         price = price! - ((discount / 100) * price);
       }
     }
+    String? symbol =
+        Get.find<SplashController>().configModel?.currencySymbol ?? '﷼';
     bool isRightSide =
-        Get.find<SplashController>().configModel!.currencySymbolDirection ==
+        Get.find<SplashController>().configModel?.currencySymbolDirection
+            ?.toLowerCase()
+            .trim() ==
         'right';
 
-    if (forTaxi && price! > 100000) {
-      return '${isRightSide ? '' : '${Get.find<SplashController>().configModel!.currencySymbol!} '}'
-          '${intl.NumberFormat.compact().format(price)}'
-          '${isRightSide ? ' ${Get.find<SplashController>().configModel!.currencySymbol!}' : ''}';
+    // For Arabic language, invert the direction logic
+    // English: Left = Symbol,Price | Right = Price,Symbol
+    // Arabic:  Left = Price,Symbol | Right = Symbol,Price
+    if (_isArabicLanguage()) {
+      isRightSide = !isRightSide;
     }
-    return '${isRightSide ? '' : '${Get.find<SplashController>().configModel!.currencySymbol!} '}'
-        '${formatedStringPrice ?? toFixed(price!).toStringAsFixed(forDM ? 0 : Get.find<SplashController>().configModel!.digitAfterDecimalPoint!).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}'
-        '${isRightSide ? ' ${Get.find<SplashController>().configModel!.currencySymbol!}' : ''}';
+
+    int digitAfterDecimal =
+        Get.find<SplashController>().configModel?.digitAfterDecimalPoint ?? 2;
+
+    if (forTaxi && price! > 100000) {
+      String compact = intl.NumberFormat.compact().format(price);
+      return isRightSide
+          ? '\u202D$compact $symbol\u202C'
+          : '\u202D$symbol $compact\u202C';
+    }
+
+    String formattedPrice =
+        formatedStringPrice ??
+        toFixed(price!)
+            .toStringAsFixed(forDM ? 0 : digitAfterDecimal)
+            .replaceAllMapped(
+              RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+              (Match m) => '${m[1]},',
+            );
+
+    return isRightSide
+        ? '\u202D$formattedPrice $symbol\u202C'
+        : '\u202D$symbol $formattedPrice\u202C';
+  }
+
+  /// Converts price with a prefix sign (+) or (-) based on language direction
+  /// For Arabic: Symbol Price (sign) e.g., ﷼ 100.00 (-)
+  /// For English: (sign) Symbol Price e.g., (-) ﷼ 100.00
+  static String convertPriceWithSign(
+    num? price, {
+    bool isPositive = false, // true for (+), false for (-)
+    num? discount,
+    String? discountType,
+    bool forDM = false,
+    bool isFoodVariation = false,
+  }) {
+    String priceStr = convertPrice(
+      price,
+      discount: discount,
+      discountType: discountType,
+      forDM: forDM,
+      isFoodVariation: isFoodVariation,
+    );
+
+    String sign = isPositive ? '(+)' : '(-)';
+
+    // For Arabic: price then sign | For English: sign then price
+    return _isArabicLanguage()
+        ? '\u202D$priceStr $sign\u202C'
+        : '\u202D$sign $priceStr\u202C';
   }
 
   static Widget convertAnimationPrice(
@@ -50,24 +119,31 @@ class PriceConverter {
         price = price! - ((discount / 100) * price);
       }
     }
+    String? symbol =
+        Get.find<SplashController>().configModel?.currencySymbol ?? '﷼';
     bool isRightSide =
-        Get.find<SplashController>().configModel!.currencySymbolDirection ==
+        Get.find<SplashController>().configModel?.currencySymbolDirection
+            ?.toLowerCase()
+            .trim() ==
         'right';
+
+    // For Arabic language, invert the direction logic
+    if (_isArabicLanguage()) {
+      isRightSide = !isRightSide;
+    }
+
+    int digitAfterDecimal =
+        Get.find<SplashController>().configModel?.digitAfterDecimalPoint ?? 2;
+
     return Directionality(
       textDirection: TextDirection.ltr,
       child: AnimatedFlipCounter(
         duration: const Duration(milliseconds: 500),
         value: toFixed(price!),
         textStyle: textStyle ?? robotoMedium,
-        fractionDigits: forDM
-            ? 0
-            : Get.find<SplashController>().configModel!.digitAfterDecimalPoint!,
-        prefix: isRightSide
-            ? ''
-            : '${Get.find<SplashController>().configModel!.currencySymbol!} ',
-        suffix: isRightSide
-            ? '${Get.find<SplashController>().configModel!.currencySymbol!} '
-            : '',
+        fractionDigits: forDM ? 0 : digitAfterDecimal,
+        prefix: isRightSide ? '' : '$symbol ',
+        suffix: isRightSide ? ' $symbol' : '',
       ),
     );
   }
@@ -97,11 +173,28 @@ class PriceConverter {
   }
 
   static String percentageCalculation(
-    String price,
+    String? price,
     String discount,
     String discountType,
   ) {
-    return '$discount${discountType == 'percent' ? '%' : Get.find<SplashController>().configModel!.currencySymbol} OFF';
+    String? symbol =
+        Get.find<SplashController>().configModel?.currencySymbol ?? '﷼';
+    bool isRightSide =
+        Get.find<SplashController>().configModel?.currencySymbolDirection
+            ?.toLowerCase()
+            .trim() ==
+        'right';
+
+    // For Arabic language, invert the direction logic
+    if (_isArabicLanguage()) {
+      isRightSide = !isRightSide;
+    }
+
+    return '\u202D${(isRightSide || discountType == 'percent') ? '' : '$symbol '}$discount${discountType == 'percent'
+        ? '%'
+        : isRightSide
+        ? ' $symbol'
+        : ''} ${'off'.tr}\u202C';
   }
 
   static num toFixed(num val) {
