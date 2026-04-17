@@ -148,6 +148,7 @@ class _NewRequestDialogState extends State<NotificationPopUpDialogWidget> {
                               Get.toNamed(
                                 RouteHelper.getOrderDetailsRoute(
                                   int.tryParse(widget.payloadModel.orderId!),
+                                  fromNotification: true,
                                 ),
                               );
                             }

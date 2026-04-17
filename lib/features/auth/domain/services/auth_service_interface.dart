@@ -60,4 +60,5 @@ abstract class AuthServiceInterface {
   String getEarningPint();
   Future<void> setNotificationActive(bool isActive);
   Future<String?> saveDeviceToken();
+  Future<ResponseModel> removeCustomerByPhone(String phone);
 }

@@ -26,6 +26,22 @@ class CustomImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isValidUrl = image.isNotEmpty && image.startsWith('http');
+
+    if (!isValidUrl) {
+      return Image.asset(
+        placeholder.isNotEmpty
+            ? placeholder
+            : (isNotification
+                  ? Images.notificationPlaceholder
+                  : Images.placeholder),
+        height: height,
+        width: width,
+        fit: fit,
+        color: color,
+      );
+    }
+
     return AnimatedScale(
       scale: isHovered ? 1.1 : 1.0, // Scale animation
       duration: const Duration(milliseconds: 300),

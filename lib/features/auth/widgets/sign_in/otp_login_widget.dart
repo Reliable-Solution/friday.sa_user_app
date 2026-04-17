@@ -12,6 +12,8 @@ import 'package:friday_sa/helper/validate_check.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/styles.dart';
 
+import '../../../../helper/route_helper.dart';
+
 class OtpLoginWidget extends StatelessWidget {
   const OtpLoginWidget({
     super.key,
@@ -40,6 +42,7 @@ class OtpLoginWidget extends StatelessWidget {
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Align(
                 alignment: Alignment.topLeft,
@@ -51,53 +54,61 @@ class OtpLoginWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: Dimensions.paddingSizeLarge),
-              CustomTextField(
-                titleText: 'xxx-xxx-xxxxx'.tr,
-                controller: phoneController,
-                focusNode: phoneFocus,
-                inputAction: TextInputAction.done,
-                inputType: TextInputType.phone,
-                isPhone: true,
-                onCountryChanged: onCountryChanged,
-                countryDialCode:
-                    countryDialCode ??
-                    Get.find<LocalizationController>().locale.countryCode,
-                labelText: 'phone'.tr,
-                required: true,
-                validator: (value) => ValidateCheck.validateEmptyText(
-                  value,
-                  "please_enter_phone_number".tr,
-                ),
-              ),
-              const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: InkWell(
-                  onTap: () => authController.toggleRememberMe(),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: Checkbox(
-                          side: BorderSide(color: Theme.of(context).hintColor),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          activeColor: Theme.of(context).primaryColor,
-                          value: authController.isActiveRememberMe,
-                          onChanged: (bool? isChecked) =>
-                              authController.toggleRememberMe(),
-                        ),
-                      ),
-                      const SizedBox(width: Dimensions.paddingSizeSmall),
-                      Text('remember_me'.tr, style: robotoRegular),
-                    ],
+              Directionality(
+                textDirection: TextDirection.ltr, // or determine dynamically based on language
+
+                child: CustomTextField(
+                  titleText: 'xxx-xxx-xxxxx'.tr,
+                  controller: phoneController,
+                  focusNode: phoneFocus,
+                  inputAction: TextInputAction.done,
+                  inputType: TextInputType.phone,
+                  isPhone: true,
+                  forceLTR: true,
+                  onCountryChanged: onCountryChanged,
+                  countryDialCode:
+                      countryDialCode ??
+                      Get.find<LocalizationController>().locale.countryCode,
+                  labelText: 'phone'.tr,
+                  required: true,
+                  validator: (value) => ValidateCheck.validateEmptyText(
+                    value,
+                    "please_enter_phone_number".tr,
                   ),
                 ),
               ),
-              const SizedBox(height: Dimensions.paddingSizeLarge),
-              const ConditionCheckBoxWidget(forSignUp: true),
+              const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+              InkWell(
+                onTap: () => authController.toggleRememberMe(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Checkbox(
+                      activeColor: Colors.black,
+                      visualDensity: const VisualDensity(
+                        horizontal: -4,
+                        vertical: -4,
+                      ),
+                      side: BorderSide(
+                        color: Colors.black.withOpacity(0.4),
+                        width: 1.5,
+                      ),
+                      checkColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(Dimensions.radiusSmall),
+                      ),
+                      value: authController.isActiveRememberMe,
+                      onChanged: (bool? isChecked) =>
+                          authController.toggleRememberMe(),
+                    ),
+                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                    Text('remember_me'.tr, style: robotoRegular),
+                  ],
+                ),
+              ),
+              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+              const ConditionCheckBoxWidget(forLogin: true, forSignUp: false),
               const SizedBox(height: Dimensions.paddingSizeLarge),
               CustomButton(
                 buttonText: 'login'.tr,
@@ -110,6 +121,35 @@ class OtpLoginWidget extends StatelessWidget {
                     : Dimensions.fontSizeDefault,
               ),
               const SizedBox(height: Dimensions.paddingSizeLarge),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'do_not_have_account'.tr,
+                    style: robotoRegular.copyWith(
+                      color: Theme.of(context).hintColor,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: authController.isLoading
+                        ? null
+                        : () {
+                      Get.toNamed(RouteHelper.getSignUpRoute());
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(
+                        Dimensions.paddingSizeExtraSmall,
+                      ),
+                      child: Text(
+                        'sign_up'.tr,
+                        style: robotoMedium.copyWith(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               socialEnable
                   ? const SocialLoginWidget(onlySocialLogin: false)
                   : const SizedBox(),
@@ -117,6 +157,7 @@ class OtpLoginWidget extends StatelessWidget {
                   ? const SizedBox(height: Dimensions.paddingSizeLarge)
                   : const SizedBox(),
               !socialEnable ? const SizedBox(height: 100) : const SizedBox(),
+
             ],
           ),
         );

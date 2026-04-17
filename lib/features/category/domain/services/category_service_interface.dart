@@ -13,7 +13,10 @@ abstract class CategoryServiceInterface {
     String storeId, {
     DataSourceEnum? source,
   });
-  Future<List<CategoryModel>?> getSubCategoryList(String? parentID);
+  Future<List<CategoryModel>?> getSubCategoryList(
+    String? parentID, {
+    String? storeId,
+  });
   Future<ItemModel?> getCategoryItemList(
     String? categoryID,
     int offset,
