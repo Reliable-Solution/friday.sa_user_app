@@ -11,25 +11,30 @@ class HeaderHelper {
     SharedPreferences sharedPreferences = Get.find<SharedPreferences>();
     AddressModel? addressModel;
     try {
-      addressModel = AddressModel.fromJson(
-        jsonDecode(sharedPreferences.getString(AppConstants.userAddress)!),
+      String? addressString = sharedPreferences.getString(
+        AppConstants.userAddress,
       );
+      if (addressString != null && addressString.isNotEmpty) {
+        addressModel = AddressModel.fromJson(jsonDecode(addressString));
+      }
     } catch (_) {}
     int? moduleID;
     if (GetPlatform.isWeb &&
         sharedPreferences.containsKey(AppConstants.moduleId)) {
       try {
-        moduleID = ModuleModel.fromJson(
-          jsonDecode(sharedPreferences.getString(AppConstants.moduleId)!),
-        ).id;
+        String? moduleString = sharedPreferences.getString(
+          AppConstants.moduleId,
+        );
+        if (moduleString != null && moduleString.isNotEmpty) {
+          moduleID = ModuleModel.fromJson(jsonDecode(moduleString)).id;
+        }
       } catch (_) {}
     }
-    return {
+    Map<String, String> header = {
       'Content-Type': 'application/json; charset=UTF-8',
       AppConstants.zoneId: addressModel?.zoneIds != null
           ? jsonEncode(addressModel?.zoneIds)
           : '',
-      moduleID != null ? AppConstants.moduleId : '$moduleID': '',
       AppConstants.localizationKey:
           sharedPreferences.getString(AppConstants.languageCode) ??
           AppConstants.languages[0].languageCode!,
@@ -41,5 +46,11 @@ class HeaderHelper {
           : '',
       // 'Authorization': 'Bearer $token'
     };
+    if (moduleID != null) {
+      header[AppConstants.moduleId] = moduleID.toString();
+    } else {
+      header['null'] = '';
+    }
+    return header;
   }
 }
