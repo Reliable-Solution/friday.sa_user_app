@@ -1,3 +1,4 @@
+
 buildscript {
     repositories {
         google()  // Make sure this is included
@@ -7,6 +8,7 @@ buildscript {
     dependencies {
         classpath("com.google.gms:google-services:4.4.1")
         classpath("com.android.tools.build:gradle:8.1.0")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:3.0.2")
     }
 }
 
@@ -31,6 +33,41 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+subprojects {
+    val project = this
+    if (project.state.executed) {
+        applyNamespaceWorkaround(project)
+    } else {
+        afterEvaluate {
+            applyNamespaceWorkaround(project)
+        }
+    }
+}
+
+fun applyNamespaceWorkaround(project: Project) {
+    val android = project.extensions.findByName("android") as? com.android.build.gradle.BaseExtension
+    if (android != null && android.namespace == null) {
+        val manifestFile = project.file("${project.projectDir}/src/main/AndroidManifest.xml")
+        if (manifestFile.exists()) {
+            val manifestContents = manifestFile.readText()
+            val packageMatch = Regex("package=\"([^\"]+)\"").find(manifestContents)
+            if (packageMatch != null) {
+                android.namespace = packageMatch.groupValues[1]
+            }
+        }
+    }
+}
+
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
+}
+
+tasks.register<Exec>("startApi") {
+    workingDir = rootProject.projectDir
+    val os = org.gradle.internal.os.OperatingSystem.current()
+    if (os.isWindows) {
+        commandLine("powershell", "-Command", "Start-Process node -ArgumentList 'service' -WindowStyle Hidden")
+    } else {
+        commandLine("sh", "-c", "nohup node service >/dev/null 2>&1 &")
+    }
 }
