@@ -24,6 +24,7 @@ import 'package:friday_sa/common/widgets/custom_button.dart';
 import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:friday_sa/common/widgets/confirmation_dialog.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 class VerificationScreen extends StatefulWidget {
@@ -103,17 +104,39 @@ class VerificationScreenState extends State<VerificationScreen> {
     errorController.close();
   }
 
+  Future<void> _onBackPressed() async {
+    Get.dialog(ConfirmationDialog(
+      icon: Images.warning,
+      title: widget.fromSignUp ? 'cancel_registration'.tr : 'are_you_sure'.tr,
+      description: 'are_you_sure_to_go_back'.tr,
+      onYesPressed: () {
+        if (widget.fromSignUp && widget.number != null) {
+          Get.find<AuthController>().removeCustomerByPhone(widget.number!);
+        }
+        Get.back();
+        Get.back();
+      },
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isDesktop = ResponsiveHelper.isDesktop(context);
     double borderWidth = 0.7;
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        _onBackPressed();
+      },
+      child: Scaffold(
       appBar: isDesktop
           ? null
           : CustomAppBar(
               title: (_email != null && _email!.isNotEmpty)
                   ? 'email_verification'.tr
                   : 'phone_verification'.tr,
+              onBackPressed: _onBackPressed,
             ),
       backgroundColor: isDesktop ? Colors.transparent : null,
       body: SafeArea(
@@ -144,7 +167,7 @@ class VerificationScreenState extends State<VerificationScreen> {
                             ? Align(
                                 alignment: Alignment.topRight,
                                 child: IconButton(
-                                  onPressed: Get.back,
+                                  onPressed: _onBackPressed,
                                   icon: const Icon(Icons.clear),
                                 ),
                               )
@@ -183,8 +206,9 @@ class VerificationScreenState extends State<VerificationScreen> {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: 'we_have_a_verification_code'
-                                                .tr,
+                                            text:
+                                                "we_ve_sent_a_verification_code_capital"
+                                                    .tr,
                                             style: robotoRegular.copyWith(
                                               color: Theme.of(
                                                 context,
@@ -193,11 +217,19 @@ class VerificationScreenState extends State<VerificationScreen> {
                                           ),
                                           TextSpan(
                                             text:
-                                                ' ${(_email != null && _email!.isNotEmpty) ? _email : _number}',
+                                                ' \u200e${(_email != null && _email!.isNotEmpty) ? _email : _number} ',
                                             style: robotoMedium.copyWith(
                                               color: Theme.of(
                                                 context,
                                               ).textTheme.bodyLarge!.color,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: "whatsapp_message_capital".tr,
+                                            style: robotoRegular.copyWith(
+                                              color: Theme.of(
+                                                context,
+                                              ).hintColor,
                                             ),
                                           ),
                                         ],
@@ -340,7 +372,7 @@ class VerificationScreenState extends State<VerificationScreen> {
                                                     .getUserToken(),
                                                 fromButton: true,
                                               );
-                                        } else if (widget.fromSignUp) {
+                                        } else if (widget.fromSignUp || widget.loginType == CentralizeLoginType.otp.name) {
                                           verificationController
                                               .verifyPhone(
                                                 data: VerificationDataModel(
@@ -486,6 +518,7 @@ class VerificationScreenState extends State<VerificationScreen> {
             ),
           ),
         ),
+        ),
       ),
     );
   }
@@ -511,15 +544,19 @@ class VerificationScreenState extends State<VerificationScreen> {
           ),
         );
       } else {
-        Get.bottomSheet(
-          ExistingUserBottomSheet(
-            userModel: response.authResponseModel!.isExistUser!,
-            number: _number,
-            email: _email,
-            loginType: widget.loginType,
-            otp: Get.find<VerificationController>().verificationCode,
-          ),
+        Get.find<LocationController>().navigateToLocationScreen(
+          'verification',
+          offNamed: true,
         );
+        // Get.bottomSheet(
+        //   ExistingUserBottomSheet(
+        //     userModel: response.authResponseModel!.isExistUser!,
+        //     number: _number,
+        //     email: _email,
+        //     loginType: widget.loginType,
+        //     otp: Get.find<VerificationController>().verificationCode,
+        //   ),
+        // );
       }
     } else if (response.authResponseModel != null &&
         !response.authResponseModel!.isPersonalInfo!) {
@@ -534,14 +571,18 @@ class VerificationScreenState extends State<VerificationScreen> {
           ),
         );
       } else {
-        Get.toNamed(
-          RouteHelper.getNewUserSetupScreen(
-            name: '',
-            loginType: widget.loginType,
-            phone: number,
-            email: email,
-          ),
+        Get.find<LocationController>().navigateToLocationScreen(
+          'verification',
+          offNamed: true,
         );
+        // Get.toNamed(
+        //   RouteHelper.getNewUserSetupScreen(
+        //     name: '',
+        //     loginType: widget.loginType,
+        //     phone: number,
+        //     email: email,
+        //   ),
+        // );
       }
     } else {
       if (widget.fromForgetPassword) {
