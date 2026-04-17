@@ -65,7 +65,6 @@ class BottomCartWidget extends StatelessWidget {
                               fontSize: Dimensions.fontSizeLarge,
                               color: Theme.of(context).primaryColor,
                             ),
-                            textDirection: TextDirection.ltr,
                           ),
                         ],
                       ),

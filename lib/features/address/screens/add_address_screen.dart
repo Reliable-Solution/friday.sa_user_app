@@ -80,11 +80,12 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       : CountryCode.fromCountryCode(
           Get.find<SplashController>().configModel!.country!,
         ).dialCode;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    initCall();
+    _initLocation();
 
     if (widget.address != null) {
       splitPhoneNumber(widget.address!.contactPersonNumber!);
@@ -99,6 +100,26 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       _contactPersonNameController.text =
           '${Get.find<ProfileController>().userInfoModel!.fName} ${Get.find<ProfileController>().userInfoModel!.lName}';
       splitPhoneNumber(Get.find<ProfileController>().userInfoModel!.phone!);
+    }
+  }
+
+  void _initLocation() async {
+    initCall();
+    if (widget.address == null) {
+      setState(() => _isLoading = true);
+      try {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+        if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+          Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+          _initialPosition = LatLng(position.latitude, position.longitude);
+        }
+      } catch (e) {
+        debugPrint('Error getting current location: $e');
+      }
+      setState(() => _isLoading = false);
     }
   }
 
@@ -235,7 +256,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                                     BorderRadius.circular(
                                                       Dimensions.radiusSmall,
                                                     ),
-                                                child: Stack(
+                                                child: _isLoading ? const Center(child: CircularProgressIndicator()) : Stack(
                                                   clipBehavior: Clip.none,
                                                   children: [
                                                     GoogleMap(
@@ -364,13 +385,21 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                                         : const SizedBox(),
                                                     Center(
                                                       child:
-                                                          !locationController
-                                                              .loading
-                                                          ? Image.asset(
-                                                              Images.pickMarker,
-                                                              height: 50,
-                                                              width: 50,
-                                                            )
+                                                          !locationController.loading
+                                                          ? Stack(alignment: Alignment.topCenter, children: [
+                                                              Image.asset(
+                                                                Images.pickMarkerBack,
+                                                                height: 60,
+                                                                width: 60,
+                                                              ),
+                                                              Positioned(
+                                                                top: 05,
+                                                                child: Text(
+                                                                  'pick'.tr,
+                                                                  style: robotoBold.copyWith(color: Colors.white, fontSize: 13),
+                                                                ),
+                                                              ),
+                                                            ])
                                                           : const CircularProgressIndicator(),
                                                     ),
                                                     Positioned(
@@ -877,7 +906,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                           borderRadius: BorderRadius.circular(
                                             Dimensions.radiusSmall,
                                           ),
-                                          child: Stack(
+                                          child: _isLoading ? const Center(child: CircularProgressIndicator()) : Stack(
                                             clipBehavior: Clip.none,
                                             children: [
                                               GoogleMap(
@@ -1023,11 +1052,20 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                               Center(
                                                 child:
                                                     !locationController.loading
-                                                    ? Image.asset(
-                                                        Images.pickMarker,
-                                                        height: 50,
-                                                        width: 50,
-                                                      )
+                                                    ? Stack(alignment: Alignment.topCenter, children: [
+                                                  Image.asset(
+                                                    Images.pickMarkerBack,
+                                                    height: 60,
+                                                    width: 60,
+                                                  ),
+                                                  Positioned(
+                                                    top: 05,
+                                                    child: Text(
+                                                      'pick'.tr,
+                                                      style: robotoBold.copyWith(color: Colors.white, fontSize: 13),
+                                                    ),
+                                                  ),
+                                                ])
                                                     : const CircularProgressIndicator(),
                                               ),
                                               Positioned(

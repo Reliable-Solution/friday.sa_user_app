@@ -34,7 +34,7 @@ class CategoryRepository implements CategoryRepositoryInterface {
     if (categoryList) {
       return _getCategoryList(allCategory!, source ?? DataSourceEnum.client);
     } else if (subCategoryList) {
-      return _getSubCategoryList(id);
+      return _getSubCategoryList(id, storeId);
     } else if (categoryItemList) {
       return _getCategoryItemList(id, offset!, type!);
     } else if (categoryStoreList) {
@@ -154,11 +154,16 @@ class CategoryRepository implements CategoryRepositoryInterface {
     return categoryList;
   }
 
-  Future<List<CategoryModel>?> _getSubCategoryList(String? parentID) async {
+  Future<List<CategoryModel>?> _getSubCategoryList(
+    String? parentID,
+    String? storeId,
+  ) async {
     List<CategoryModel>? subCategoryList;
-    Response response = await apiClient.getData(
-      '${AppConstants.subCategoryUri}$parentID',
-    );
+    String url = '${AppConstants.subCategoryUri}$parentID';
+    if (storeId != null && storeId != 'null' && storeId.isNotEmpty) {
+      url = '$url?store_id=$storeId';
+    }
+    Response response = await apiClient.getData(url);
     if (response.statusCode == 200) {
       subCategoryList = [];
       response.body.forEach(

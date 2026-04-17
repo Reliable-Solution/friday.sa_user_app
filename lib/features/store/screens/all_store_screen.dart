@@ -274,22 +274,22 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
                               ],
                             ),
                           )
-                        :   SizedBox(),
+                        : SizedBox(),
                     WebScreenTitleWidget(
-                            title: widget.isFeatured
-                                ? 'featured_stores'.tr
-                                : widget.isPopular
-                                ? Get.find<SplashController>()
-                                          .configModel!
-                                          .moduleConfig!
-                                          .module!
-                                          .showRestaurantText!
-                                      ? 'popular_restaurants'.tr
-                                      : 'popular_stores'.tr
-                                : widget.isTopOfferStore
-                                ? 'top_offers_near_me'.tr
-                                : '${'new_on'.tr} ${AppConstants.appName}',
-                          ),
+                      title: widget.isFeatured
+                          ? 'featured_stores'.tr
+                          : widget.isPopular
+                          ? Get.find<SplashController>()
+                                    .configModel!
+                                    .moduleConfig!
+                                    .module!
+                                    .showRestaurantText!
+                                ? 'popular_restaurants'.tr
+                                : 'popular_stores'.tr
+                          : widget.isTopOfferStore
+                          ? 'top_offers_near_me'.tr
+                          : '${'new_on'.tr} ${AppConstants.appName}',
+                    ),
                     SizedBox(
                       width: Dimensions.webMaxWidth,
                       child: GetBuilder<StoreController>(

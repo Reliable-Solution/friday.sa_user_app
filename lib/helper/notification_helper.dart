@@ -521,7 +521,7 @@ class NotificationHelper {
   ) {
     final orderId = data['order_id'];
     return NotificationBodyModel(
-      orderId: int.tryParse(orderId) ?? 0,
+      orderId: int.tryParse(orderId.toString()) ?? 0,
       notificationType: NotificationType.order,
     );
   }
@@ -531,7 +531,7 @@ class NotificationHelper {
   ) {
     final orderId = data['order_id'];
     return NotificationBodyModel(
-      orderId: int.tryParse(orderId) ?? 0,
+      orderId: int.tryParse(orderId.toString()) ?? 0,
       notificationType: NotificationType.trip,
     );
   }

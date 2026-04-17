@@ -20,6 +20,7 @@ import 'package:friday_sa/common/widgets/discount_tag.dart';
 import 'package:friday_sa/common/widgets/hover/on_hover.dart';
 import 'package:friday_sa/common/widgets/not_available_widget.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
+import 'package:friday_sa/features/home/screens/home_screen.dart';
 
 class StoreCardWidget extends StatelessWidget {
   const StoreCardWidget({super.key, required this.store});
@@ -66,13 +67,14 @@ class StoreCardWidget extends StatelessWidget {
                             in Get.find<SplashController>().moduleList!) {
                           if (module.id == store!.moduleId) {
                             Get.find<SplashController>().setModule(module);
+                            HomeScreen.loadData(false);
                             break;
                           }
                         }
                       }
                       Get.toNamed(
                         RouteHelper.getStoreRoute(id: store!.id, page: 'item'),
-                        arguments: StoreScreen(store: store, fromModule: false),
+                        arguments: StoreScreen(store: store, fromModule: true),
                       );
                     }
                   },
