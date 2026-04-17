@@ -7,6 +7,7 @@ import 'package:friday_sa/api/api_client.dart';
 import 'package:friday_sa/features/address/domain/models/address_model.dart';
 import 'package:friday_sa/util/app_constants.dart';
 
+
 class AddressHelper {
   static Future<bool> saveUserAddressInSharedPref(AddressModel address) async {
     SharedPreferences sharedPreferences = Get.find<SharedPreferences>();
@@ -24,18 +25,22 @@ class AddressHelper {
   }
 
   static AddressModel? getUserAddressFromSharedPref() {
-    SharedPreferences sharedPreferences = Get.find<SharedPreferences>();
-    AddressModel? addressModel;
     try {
-      addressModel = AddressModel.fromJson(
-        jsonDecode(sharedPreferences.getString(AppConstants.userAddress)!),
+      SharedPreferences sharedPreferences = Get.find<SharedPreferences>();
+      AddressModel? addressModel;
+      String? addressString = sharedPreferences.getString(
+        AppConstants.userAddress,
       );
+      if (addressString != null && addressString.isNotEmpty) {
+        addressModel = AddressModel.fromJson(jsonDecode(addressString));
+      }
+      return addressModel;
     } catch (e) {
       if (!GetPlatform.isWeb) {
-        debugPrint('Address Catch exception : $e');
+        debugPrint('Address Catch exception: $e');
       }
+      return null;
     }
-    return addressModel;
   }
 
   static bool clearAddressFromSharedPref() {
