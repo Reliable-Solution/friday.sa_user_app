@@ -355,4 +355,14 @@ class AuthService implements AuthServiceInterface {
   Future<String?> saveDeviceToken() async {
     return authRepositoryInterface.saveDeviceToken();
   }
+
+  @override
+  Future<ResponseModel> removeCustomerByPhone(String phone) async {
+    Response response = await authRepositoryInterface.removeCustomerByPhone(phone);
+    if (response.statusCode == 200) {
+      return ResponseModel(true, 'success');
+    } else {
+      return ResponseModel(false, response.statusText);
+    }
+  }
 }
