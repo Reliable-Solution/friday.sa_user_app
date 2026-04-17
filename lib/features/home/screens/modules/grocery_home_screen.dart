@@ -45,7 +45,7 @@ class GroceryHomeScreen extends StatelessWidget {
         const BestStoreNearbyView(),
         const MostPopularItemView(isFood: false, isShop: false),
         const MiddleSectionBannerView(),
-        const BestReviewItemView(),
+        // const BestReviewItemView(),
         const JustForYouView(),
         const TopOffersNearMe(),
         const ItemThatYouLoveView(forShop: false),
