@@ -68,7 +68,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                           ),
                         )
                       : const SizedBox(),
-                  Image.asset(Images.logo, width: 125),
+                  Image.asset(Images.splashLogo, width: 125),
                   const SizedBox(height: Dimensions.paddingSizeExtraLarge),
                   Align(
                     alignment: Alignment.topLeft,
