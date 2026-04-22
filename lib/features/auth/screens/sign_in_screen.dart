@@ -34,6 +34,7 @@ class SignInScreen extends StatefulWidget {
 }
 
 
+
 class SignInScreenState extends State<SignInScreen> {
   bool _canExit = GetPlatform.isWeb ? true : false;
 

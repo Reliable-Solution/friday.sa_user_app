@@ -26,6 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/common/widgets/confirmation_dialog.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:friday_sa/helper/custom_validator.dart';
 
 class VerificationScreen extends StatefulWidget {
   const VerificationScreen({
@@ -74,14 +75,24 @@ class VerificationScreenState extends State<VerificationScreen> {
       canUpdate: false,
     );
     if (widget.number != null && widget.number!.isNotEmpty) {
-      _number = widget.number!.startsWith('+')
-          ? widget.number
-          : '+${widget.number!.substring(1, widget.number!.length)}';
+      _number = widget.number;
+      _normalizeNumber();
     }
     _email = widget.email;
     _startTimer();
 
     errorController = StreamController<ErrorAnimationType>();
+  }
+
+  void _normalizeNumber() async {
+    if (_number != null && _number!.isNotEmpty) {
+      PhoneValid phoneValid = await CustomValidator.isPhoneValid(_number!);
+      if (phoneValid.isValid) {
+        setState(() {
+          _number = phoneValid.phone;
+        });
+      }
+    }
   }
 
   void _startTimer() {

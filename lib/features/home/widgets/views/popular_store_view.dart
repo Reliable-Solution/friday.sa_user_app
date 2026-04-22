@@ -37,7 +37,7 @@ class PopularStoreView extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: 170,
+                height: 180,
                 child: storeList != null
                     ? ListView.builder(
                         scrollDirection: Axis.horizontal,

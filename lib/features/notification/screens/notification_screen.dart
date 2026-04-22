@@ -289,7 +289,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                                           ? Images.pushNotificationIcon
                                                                           : notificationController.notificationList![index].data!.type ==
                                                                                 'order_status'
-                                                                          ? Images.orderConfirmIcon
+                                                                          ? Images.notificationPlaceholder
                                                                           : Images.referEarnIcon,
                                                                       height:
                                                                           30,

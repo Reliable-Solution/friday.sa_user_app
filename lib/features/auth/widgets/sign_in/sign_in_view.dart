@@ -281,7 +281,6 @@ class _SignInViewState extends State<SignInView> {
     );
     numberWithCountryCode = phoneValid.phone;
 
-
     print("===> Phone Number : ${numberWithCountryCode}");
     if (_formKeyLogin!.currentState!.validate()) {
       String isPhone = ValidateCheck.getValidPhone(

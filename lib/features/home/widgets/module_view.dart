@@ -158,7 +158,7 @@ class ModuleView extends StatelessWidget {
                               height: Dimensions.paddingSizeExtraSmall,
                             ),
                             SizedBox(
-                              height: 80,
+                              height: 95,
                               child: ListView.builder(
                                 physics: const BouncingScrollPhysics(),
                                 itemCount: addressList.length,
@@ -293,7 +293,7 @@ class AddressShimmer extends StatelessWidget {
         ),
         const SizedBox(height: Dimensions.paddingSizeExtraSmall),
         SizedBox(
-          height: 70,
+          height: 85,
           child: ListView.builder(
             physics: const BouncingScrollPhysics(),
             itemCount: 5,

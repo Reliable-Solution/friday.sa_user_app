@@ -31,7 +31,7 @@ class NewOnMartView extends StatelessWidget {
 
         return storeList != null
             ? storeList.isNotEmpty
-                  ? Padding(
+                  /* ? Padding(
                       padding: const EdgeInsets.symmetric(
                         vertical: Dimensions.paddingSizeDefault,
                       ),
@@ -101,7 +101,8 @@ class NewOnMartView extends StatelessWidget {
                                 ),
                         ],
                       ),
-                    )
+                    ) */
+                  ? const SizedBox()
                   : const SizedBox.shrink()
             : const WebNewOnShimmerView();
       },
@@ -116,7 +117,7 @@ class PopularStoreShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 150,
+      height: 160,
       child: ListView.builder(
         shrinkWrap: true,
         physics: const BouncingScrollPhysics(),

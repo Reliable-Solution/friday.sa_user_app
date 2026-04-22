@@ -42,7 +42,7 @@ class _BestReviewItemViewState extends State<BestReviewItemView> {
                           ),
                         ),
                         SizedBox(
-                          height: 285,
+                          height: 320,
                           width: Get.width,
                           child: ListView.builder(
                             controller: scrollController,
@@ -122,7 +122,7 @@ class BestReviewItemShimmer extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 285,
+          height: 320,
           width: Get.width,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,

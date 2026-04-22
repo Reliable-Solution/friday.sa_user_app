@@ -32,11 +32,12 @@ class PriceConverter {
     String? formatedStringPrice,
     bool forTaxi = false,
   }) {
+    if (price == null) return '';
     if (discount != null && discountType != null) {
       if (discountType == 'amount' && !isFoodVariation) {
-        price = price! - discount;
+        price = price - (discount);
       } else if (discountType == 'percent') {
-        price = price! - ((discount / 100) * price);
+        price = price - ((discount / 100) * price);
       }
     }
     String? symbol =
@@ -112,11 +113,12 @@ class PriceConverter {
     bool forDM = false,
     TextStyle? textStyle,
   }) {
+    if (price == null) return const SizedBox();
     if (discount != null && discountType != null) {
       if (discountType == 'amount') {
-        price = price! - discount;
+        price = price - (discount);
       } else if (discountType == 'percent') {
-        price = price! - ((discount / 100) * price);
+        price = price - ((discount / 100) * price);
       }
     }
     String? symbol =
@@ -154,20 +156,25 @@ class PriceConverter {
     String? discountType, {
     bool isFoodVariation = false,
   }) {
+    if (price == null) return 0;
+    if (discount == null || discountType == null) return price;
+
     if (discountType == 'amount' && !isFoodVariation) {
-      price = price! - discount!;
+      price = price - (discount);
     } else if (discountType == 'percent') {
-      price = price! - ((discount! / 100) * price);
+      price = price - ((discount / 100) * price);
     }
     return price;
   }
 
   static num calculation(num amount, num? discount, String type, int quantity) {
     num calculatedAmount = 0;
-    if (type == 'amount' || type == 'fixed') {
-      calculatedAmount = discount! * quantity;
-    } else if (type == 'percent') {
-      calculatedAmount = (discount! / 100) * (amount * quantity);
+    if (discount != null) {
+      if (type == 'amount' || type == 'fixed') {
+        calculatedAmount = discount * quantity;
+      } else if (type == 'percent') {
+        calculatedAmount = (discount / 100) * (amount * quantity);
+      }
     }
     return calculatedAmount;
   }

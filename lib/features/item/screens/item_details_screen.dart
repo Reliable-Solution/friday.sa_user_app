@@ -42,6 +42,13 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   final Size size = Get.size;
   final GlobalKey<ScaffoldMessengerState> _globalKey = GlobalKey();
   final GlobalKey<DetailsAppBarWidgetState> _key = GlobalKey();
+  int? _initialQuantity;
+  List<int>? _initialVariationIndex;
+  List<bool>? _initialAddOnActiveList;
+  List<int?>? _initialAddOnQtyList;
+  List<int>? _lastVariationIndex;
+  int? _lastCartIndex;
+
 
   @override
   void initState() {
@@ -49,6 +56,25 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
 
     Get.find<ItemController>().getProductDetails(widget.item!);
     Get.find<ItemController>().setSelect(0, false);
+
+    _initInitialState();
+  }
+
+  void _initInitialState() {
+      ItemController itemController = Get.find<ItemController>();
+    CartController cartController = Get.find<CartController>();
+    if (itemController.cartIndex != -1) {
+      CartModel cart = cartController.cartList[itemController.cartIndex];
+      _initialQuantity = cart.quantity;
+      _initialVariationIndex = List.from(itemController.variationIndex!);
+      _initialAddOnActiveList = List.from(itemController.addOnActiveList);
+      _initialAddOnQtyList = List.from(itemController.addOnQtyList);
+    } else {
+      _initialQuantity = itemController.quantity;
+      _initialVariationIndex = itemController.variationIndex != null ? List.from(itemController.variationIndex!) : null;
+      _initialAddOnActiveList = List.from(itemController.addOnActiveList);
+      _initialAddOnQtyList = List.from(itemController.addOnQtyList);
+    }
   }
 
   @override
@@ -70,13 +96,15 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                 index < itemController.item!.choiceOptions!.length;
                 index++
               ) {
-                variationList.add(
-                  itemController
-                      .item!
-                      .choiceOptions![index]
-                      .options![itemController.variationIndex![index]]
-                      .replaceAll(' ', ''),
-                );
+                if (itemController.variationIndex!.length > index && itemController.item!.choiceOptions![index].options!.isNotEmpty && itemController.item!.choiceOptions![index].options!.length > itemController.variationIndex![index]) {
+                  variationList.add(
+                    itemController
+                        .item!
+                        .choiceOptions![index]
+                        .options![itemController.variationIndex![index]]
+                        .replaceAll(' ', ''),
+                  );
+                }
               }
               String variationType = '';
               bool isFirst = true;
@@ -115,7 +143,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                 price,
                 discount,
                 discountType,
-              )!;
+              ) ?? 0;
               num priceWithQuantity =
                   priceWithDiscount * itemController.quantity!;
               num addonsCost = 0;
@@ -126,15 +154,15 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                 index < itemController.item!.addOns!.length;
                 index++
               ) {
-                if (itemController.addOnActiveList[index]) {
+                if (itemController.addOnActiveList.length > index && itemController.addOnActiveList[index]) {
                   addonsCost =
                       addonsCost +
                       (itemController.item!.addOns![index].price! *
-                          itemController.addOnQtyList[index]!);
+                          (itemController.addOnQtyList.length > index ? itemController.addOnQtyList[index]! : 1));
                   addOnIdList.add(
                     AddOn(
                       id: itemController.item!.addOns![index].id,
-                      quantity: itemController.addOnQtyList[index],
+                      quantity: itemController.addOnQtyList.length > index ? itemController.addOnQtyList[index] : 1,
                     ),
                   );
                   addOnsList.add(itemController.item!.addOns![index]);
@@ -194,6 +222,47 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                           .addOn!
                       ? addonsCost
                       : 0);
+
+              if (_initialQuantity == null) {
+                _initInitialState();
+              }
+
+              if (itemController.variationIndex != null) {
+                if (_lastVariationIndex == null || !_areListsEqual(_lastVariationIndex!, itemController.variationIndex!)) {
+                  _lastVariationIndex = List.from(itemController.variationIndex!);
+                  _initInitialState();
+                }
+              }
+
+              if (_lastCartIndex == null || _lastCartIndex != itemController.cartIndex) {
+                _lastCartIndex = itemController.cartIndex;
+                _initInitialState();
+              }
+            }
+
+            bool isChanged = false;
+            if (itemController.item != null && _initialQuantity != null) {
+              int currentQuantity = itemController.cartIndex != -1
+                  ? cartController.cartList[itemController.cartIndex].quantity!
+                  : itemController.quantity!;
+
+              bool variationChanged = false;
+              if (_initialVariationIndex != null && itemController.variationIndex != null) {
+                if (!_areListsEqual(_initialVariationIndex!, itemController.variationIndex!)) {
+                  variationChanged = true;
+                }
+              }
+
+              bool addOnChanged = false;
+              for (int i = 0; i < _initialAddOnActiveList!.length; i++) {
+                if (itemController.addOnActiveList.length > i && (_initialAddOnActiveList![i] != itemController.addOnActiveList[i] ||
+                    (itemController.addOnQtyList.length > i && _initialAddOnQtyList![i] != null && itemController.addOnQtyList[i] != null && _initialAddOnQtyList![i] != itemController.addOnQtyList[i]))) {
+                  addOnChanged = true;
+                  break;
+                }
+              }
+
+              isChanged = (currentQuantity != _initialQuantity) || variationChanged || addOnChanged;
             }
 
             return Scaffold(
@@ -451,8 +520,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                                           cartController.cartList[itemController.cartIndex].quantity,
                                                                         );
                                                                       } else {
-                                                                        cartController.removeFromCart(itemController.cartIndex, item: itemController.item);
-                                                                        Get.back();
+                                                                         cartController.removeFromCart(itemController.cartIndex, item: itemController.item);
+                                                                         itemController.setQuantity(false, stock, itemController.item!.quantityLimit);
                                                                       }
                                                                     } else {
                                                                       if (itemController.quantity! > 0) {
@@ -790,6 +859,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                       ),
                                       child: CustomButton(
                                         isLoading: cartController.isLoading,
+                                        color: (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).disabledColor : Theme.of(context).primaryColor,
+                                        textColor: (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).cardColor : Colors.white,
                                         buttonText:
                                             (Get.find<SplashController>()
                                                     .configModel!
@@ -812,7 +883,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                     .moduleConfig!
                                                     .module!
                                                     .stock! ||
-                                                (stock! > 0 && (itemController.cartIndex != -1 || itemController.quantity! > 0)))
+                                                (stock! > 0 && ((itemController.cartIndex != -1 && isChanged) || (itemController.cartIndex == -1 && itemController.quantity! > 0))))
                                             ? () async {
                                                 if (!Get.find<
                                                           SplashController
@@ -916,6 +987,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                                 //showCartSnackBar();
                                                                 _key.currentState!
                                                                     .shake();
+                                                                _initInitialState();
+                                                                setState(() {});
                                                               }
                                                             });
                                                       } else {
@@ -928,6 +1001,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                                 //showCartSnackBar();
                                                                 _key.currentState!
                                                                     .shake();
+                                                                _initInitialState();
+                                                                setState(() {});
                                                               }
                                                             });
                                                       }
@@ -1005,6 +1080,14 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
 
     return discountedPrice;
   }
+
+  bool _areListsEqual(List list1, List list2) {
+    if (list1.length != list2.length) return false;
+    for (int i = 0; i < list1.length; i++) {
+      if (list1[i] != list2[i]) return false;
+    }
+    return true;
+  }
 }
 
 class QuantityButton extends StatelessWidget {
@@ -1044,7 +1127,7 @@ class QuantityButton extends StatelessWidget {
                   );
                 } else if (!isIncrement && quantity! == 1) {
                   Get.find<CartController>().removeFromCart(cartIndex);
-                  Get.back();
+                  Get.find<ItemController>().setQuantity(false, stock, quantityLimit);
                 } else if (isIncrement && quantity! >= 0) {
                   if (quantity! < stock! ||
                       !Get.find<SplashController>()

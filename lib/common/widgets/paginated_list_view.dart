@@ -231,9 +231,9 @@ class _PaginatedListViewState extends State<PaginatedListView> {
       // Only trigger if we haven't requested this page yet
       final int pageSize = widget.totalSize != null
           ? (widget.totalSize! / 10).ceil()
-          : _offset! + 5; // fallback
+          : (_offset ?? 0) + 5; // fallback
 
-      if (_offset! < pageSize && !_offsetList.contains(_offset! + 1)) {
+      if (_offset != null && _offset! < pageSize && !_offsetList.contains(_offset! + 1)) {
         _paginate(); // This will only run ONCE per page
       }
     }
@@ -246,9 +246,9 @@ class _PaginatedListViewState extends State<PaginatedListView> {
   }
 
   Future<void> _paginate() async {
-    int pageSize = (widget.totalSize! / 10).ceil();
-    print("====> Pagination ${_offset }. && ${pageSize}");
-    if (_offset! < pageSize && !_offsetList.contains(_offset! + 1)) {
+    int pageSize = widget.totalSize != null ? (widget.totalSize! / 10).ceil() : (_offset ?? 0) + 1;
+    debugPrint("====> Pagination $_offset. && $pageSize");
+    if (_offset != null && _offset! < pageSize && !_offsetList.contains(_offset! + 1)) {
       setState(() {
         _offset = _offset! + 1;
         _offsetList.add(_offset);
@@ -282,8 +282,8 @@ class _PaginatedListViewState extends State<PaginatedListView> {
         widget.reverse ? const SizedBox() : widget.itemView,
         (ResponsiveHelper.isDesktop(context) &&
             (widget.totalSize == null ||
-                _offset! >= (widget.totalSize! / 10).ceil() ||
-                _offsetList.contains(_offset! + 1)))
+                (_offset ?? 0) >= (widget.totalSize! / 10).ceil() ||
+                _offsetList.contains((_offset ?? 0) + 1)))
             ? const SizedBox()
             : Center(
           child: Padding(

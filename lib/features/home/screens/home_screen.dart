@@ -61,7 +61,7 @@ class HomeScreen extends StatefulWidget {
     if (AuthHelper.isLoggedIn()) {
         Get.find<StoreController>().getVisitAgainStoreList(
         fromModule: fromModule,
-      );
+     );
     }
 
 
@@ -152,14 +152,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    HomeScreen.loadData(widget.isLoad).then((value) {
-      Get.find<SplashController>().getReferBottomSheetStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      HomeScreen.loadData(widget.isLoad).then((value) {
+        Get.find<SplashController>().getReferBottomSheetStatus();
 
-      if ((Get.find<ProfileController>().userInfoModel?.isValidForDiscount ??
-              false) &&
-          Get.find<SplashController>().showReferBottomSheet) {
-        _showReferBottomSheet();
-      }
+        if ((Get.find<ProfileController>().userInfoModel?.isValidForDiscount ??
+                false) &&
+            Get.find<SplashController>().showReferBottomSheet) {
+          _showReferBottomSheet();
+        }
+      });
     });
 
     if (!ResponsiveHelper.isWeb()) {

@@ -509,7 +509,7 @@ class SplashController extends GetxController implements GetxService {
   Future<void> getCountryData() async {
     isCountryLoad = true;
     update();
-    await Future.delayed(const Duration(milliseconds: 1000));
+    // await Future.delayed(const Duration(milliseconds: 1000));
     try {
       final res = await splashServiceInterface.getCountryList();
       if (res?.success ?? false) {

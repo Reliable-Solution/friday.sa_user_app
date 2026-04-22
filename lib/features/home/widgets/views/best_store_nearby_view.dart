@@ -25,6 +25,8 @@ import 'package:friday_sa/common/widgets/rating_bar.dart';
 import 'package:friday_sa/common/widgets/title_widget.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
 
+import '../../../../common/widgets/not_available_widget.dart';
+
 class BestStoreNearbyView extends StatelessWidget {
   const BestStoreNearbyView({super.key});
 
@@ -245,10 +247,10 @@ class BestStoreNearbyView extends StatelessWidget {
                                         RotatedBox(
                                           quarterTurns: 3,
                                           child: Text(
-                                            'best_store_nearby'.tr,
+                                            (storeList != null && storeList.isNotEmpty && storeList.every((e) => e.open == 0)) ? 'closed'.tr : 'best_store_nearby'.tr,
                                             style: robotoBold.copyWith(
-                                              fontSize:
-                                                  Dimensions.fontSizeLarge,
+                                              fontSize: Dimensions.fontSizeLarge,
+                                              color: (storeList != null && storeList.isNotEmpty && storeList.every((e) => e.open == 0)) ? Theme.of(context).colorScheme.error : null,
                                             ),
                                           ),
                                         ),
@@ -536,6 +538,7 @@ class BestStoreNearbyView extends StatelessWidget {
                                                                   width: double
                                                                       .infinity,
                                                                 ),
+                                                                (storeList[index].open == 0 || !storeList[index].active!) ? NotAvailableWidget(isStore: true) : SizedBox(),
                                                                 DiscountTag(
                                                                   discount: storeController
                                                                       .getDiscount(
@@ -613,6 +616,7 @@ class BestStoreNearbyView extends StatelessWidget {
                               right: Get.find<LocalizationController>().isLtr ? 15 : null,
                               item: Item(id: storeList[index].id),
                             ),*/
+
                                                     Positioned(
                                                       top: 40,
                                                       left:

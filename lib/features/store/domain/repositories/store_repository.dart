@@ -424,7 +424,7 @@ class StoreRepository implements StoreRepositoryInterface {
   ) async {
     ItemModel? storeSearchItemModel;
     Response response = await apiClient.getData(
-      '${AppConstants.searchUri}items/search?store_id=$storeID&name=$searchText&offset=$offset&limit=10&type=$type&category_id=${categoryID ?? ''}',
+      '${AppConstants.searchUri}items/search?store_id=$storeID&name=$searchText&offset=$offset&limit=10&type=$type ?? ''}',
     );
     if (response.statusCode == 200) {
       storeSearchItemModel = ItemModel.fromJson(response.body);

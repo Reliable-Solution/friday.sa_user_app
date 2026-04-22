@@ -11,14 +11,15 @@ class AppConstants {
   static const String fontFamily = 'Roboto';
   static const bool payInWevView = false;
   static const int balanceInputLen = 10;
-  static const String webHostedUrl = 'http://172.105.39.242/testing/';
+  //   static const String webHostedUrl = 'http://172.105.39.242/testing/';
+  static const String webHostedUrl = 'https://friday.sa/';
   static const bool useReactWebsite = false;
 
-  // static String baseUrl = 'https://friday.sa';
-  // static String mainUrl = 'https://friday.sa';
+  static String baseUrl = 'https://friday.sa';
+  static String mainUrl = 'https://friday.sa';
 
-  static String baseUrl = 'http://172.235.25.239';
-  static String mainUrl = 'http://172.235.25.239';
+  // static String baseUrl = 'http://172.235.25.239';
+  // static String mainUrl = 'http://172.235.25.239';
 
   static const String countryList = '/api/v1/base-url/list';
   static String cardUrl = 'https://dcard.topfixhub.com';

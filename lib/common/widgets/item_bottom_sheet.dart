@@ -48,6 +48,39 @@ class ItemBottomSheet extends StatefulWidget {
 
 class _ItemBottomSheetState extends State<ItemBottomSheet> {
   bool _newVariation = false;
+  int? _initialQuantity;
+  List<int>? _initialVariationIndex;
+  List<List<bool?>>? _initialSelectedVariations;
+  List<bool>? _initialAddOnActiveList;
+  List<int?>? _initialAddOnQtyList;
+  int _lastCartIndex = -2;
+
+  void _initInitialState() {
+    ItemController itemController = Get.find<ItemController>();
+    _initialQuantity = itemController.quantity;
+    _initialVariationIndex = itemController.variationIndex != null
+        ? List.from(itemController.variationIndex!)
+        : null;
+    _initialSelectedVariations = itemController.selectedVariations
+        .map((list) => List<bool?>.from(list))
+        .toList();
+    _initialAddOnActiveList = List.from(itemController.addOnActiveList);
+    _initialAddOnQtyList = List.from(itemController.addOnQtyList);
+  }
+
+  bool _areListsEqual(List? list1, List? list2) {
+    if (list1 == null && list2 == null) return true;
+    if (list1 == null || list2 == null) return false;
+    if (list1.length != list2.length) return false;
+    for (int i = 0; i < list1.length; i++) {
+      if (list1[i] is List && list2[i] is List) {
+        if (!_areListsEqual(list1[i], list2[i])) return false;
+      } else if (list1[i] != list2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   @override
   void initState() {
@@ -66,6 +99,7 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
             .newVariation ??
         false;
     Get.find<ItemController>().initData(widget.item, widget.cart);
+    _initInitialState();
   }
 
   @override
@@ -83,6 +117,39 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
       ),
       child: GetBuilder<ItemController>(
         builder: (itemController) {
+          if (_lastCartIndex != itemController.cartIndex) {
+            _lastCartIndex = itemController.cartIndex;
+            _initInitialState();
+          }
+
+          bool isChanged = false;
+          if (itemController.cartIndex != -1) {
+            bool quantityChanged = _initialQuantity != itemController.quantity;
+            bool variationsChanged = !_areListsEqual(
+              _initialVariationIndex,
+              itemController.variationIndex,
+            );
+            bool foodVariationsChanged = !_areListsEqual(
+              _initialSelectedVariations,
+              itemController.selectedVariations,
+            );
+            bool addonsActiveChanged = !_areListsEqual(
+              _initialAddOnActiveList,
+              itemController.addOnActiveList,
+            );
+            bool addonsQtyChanged = !_areListsEqual(
+              _initialAddOnQtyList,
+              itemController.addOnQtyList,
+            );
+
+            isChanged =
+                quantityChanged ||
+                variationsChanged ||
+                foodVariationsChanged ||
+                addonsActiveChanged ||
+                addonsQtyChanged;
+          }
+
           num? startingPrice;
           num? endingPrice;
           if (widget.item!.choiceOptions!.isNotEmpty &&
@@ -1014,8 +1081,12 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                         children: [
                                           QuantityButton(
                                             onTap: () {
-                                              if (itemController.cartIndex != -1 || (widget.cartIndex != null && widget.cartIndex != -1)) {
-                                                if (itemController.quantity! > 1) {
+                                              if (itemController.cartIndex !=
+                                                      -1 ||
+                                                  (widget.cartIndex != null &&
+                                                      widget.cartIndex != -1)) {
+                                                if (itemController.quantity! >
+                                                    1) {
                                                   itemController.setQuantity(
                                                     false,
                                                     stock,
@@ -1023,14 +1094,25 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                                     getxSnackBar: true,
                                                   );
                                                 } else {
-                                                  int index = itemController.cartIndex != -1 ? itemController.cartIndex : (widget.cartIndex ?? -1);
+                                                  int index =
+                                                      itemController
+                                                              .cartIndex !=
+                                                          -1
+                                                      ? itemController.cartIndex
+                                                      : (widget.cartIndex ??
+                                                            -1);
                                                   if (index != -1) {
-                                                    Get.find<CartController>().removeFromCart(index, item: widget.item);
+                                                    Get.find<CartController>()
+                                                        .removeFromCart(
+                                                          index,
+                                                          item: widget.item,
+                                                        );
                                                   }
                                                   Get.back();
                                                 }
                                               } else {
-                                                if (itemController.quantity! > 0) {
+                                                if (itemController.quantity! >
+                                                    0) {
                                                   itemController.setQuantity(
                                                     false,
                                                     stock,
@@ -1042,7 +1124,8 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                             },
                                             isIncrement: false,
                                             fromSheet: true,
-                                            showRemoveIcon: itemController.quantity == 1,
+                                            showRemoveIcon:
+                                                itemController.quantity == 1,
                                           ),
                                           Text(
                                             itemController.quantity.toString(),
@@ -1101,7 +1184,26 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                                             -1)
                                                   ? 'update_in_cart'.tr
                                                   : 'add_to_cart'.tr,
-                                              onPressed: (stock! > 0 && (itemController.cartIndex != -1 || itemController.quantity! > 0)) ? () async {
+                                              color:
+                                                  (itemController.cartIndex !=
+                                                          -1 &&
+                                                      !isChanged)
+                                                  ? Theme.of(
+                                                      context,
+                                                    ).disabledColor
+                                                  : Theme.of(
+                                                      context,
+                                                    ).primaryColor,
+                                              onPressed:
+                                                  (stock! > 0 &&
+                                                      (itemController
+                                                                  .cartIndex !=
+                                                              -1
+                                                          ? isChanged
+                                                          : itemController
+                                                                    .quantity! >
+                                                                0))
+                                                  ? () async {
                                                       String? invalid;
                                                       if (_newVariation) {
                                                         for (
@@ -1420,7 +1522,8 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                                           }
                                                         }
                                                       }
-                                                    } : null,
+                                                    }
+                                                  : null,
                                             );
                                           },
                                         ),
@@ -2079,7 +2182,13 @@ class NewVariationView extends StatelessWidget {
                                   const Spacer(),
                                   showOriginalPrice
                                       ? Text(
-                                          PriceConverter.convertPriceWithSign(item!.foodVariations![index].variationValues![i].optionPrice, isPositive: true),
+                                          PriceConverter.convertPriceWithSign(
+                                            item!
+                                                .foodVariations![index]
+                                                .variationValues![i]
+                                                .optionPrice,
+                                            isPositive: true,
+                                          ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: robotoRegular.copyWith(
@@ -2099,7 +2208,16 @@ class NewVariationView extends StatelessWidget {
                                         : 0,
                                   ),
                                   Text(
-                                    PriceConverter.convertPriceWithSign(item!.foodVariations![index].variationValues![i].optionPrice, discount: discount, discountType: discountType, isFoodVariation: true, isPositive: true),
+                                    PriceConverter.convertPriceWithSign(
+                                      item!
+                                          .foodVariations![index]
+                                          .variationValues![i]
+                                          .optionPrice,
+                                      discount: discount,
+                                      discountType: discountType,
+                                      isFoodVariation: true,
+                                      isPositive: true,
+                                    ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style:

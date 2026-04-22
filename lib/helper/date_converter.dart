@@ -158,7 +158,7 @@ class DateConverter {
   }
 
   static String _timeFormatter() {
-    return Get.find<SplashController>().configModel!.timeformat == '24'
+    return Get.find<SplashController>().configModel?.timeformat == '24'
         ? 'HH:mm'
         : 'hh:mm a';
   }
