@@ -1,5 +1,6 @@
 import 'package:friday_sa/common/widgets/cart_count_view.dart';
 import 'package:friday_sa/common/widgets/custom_favourite_widget.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:friday_sa/common/widgets/hover/on_hover.dart';
 import 'package:friday_sa/common/widgets/hover/text_hover.dart';
 import 'package:friday_sa/features/favourite/controllers/favourite_controller.dart';
@@ -21,6 +22,7 @@ import 'package:friday_sa/common/widgets/not_available_widget.dart';
 import 'package:friday_sa/common/widgets/organic_tag.dart';
 import 'package:friday_sa/common/widgets/rating_bar.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
+import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -87,41 +89,50 @@ class WebItemWidget extends StatelessWidget {
           onTap: () {
             if (isStore) {
               if (store != null) {
+                if (store!.open == 0 || store!.active == false) {
+                  showCustomSnackBar('this_store_is_closed_now'.tr);
+                } else {
+                  if (isFeatured &&
+                      Get.find<SplashController>().moduleList != null) {
+                    for (ModuleModel module
+                        in Get.find<SplashController>().moduleList!) {
+                      if (module.id == store!.moduleId) {
+                        Get.find<SplashController>().setModule(module);
+                        break;
+                      }
+                    }
+                  }
+                  Get.toNamed(
+                    RouteHelper.getStoreRoute(
+                      id: store!.id,
+                      page: isFeatured ? 'module' : 'item',
+                    ),
+                    arguments:
+                        StoreScreen(store: store, fromModule: isFeatured),
+                  );
+                }
+              }
+            } else {
+              if (item!.storeOpen == 0 || item!.storeActive == false) {
+                showCustomSnackBar('this_store_is_closed_now'.tr);
+              } else {
                 if (isFeatured &&
                     Get.find<SplashController>().moduleList != null) {
                   for (ModuleModel module
                       in Get.find<SplashController>().moduleList!) {
-                    if (module.id == store!.moduleId) {
+                    if (module.id == item!.moduleId) {
                       Get.find<SplashController>().setModule(module);
                       break;
                     }
                   }
                 }
-                Get.toNamed(
-                  RouteHelper.getStoreRoute(
-                    id: store!.id,
-                    page: isFeatured ? 'module' : 'item',
-                  ),
-                  arguments: StoreScreen(store: store, fromModule: isFeatured),
+                Get.find<ItemController>().navigateToItemPage(
+                  item,
+                  context,
+                  inStore: inStore,
+                  isCampaign: isCampaign,
                 );
               }
-            } else {
-              if (isFeatured &&
-                  Get.find<SplashController>().moduleList != null) {
-                for (ModuleModel module
-                    in Get.find<SplashController>().moduleList!) {
-                  if (module.id == item!.moduleId) {
-                    Get.find<SplashController>().setModule(module);
-                    break;
-                  }
-                }
-              }
-              Get.find<ItemController>().navigateToItemPage(
-                item,
-                context,
-                inStore: inStore,
-                isCampaign: isCampaign,
-              );
             }
           },
           borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
@@ -188,7 +199,7 @@ class WebItemWidget extends StatelessWidget {
                                   discount: discount,
                                   discountType: discountType,
                                   freeDelivery: isStore
-                                      ? store!.freeDelivery
+                                      ? FreeDeliveryHelper.isFreeDelivery(store)
                                       : false,
                                 ),
                                 !isStore

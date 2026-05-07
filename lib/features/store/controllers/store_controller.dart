@@ -823,8 +823,8 @@ class StoreController extends GetxController implements GetxService {
             _subCategoryList.clear();
             if (value != null) {
               _subCategoryList.addAll(value);
-            }
-            update();
+                }
+                update();
             if (itemSearching) {
               _storeSearchItemModel = null;
               getStoreSearchItemList(
@@ -954,6 +954,17 @@ class StoreController extends GetxController implements GetxService {
 
     getStoreBannerList(storeId ?? store?.id);
     getRestaurantRecommendedItemList(storeId ?? store?.id, false);
+    update();
+  }
+
+  void clearStoreData() {
+    _popularStoreList = null;
+    _latestStoreList = null;
+    _topOfferStoreList = null;
+    _featuredStoreList = null;
+    _recommendedStoreList = null;
+    _visitAgainStoreList = null;
+    _storeModel = null;
     update();
   }
 }

@@ -23,6 +23,10 @@ import 'package:friday_sa/features/item/widgets/details_web_view_widget.dart';
 import 'package:friday_sa/features/item/widgets/item_image_view_widget.dart';
 import 'package:friday_sa/features/item/widgets/item_title_view_widget.dart';
 
+import '../../coupon/domain/models/coupon_model.dart';
+import '../../store/controllers/store_controller.dart';
+import '../../store/domain/models/store_model.dart' as store_model;
+
 class ItemDetailsScreen extends StatefulWidget {
   const ItemDetailsScreen({
     super.key,
@@ -56,6 +60,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
 
     Get.find<ItemController>().getProductDetails(widget.item!);
     Get.find<ItemController>().setSelect(0, false);
+    Get.find<StoreController>().getStoreDetails(store_model.Store(id: widget.item!.storeId), false);
 
     _initInitialState();
   }
@@ -850,41 +855,46 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                     ),
                                   ),
                                 ),
-                                GetBuilder<CartController>(
-                                  builder: (cartController) {
-                                    return Container(
-                                      width: 1170,
-                                      padding: const EdgeInsets.all(
-                                        Dimensions.paddingSizeSmall,
-                                      ),
-                                      child: CustomButton(
-                                        isLoading: cartController.isLoading,
-                                        color: (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).disabledColor : Theme.of(context).primaryColor,
-                                        textColor: (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).cardColor : Colors.white,
-                                        buttonText:
-                                            (Get.find<SplashController>()
-                                                    .configModel!
-                                                    .moduleConfig!
-                                                    .module!
-                                                    .stock! &&
-                                                stock! <= 0)
-                                            ? 'out_of_stock'.tr
-                                            : itemController
-                                                      .item!
-                                                      .availableDateStarts !=
-                                                  null
-                                            ? 'order_now'.tr
-                                            : itemController.cartIndex != -1
-                                            ? 'update_in_cart'.tr
-                                            : 'add_to_cart'.tr,
-                                        onPressed:
-                                            (!Get.find<SplashController>()
-                                                    .configModel!
-                                                    .moduleConfig!
-                                                    .module!
-                                                    .stock! ||
-                                                (stock! > 0 && ((itemController.cartIndex != -1 && isChanged) || (itemController.cartIndex == -1 && itemController.quantity! > 0))))
-                                            ? () async {
+                                GetBuilder<StoreController>(
+                                  builder: (storeController) {
+                                    bool isStoreClosed = (itemController.item!.storeOpen == 0 || itemController.item!.storeActive == false) || (storeController.store != null && (storeController.store!.open == 0 || storeController.store!.active == false));
+
+                                    return GetBuilder<CartController>(
+                                      builder: (cartController) {
+                                        return Container(
+                                          width: 1170,
+                                          padding: const EdgeInsets.all(
+                                            Dimensions.paddingSizeSmall,
+                                          ),
+                                          child: CustomButton(
+                                            isLoading: cartController.isLoading,
+                                            color: isStoreClosed ? Theme.of(context).disabledColor : (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).disabledColor : Theme.of(context).primaryColor,
+                                            textColor: isStoreClosed ? Theme.of(context).cardColor : (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).cardColor : Colors.white,
+                                            buttonText: isStoreClosed
+                                                ? 'this_store_is_closed_now'.tr
+                                                : (Get.find<SplashController>()
+                                                        .configModel!
+                                                        .moduleConfig!
+                                                        .module!
+                                                        .stock! &&
+                                                    stock! <= 0)
+                                                ? 'out_of_stock'.tr
+                                                : itemController
+                                                          .item!
+                                                          .availableDateStarts !=
+                                                      null
+                                                ? 'order_now'.tr
+                                                : itemController.cartIndex != -1
+                                                ? 'update_in_cart'.tr
+                                                : 'add_to_cart'.tr,
+                                            onPressed: isStoreClosed ? null :
+                                                (!Get.find<SplashController>()
+                                                        .configModel!
+                                                        .moduleConfig!
+                                                        .module!
+                                                        .stock! ||
+                                                    (stock! > 0 && ((itemController.cartIndex != -1 && isChanged) || (itemController.cartIndex == -1 && itemController.quantity! > 0))))
+                                                ? () async {
                                                 if (!Get.find<
                                                           SplashController
                                                         >()
@@ -1013,9 +1023,11 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                             : null,
                                       ),
                                     );
-                                  },
-                                ),
-                              ],
+                                       },
+                                     );
+                                   },
+                                 ),
+                               ],
                             )
                     : const Center(child: CircularProgressIndicator()),
               ),

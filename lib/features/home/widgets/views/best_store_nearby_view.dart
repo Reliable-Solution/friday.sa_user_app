@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:friday_sa/common/widgets/card_design/store_card.dart';
@@ -200,33 +201,42 @@ class BestStoreNearbyView extends StatelessWidget {
                                           ),
                                           child: InkWell(
                                             onTap: () {
-                                              if (Get.find<SplashController>()
-                                                      .moduleList !=
-                                                  null) {
-                                                for (ModuleModel module
-                                                    in Get.find<
-                                                          SplashController
-                                                        >()
-                                                        .moduleList!) {
-                                                  if (module.id ==
-                                                      storeList[index]
-                                                          .moduleId) {
-                                                    Get.find<SplashController>()
-                                                        .setModule(module);
-                                                    break;
+                                              if (storeList[index].open == 0 ||
+                                                  storeList[index].active ==
+                                                      false) {
+                                                showCustomSnackBar(
+                                                  'this_store_is_closed_now'.tr,
+                                                );
+                                              } else {
+                                                if (Get.find<SplashController>()
+                                                        .moduleList !=
+                                                    null) {
+                                                  for (ModuleModel module
+                                                      in Get.find<
+                                                            SplashController
+                                                          >()
+                                                          .moduleList!) {
+                                                    if (module.id ==
+                                                        storeList[index]
+                                                            .moduleId) {
+                                                      Get.find<
+                                                              SplashController>()
+                                                          .setModule(module);
+                                                      break;
+                                                    }
                                                   }
                                                 }
+                                                Get.toNamed(
+                                                  RouteHelper.getStoreRoute(
+                                                    id: storeList[index].id,
+                                                    page: 'store',
+                                                  ),
+                                                  arguments: StoreScreen(
+                                                    store: storeList[index],
+                                                    fromModule: true,
+                                                  ),
+                                                );
                                               }
-                                              Get.toNamed(
-                                                RouteHelper.getStoreRoute(
-                                                  id: storeList[index].id,
-                                                  page: 'store',
-                                                ),
-                                                arguments: StoreScreen(
-                                                  store: storeList[index],
-                                                  fromModule: true,
-                                                ),
-                                              );
                                             },
                                             child: StoreCardWithDistance(
                                               store: storeList[index],
@@ -247,10 +257,26 @@ class BestStoreNearbyView extends StatelessWidget {
                                         RotatedBox(
                                           quarterTurns: 3,
                                           child: Text(
-                                            (storeList != null && storeList.isNotEmpty && storeList.every((e) => e.open == 0)) ? 'closed'.tr : 'best_store_nearby'.tr,
+                                            (storeList != null &&
+                                                    storeList.isNotEmpty &&
+                                                    storeList.every(
+                                                      (e) => e.open == 0,
+                                                    ))
+                                                ? 'closed'.tr
+                                                : 'best_store_nearby'.tr,
                                             style: robotoBold.copyWith(
-                                              fontSize: Dimensions.fontSizeLarge,
-                                              color: (storeList != null && storeList.isNotEmpty && storeList.every((e) => e.open == 0)) ? Theme.of(context).colorScheme.error : null,
+                                              fontSize:
+                                                  Dimensions.fontSizeLarge,
+                                              color:
+                                                  (storeList != null &&
+                                                      storeList.isNotEmpty &&
+                                                      storeList.every(
+                                                        (e) => e.open == 0,
+                                                      ))
+                                                  ? Theme.of(
+                                                      context,
+                                                    ).colorScheme.error
+                                                  : null,
                                             ),
                                           ),
                                         ),
@@ -310,42 +336,54 @@ class BestStoreNearbyView extends StatelessWidget {
                                                       ),
                                                       child: CustomInkWell(
                                                         onTap: () {
-                                                          if (Get.find<
-                                                                    SplashController
-                                                                  >()
-                                                                  .moduleList !=
-                                                              null) {
-                                                            for (ModuleModel
-                                                                module
-                                                                in Get.find<
+                                                          if (storeList[index]
+                                                                      .open ==
+                                                                  0 ||
+                                                              storeList[index]
+                                                                      .active ==
+                                                                  false) {
+                                                            showCustomSnackBar(
+                                                              'this_store_is_closed_now'
+                                                                  .tr,
+                                                            );
+                                                          } else {
+                                                            if (Get.find<
                                                                       SplashController
                                                                     >()
-                                                                    .moduleList!) {
-                                                              if (module.id ==
-                                                                  storeList[index]
-                                                                      .moduleId) {
-                                                                Get.find<
-                                                                      SplashController
-                                                                    >()
-                                                                    .setModule(
-                                                                      module,
-                                                                    );
-                                                                break;
+                                                                    .moduleList !=
+                                                                null) {
+                                                              for (ModuleModel
+                                                                  module
+                                                                  in Get.find<
+                                                                        SplashController
+                                                                      >()
+                                                                      .moduleList!) {
+                                                                if (module.id ==
+                                                                    storeList[index]
+                                                                        .moduleId) {
+                                                                  Get.find<
+                                                                        SplashController
+                                                                      >()
+                                                                      .setModule(
+                                                                        module,
+                                                                      );
+                                                                  break;
+                                                                }
                                                               }
                                                             }
+                                                            Get.toNamed(
+                                                              RouteHelper.getStoreRoute(
+                                                                id: storeList[index]
+                                                                    .id,
+                                                                page: 'store',
+                                                              ),
+                                                              arguments: StoreScreen(
+                                                                store:
+                                                                    storeList[index],
+                                                                fromModule: true,
+                                                              ),
+                                                            );
                                                           }
-                                                          Get.toNamed(
-                                                            RouteHelper.getStoreRoute(
-                                                              id: storeList[index]
-                                                                  .id,
-                                                              page: 'store',
-                                                            ),
-                                                            arguments: StoreScreen(
-                                                              store:
-                                                                  storeList[index],
-                                                              fromModule: true,
-                                                            ),
-                                                          );
                                                         },
                                                         radius: Dimensions
                                                             .radiusLarge,
@@ -383,7 +421,7 @@ class BestStoreNearbyView extends StatelessWidget {
                                                                           crossAxisAlignment:
                                                                               CrossAxisAlignment.start,
                                                                           children: [
-                                                                            Column(
+                                                                            Row(
                                                                               crossAxisAlignment: CrossAxisAlignment.start,
                                                                               children: [
                                                                                 Text(
@@ -392,61 +430,71 @@ class BestStoreNearbyView extends StatelessWidget {
                                                                                     color: Theme.of(
                                                                                       context,
                                                                                     ).disabledColor,
-                                                                                    fontSize: Dimensions.fontSizeSmall,
+                                                                                    fontSize: 10,
                                                                                   ),
                                                                                 ),
                                                                                 const SizedBox(
-                                                                                  width: Dimensions.paddingSizeExtraSmall,
+                                                                                  width: 2,
                                                                                 ),
                                                                                 Text(
                                                                                   PriceConverter.convertPrice(
                                                                                     storeList[index].minimumOrder,
                                                                                   ),
                                                                                   style: robotoBold.copyWith(
-                                                                                    fontSize: Dimensions.fontSizeSmall,
+                                                                                    fontSize: 10,
                                                                                   ),
                                                                                 ),
                                                                               ],
                                                                             ),
                                                                             const SizedBox(
-                                                                              height: Dimensions.paddingSizeExtraSmall,
+                                                                              height: 2,
                                                                             ),
-                                                                            storeList[index].ratingCount! >
-                                                                                    0
+                                                                            storeList[index].ratingCount! > 0
                                                                                 ? Row(
                                                                                     mainAxisAlignment: MainAxisAlignment.start,
                                                                                     children: [
                                                                                       Icon(
                                                                                         Icons.star,
-                                                                                        size: 15,
-                                                                                        color: Theme.of(
-                                                                                          context,
-                                                                                        ).primaryColor,
+                                                                                        size: 14,
+                                                                                        color: Theme.of(context).primaryColor,
                                                                                       ),
-                                                                                      const SizedBox(
-                                                                                        width: Dimensions.paddingSizeExtraSmall,
-                                                                                      ),
+                                                                                      const SizedBox(width: 2),
                                                                                       Text(
-                                                                                        storeList[index].avgRating!.toStringAsFixed(
-                                                                                          1,
-                                                                                        ),
-                                                                                        style: robotoRegular,
+                                                                                        storeList[index].avgRating!.toStringAsFixed(1),
+                                                                                        style: robotoRegular.copyWith(fontSize: 10),
                                                                                       ),
-                                                                                      const SizedBox(
-                                                                                        width: Dimensions.paddingSizeExtraSmall,
-                                                                                      ),
+                                                                                      const SizedBox(width: 2),
                                                                                       Text(
                                                                                         "(${storeList[index].ratingCount.toString()})",
                                                                                         style: robotoRegular.copyWith(
-                                                                                          fontSize: Dimensions.fontSizeSmall,
-                                                                                          color: Theme.of(
-                                                                                            context,
-                                                                                          ).disabledColor,
+                                                                                          fontSize: 10,
+                                                                                          color: Theme.of(context).disabledColor,
                                                                                         ),
                                                                                       ),
                                                                                     ],
                                                                                   )
                                                                                 : const SizedBox(),
+                                                                            if (FreeDeliveryHelper.isFreeDelivery(storeList[index]))
+                                                                              Padding(
+                                                                                padding: const EdgeInsets.only(top: 1),
+                                                                                child: Row(
+                                                                                  children: [
+                                                                                    Icon(
+                                                                                      Icons.check_circle,
+                                                                                      size: 12,
+                                                                                      color: Theme.of(context).primaryColor,
+                                                                                    ),
+                                                                                    const SizedBox(width: 2),
+                                                                                    Text(
+                                                                                      'free_delivery'.tr,
+                                                                                      style: robotoMedium.copyWith(
+                                                                                        fontSize: 9,
+                                                                                        color: Theme.of(context).primaryColor,
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
                                                                           ],
                                                                         ),
                                                                       ],
@@ -465,6 +513,7 @@ class BestStoreNearbyView extends StatelessWidget {
                                                                     robotoMedium,
                                                               ),
                                                             ),
+
                                                           ],
                                                         ),
                                                       ),
@@ -538,7 +587,15 @@ class BestStoreNearbyView extends StatelessWidget {
                                                                   width: double
                                                                       .infinity,
                                                                 ),
-                                                                (storeList[index].open == 0 || !storeList[index].active!) ? NotAvailableWidget(isStore: true) : SizedBox(),
+                                                                (storeList[index].open ==
+                                                                            0 ||
+                                                                        !storeList[index]
+                                                                            .active!)
+                                                                    ? NotAvailableWidget(
+                                                                        isStore:
+                                                                            true,
+                                                                      )
+                                                                    : SizedBox(),
                                                                 DiscountTag(
                                                                   discount: storeController
                                                                       .getDiscount(
@@ -549,6 +606,7 @@ class BestStoreNearbyView extends StatelessWidget {
                                                                           .getDiscountType(
                                                                             storeList[index],
                                                                           ),
+                                                                  freeDelivery: false,
                                                                 ),
                                                                 Positioned(
                                                                   bottom: 0,
@@ -616,7 +674,6 @@ class BestStoreNearbyView extends StatelessWidget {
                               right: Get.find<LocalizationController>().isLtr ? 15 : null,
                               item: Item(id: storeList[index].id),
                             ),*/
-
                                                     Positioned(
                                                       top: 40,
                                                       left:

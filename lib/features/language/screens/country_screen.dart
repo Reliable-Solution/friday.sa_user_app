@@ -5,6 +5,7 @@ import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
 import 'package:friday_sa/helper/route_helper.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/styles.dart';
+import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 
 class CountryScreen extends StatefulWidget {
   const CountryScreen({super.key, required this.page, this.fromLogin = false});
@@ -82,9 +83,9 @@ class _CountryScreenState extends State<CountryScreen> {
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 10),
                                 child: GestureDetector(
-                                  onTap: () {
-                                    localizationController.setCountry(index);
-                                  },
+                                   onTap: () {
+                                     localizationController.setCountry(index);
+                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
@@ -160,19 +161,23 @@ class _CountryScreenState extends State<CountryScreen> {
                             builder: (controller) {
                               return CustomButton(
                                 buttonText: 'continue'.tr,
-                                onPressed: () {
-                                  controller.changeCountry();
-                                  if (widget.fromLogin) {
-                                    Get.toNamed(
-                                      RouteHelper.getSignInRoute(
-                                        widget.page,
-                                        fromCountry: true,
-                                      ),
-                                    );
+                                 onPressed: () {
+                                  if (controller.selectedCountryIndex == -1) {
+                                    showCustomSnackBar('please_select_a_country'.tr);
                                   } else {
-                                    Get.offAllNamed(
-                                      RouteHelper.getOnBoardingRoute(),
-                                    );
+                                    controller.changeCountry();
+                                    if (widget.fromLogin) {
+                                      Get.toNamed(
+                                        RouteHelper.getSignInRoute(
+                                          widget.page,
+                                          fromCountry: true,
+                                        ),
+                                      );
+                                    } else {
+                                      Get.offAllNamed(
+                                        RouteHelper.getOnBoardingRoute(),
+                                      );
+                                    }
                                   }
                                 },
                               );

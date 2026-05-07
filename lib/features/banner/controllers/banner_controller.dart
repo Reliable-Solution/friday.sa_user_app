@@ -84,6 +84,11 @@ class BannerController extends GetxController implements GetxService {
 
   void clearBanner() {
     _bannerImageList = null;
+    _bannerDataList = null;
+    _featuredBannerList = null;
+    _featuredBannerDataList = null;
+    _promotionalBanner = null;
+    update();
   }
 
   Future<void> getBannerList(

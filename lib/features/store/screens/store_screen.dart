@@ -37,6 +37,7 @@ import 'package:friday_sa/features/store/widgets/store_banner_widget.dart';
 import 'package:friday_sa/features/store/widgets/store_description_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:friday_sa/features/store/widgets/store_details_screen_shimmer_widget.dart';
 
 import '../widgets/bottom_cart_widget.dart';
@@ -95,6 +96,16 @@ class _StoreScreenState extends State<StoreScreen> {
       Get.find<StoreController>().changeSearchStatus(isUpdate: false);
     }
 
+    if (widget.store != null &&
+        widget.store!.open != null &&
+        (widget.store!.open == 0 || widget.store!.active == false)) {
+      Future.delayed(Duration.zero, () {
+        Get.back();
+        showCustomSnackBar('this_store_is_closed_now'.tr);
+      });
+      return;
+    }
+
     Get.find<StoreController>().hideAnimation();
     await Get.find<StoreController>()
         .getStoreDetails(
@@ -103,6 +114,12 @@ class _StoreScreenState extends State<StoreScreen> {
           slug: widget.slug,
         )
         .then((value) {
+          if (Get.find<StoreController>().store != null &&
+              (Get.find<StoreController>().store!.open == 0 ||
+                  Get.find<StoreController>().store!.active == false)) {
+            Get.back();
+            showCustomSnackBar('this_store_is_closed_now'.tr);
+          }
           Get.find<StoreController>().showButtonAnimation();
           Get.find<CategoryController>().mainScrollController =
               scrollController;
@@ -586,6 +603,27 @@ class _StoreScreenState extends State<StoreScreen> {
                                                                 ),
                                                               ],
                                                             ),
+                                                            if (FreeDeliveryHelper.isFreeDelivery(store))
+                                                              Padding(
+                                                                padding: const EdgeInsets.only(top: Dimensions.paddingSizeExtraSmall),
+                                                                child: Row(
+                                                                  children: [
+                                                                    Icon(
+                                                                      Icons.check_circle,
+                                                                      color: Theme.of(context).primaryColor,
+                                                                      size: 14 - (scrollingRate * 2),
+                                                                    ),
+                                                                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                                                    Text(
+                                                                      'free_delivery'.tr,
+                                                                      style: robotoMedium.copyWith(
+                                                                        fontSize: Dimensions.fontSizeExtraSmall - (scrollingRate * 2),
+                                                                        color: Theme.of(context).primaryColor,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
                                                           ],
                                                         ),
                                                       ),

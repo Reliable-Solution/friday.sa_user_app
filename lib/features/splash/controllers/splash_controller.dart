@@ -109,12 +109,7 @@ class SplashController extends GetxController implements GetxService {
         baseUrl ??
         _countryModel?[_selectedCountryIndex].url ??
         AppConstants.baseUrl;
-    Get.lazyPut(
-      () => ApiClient(
-        appBaseUrl: AppConstants.baseUrl,
-        sharedPreferences: Get.find(),
-      ),
-    );
+    Get.find<ApiClient>().updateBaseUrl(AppConstants.baseUrl);
     Get.find<SplashController>().getConfigData(
       source: DataSourceEnum.client,
       fromCountry: true,
@@ -383,18 +378,19 @@ class SplashController extends GetxController implements GetxService {
 
   Future<void> switchModule(int index, bool fromPhone) async {
     if (_module == null || _module!.id != _moduleList![index].id) {
-      final hadPreviousModule = _module != null;
+      if (_module != null) {
+        Get.find<ItemController>().clearItemLists();
+        Get.find<BannerController>().clearBanner();
+        Get.find<CategoryController>().clearCategoryList();
+        Get.find<CampaignController>().itemAndBasicCampaignNull();
+        Get.find<FlashSaleController>().setEmptyFlashSale(fromModule: true);
+        Get.find<StoreController>().clearStoreData();
+      }
+      
       await setModule(_moduleList![index]);
 
       if (_module!.moduleType.toString() != AppConstants.taxi) {
         Get.find<CartController>().getCartDataOnline();
-        if (hadPreviousModule) {
-          Get.find<ItemController>().clearItemLists();
-          Get.find<BannerController>().clearBanner();
-          Get.find<CategoryController>().clearCategoryList();
-          Get.find<CampaignController>().itemAndBasicCampaignNull();
-          Get.find<FlashSaleController>().setEmptyFlashSale(fromModule: true);
-        }
 
         if (AuthHelper.isLoggedIn()) {
           Get.find<HomeController>().getCashBackOfferList();

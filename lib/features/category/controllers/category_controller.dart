@@ -69,6 +69,12 @@ class CategoryController extends GetxController implements GetxService {
   void clearCategoryList() {
     _categoryList = null;
     _storeCategoryList = [];
+    _subCategoryList = null;
+    _categoryItemList = null;
+    _categoryStoreList = null;
+    _searchItemList = [];
+    _searchStoreList = [];
+    update();
   }
 
   Future<void> getCategoryList(

@@ -202,6 +202,8 @@ class Item {
     nutritionsName = json['nutritions_name']?.cast<String>();
     allergiesName = json['allergies_name']?.cast<String>();
     genericName = json['generic_name']?.cast<String>();
+    storeOpen = json['store_open'] != null ? int.parse(json['store_open'].toString()) : null;
+    storeActive = json['store_active'] != null ? json['store_active'] == 1 : null;
   }
   int? id;
   String? name;
@@ -242,6 +244,8 @@ class Item {
   List<String>? nutritionsName;
   List<String>? allergiesName;
   List<String>? genericName;
+  int? storeOpen;
+  bool? storeActive;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -294,6 +298,8 @@ class Item {
     data['nutritions_name'] = nutritionsName;
     data['allergies_name'] = allergiesName;
     data['generic_name'] = genericName;
+    data['store_open'] = storeOpen;
+    data['store_active'] = storeActive;
     return data;
   }
 }

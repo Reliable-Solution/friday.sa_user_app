@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:get/get.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:friday_sa/features/checkout/widgets/guest_create_account.dart';
@@ -356,7 +357,7 @@ class TopSection extends StatelessWidget {
                         value: 'delivery',
                         title: 'home_delivery'.tr,
                         charge: charge,
-                        isFree: checkoutController.store!.freeDelivery,
+                        isFree: FreeDeliveryHelper.isFreeDelivery(checkoutController.store, distance: checkoutController.distance),
                         fromWeb: true,
                         total: total,
                         deliveryChargeForView: deliveryChargeForView,
@@ -377,7 +378,7 @@ class TopSection extends StatelessWidget {
                                     title: 'home_delivery'.tr,
                                     charge: charge,
                                     isFree:
-                                        checkoutController.store!.freeDelivery,
+                                        FreeDeliveryHelper.isFreeDelivery(checkoutController.store, distance: checkoutController.distance),
                                     fromWeb: true,
                                     total: total,
                                     deliveryChargeForView:

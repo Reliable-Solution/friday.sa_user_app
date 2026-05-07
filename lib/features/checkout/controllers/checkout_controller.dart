@@ -342,6 +342,9 @@ class CheckoutController extends GetxController implements GetxService {
     bool fromDashboard = false,
   }) async {
     _distance = -1;
+    debugPrint('===>>> Origin: ${originLatLng.latitude}, ${originLatLng.longitude}');
+    debugPrint('===>>> Destination: ${destinationLatLng.latitude}, ${destinationLatLng.longitude}');
+
     Response response = await checkoutServiceInterface.getDistanceInMeter(
       originLatLng,
       destinationLatLng,
@@ -356,7 +359,9 @@ class CheckoutController extends GetxController implements GetxService {
           final num distanceMater = response.body['distanceMeters'] as num;
           _distance = distanceMater / 1000;
         }
+        debugPrint('===>>> Distance API Success: $_distance km');
       } else {
+        debugPrint('===>>> Distance API Failed or Status not OK: ${response.body['status']}');
         if (!isDuration) {
           _distance =
               Geolocator.distanceBetween(
@@ -364,11 +369,13 @@ class CheckoutController extends GetxController implements GetxService {
                 originLatLng.longitude,
                 destinationLatLng.latitude,
                 destinationLatLng.longitude,
-              ) /
-              1000;
+                ) /
+                1000;
+          debugPrint('===>>> Fallback Geolocator Distance: $_distance km');
         }
       }
     } catch (e) {
+      debugPrint('===>>> Distance Calculation Error: $e');
       if (!isDuration) {
         _distance =
             Geolocator.distanceBetween(
@@ -376,8 +383,9 @@ class CheckoutController extends GetxController implements GetxService {
               originLatLng.longitude,
               destinationLatLng.latitude,
               destinationLatLng.longitude,
-            ) /
-            1000;
+              ) /
+              1000;
+        debugPrint('===>>> Catch Fallback Geolocator Distance: $_distance km');
       }
     }
     if (!fromDashboard) {

@@ -37,6 +37,7 @@ import 'package:get/get.dart';
 import 'package:friday_sa/features/checkout/widgets/bottom_section.dart';
 import 'package:friday_sa/features/checkout/widgets/top_section.dart';
 import 'package:flutter/material.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({
@@ -61,7 +62,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
 
   num? _taxPercent = 0;
   bool? _isCashOnDeliveryActive = false;
-  bool? _isDigitalPaymentActive = false;
+    bool? _isDigitalPaymentActive = false;
   bool _isOfflinePaymentActive = false;
   List<CartModel?>? _cartList;
   bool _isWalletActive = false;
@@ -213,6 +214,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
         AuthHelper.isGuestLoggedIn() &&
         Get.find<SplashController>().configModel!.guestCheckoutStatus!;
     bool isLoggedIn = AuthHelper.isLoggedIn();
+    bool isGuestLoggedIn = AuthHelper.isGuestLoggedIn();
 
     return Scaffold(
       appBar: CustomAppBar(title: 'checkout'.tr),
@@ -231,24 +233,34 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                   store: checkoutController.store,
                 );
 
+                AddressModel? selectedAddress = isGuestLoggedIn
+                    ? (checkoutController.guestAddress ??
+                        AddressHelper.getUserAddressFromSharedPref())
+                    : (address.isNotEmpty &&
+                            checkoutController.addressIndex! < address.length)
+                        ? address[checkoutController.addressIndex!]
+                        : AddressHelper.getUserAddressFromSharedPref();
+
                 bool todayClosed = false;
                 bool tomorrowClosed = false;
                 Pivot? moduleData = _getModuleData(
                   store: checkoutController.store,
+                  address: selectedAddress,
                 );
                 _isCashOnDeliveryActive = _checkCODActive(
                   store: checkoutController.store,
+                  address: selectedAddress,
                 );
                 _isDigitalPaymentActive = _checkDigitalPaymentActive(
                   store: checkoutController.store,
+                  address: selectedAddress,
                 );
                 _isOfflinePaymentActive =
                     Get.find<SplashController>()
                         .configModel!
                         .offlinePaymentStatus! &&
                     _checkZoneOfflinePaymentOnOff(
-                      addressModel:
-                          AddressHelper.getUserAddressFromSharedPref(),
+                      addressModel: selectedAddress,
                       checkoutController: checkoutController,
                     );
                 if (checkoutController.store != null) {
@@ -341,13 +353,15 @@ class CheckoutScreenState extends State<CheckoutScreen> {
 
                     num originalCharge = _calculateOriginalDeliveryCharge(
                       store: checkoutController.store,
-                      address: AddressHelper.getUserAddressFromSharedPref()!,
+                      address: selectedAddress ??
+                          AddressHelper.getUserAddressFromSharedPref(),
                       distance: checkoutController.distance,
                       extraCharge: checkoutController.extraCharge,
                     )..printWithName("here original Charge");
                     num deliveryCharge = _calculateDeliveryCharge(
                       store: checkoutController.store,
-                      address: AddressHelper.getUserAddressFromSharedPref()!,
+                      address: selectedAddress ??
+                          AddressHelper.getUserAddressFromSharedPref(),
                       distance: checkoutController.distance,
                       extraCharge: checkoutController.extraCharge,
                       orderType: checkoutController.orderType!,
@@ -358,7 +372,10 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                         checkoutController.store != null) {
                       _deliveryChargeForView =
                           (checkoutController.orderType == 'delivery'
-                              ? checkoutController.store!.freeDelivery!
+                              ? FreeDeliveryHelper.isFreeDelivery(
+                                  checkoutController.store,
+                                  distance: checkoutController.distance,
+                                )
                               : true)
                           ? 'free'.tr
                           : deliveryCharge != -1
@@ -433,253 +450,260 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                   },
                                   child: SingleChildScrollView(
                                     controller: _scrollController,
-                                    physics: const AlwaysScrollableScrollPhysics(),
-                                  child: FooterView(
-                                    child: SizedBox(
-                                      width: Dimensions.webMaxWidth,
-                                      child: ResponsiveHelper.isDesktop(context)
-                                          ? Padding(
-                                              padding: const EdgeInsets.only(
-                                                top:
-                                                    Dimensions.paddingSizeLarge,
-                                              ),
-                                              child: Row(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    child: FooterView(
+                                      child: SizedBox(
+                                        width: Dimensions.webMaxWidth,
+                                        child:
+                                            ResponsiveHelper.isDesktop(context)
+                                            ? Padding(
+                                                padding: const EdgeInsets.only(
+                                                  top: Dimensions
+                                                      .paddingSizeLarge,
+                                                ),
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 6,
+                                                      child: TopSection(
+                                                        checkoutController:
+                                                            checkoutController,
+                                                        charge: originalCharge,
+                                                        deliveryCharge:
+                                                            deliveryCharge,
+                                                        addressList:
+                                                            addressList,
+                                                        tomorrowClosed:
+                                                            tomorrowClosed,
+                                                        todayClosed:
+                                                            todayClosed,
+                                                        module: module,
+                                                        price: price,
+                                                        discount: discount,
+                                                        addOns: addOns,
+                                                        address: address,
+                                                        cartList: _cartList,
+                                                        isCashOnDeliveryActive:
+                                                            _isCashOnDeliveryActive!,
+                                                        isDigitalPaymentActive:
+                                                            _isDigitalPaymentActive!,
+                                                        isWalletActive:
+                                                            _isWalletActive,
+                                                        storeId: widget.storeId,
+                                                        total: total,
+                                                        isOfflinePaymentActive:
+                                                            _isOfflinePaymentActive,
+                                                        guestNameTextEditingController:
+                                                            guestContactPersonNameController,
+                                                        guestNumberTextEditingController:
+                                                            guestContactPersonNumberController,
+                                                        guestNumberNode:
+                                                            guestNumberNode,
+                                                        guestEmailController:
+                                                            guestEmailController,
+                                                        guestEmailNode:
+                                                            guestEmailNode,
+                                                        tooltipController1:
+                                                            tooltipController1,
+                                                        tooltipController2:
+                                                            tooltipController2,
+                                                        dmTipsTooltipController:
+                                                            tooltipController3,
+                                                        guestPasswordController:
+                                                            guestPasswordController,
+                                                        guestConfirmPasswordController:
+                                                            guestConfirmPasswordController,
+                                                        guestPasswordNode:
+                                                            guestPasswordNode,
+                                                        guestConfirmPasswordNode:
+                                                            guestConfirmPasswordNode,
+                                                        variationPrice:
+                                                            isPassedVariationPrice
+                                                            ? variations
+                                                            : 0,
+                                                        deliveryChargeForView:
+                                                            _deliveryChargeForView,
+                                                        badWeatherCharge:
+                                                            badWeatherChargeForToolTip,
+                                                        extraChargeForToolTip:
+                                                            extraChargeForToolTip,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: Dimensions
+                                                          .paddingSizeLarge,
+                                                    ),
+                                                    Expanded(
+                                                      flex: 4,
+                                                      child: BottomSection(
+                                                        checkoutController:
+                                                            checkoutController,
+                                                        total: total,
+                                                        module: module!,
+                                                        subTotal: subTotal,
+                                                        discount: discount,
+                                                        couponController:
+                                                            couponController,
+                                                        taxIncluded:
+                                                            taxIncluded,
+                                                        tax: tax,
+                                                        deliveryCharge:
+                                                            deliveryCharge,
+                                                        todayClosed:
+                                                            todayClosed,
+                                                        tomorrowClosed:
+                                                            tomorrowClosed,
+                                                        orderAmount:
+                                                            orderAmount,
+                                                        maxCodOrderAmount:
+                                                            maxCodOrderAmount,
+                                                        storeId: widget.storeId,
+                                                        taxPercent: _taxPercent,
+                                                        price: price,
+                                                        addOns: addOns,
+                                                        isPrescriptionRequired:
+                                                            isPrescriptionRequired,
+                                                        checkoutButton:
+                                                            _orderPlaceButton(
+                                                              checkoutController,
+                                                              todayClosed,
+                                                              tomorrowClosed,
+                                                              orderAmount,
+                                                              deliveryCharge,
+                                                              tax,
+                                                              discount,
+                                                              total,
+                                                              maxCodOrderAmount,
+                                                              isPrescriptionRequired,
+                                                            ),
+                                                        referralDiscount:
+                                                            referralDiscount,
+                                                        variationPrice:
+                                                            isPassedVariationPrice
+                                                            ? variations
+                                                            : 0,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Expanded(
-                                                    flex: 6,
-                                                    child: TopSection(
-                                                      checkoutController:
-                                                          checkoutController,
-                                                      charge: originalCharge,
-                                                      deliveryCharge:
-                                                          deliveryCharge,
-                                                      addressList: addressList,
-                                                      tomorrowClosed:
-                                                          tomorrowClosed,
-                                                      todayClosed: todayClosed,
-                                                      module: module,
-                                                      price: price,
-                                                      discount: discount,
-                                                      addOns: addOns,
-                                                      address: address,
-                                                      cartList: _cartList,
-                                                      isCashOnDeliveryActive:
-                                                          _isCashOnDeliveryActive!,
-                                                      isDigitalPaymentActive:
-                                                          _isDigitalPaymentActive!,
-                                                      isWalletActive:
-                                                          _isWalletActive,
-                                                      storeId: widget.storeId,
-                                                      total: total,
-                                                      isOfflinePaymentActive:
-                                                          _isOfflinePaymentActive,
-                                                      guestNameTextEditingController:
-                                                          guestContactPersonNameController,
-                                                      guestNumberTextEditingController:
-                                                          guestContactPersonNumberController,
-                                                      guestNumberNode:
-                                                          guestNumberNode,
-                                                      guestEmailController:
-                                                          guestEmailController,
-                                                      guestEmailNode:
-                                                          guestEmailNode,
-                                                      tooltipController1:
-                                                          tooltipController1,
-                                                      tooltipController2:
-                                                          tooltipController2,
-                                                      dmTipsTooltipController:
-                                                          tooltipController3,
-                                                      guestPasswordController:
-                                                          guestPasswordController,
-                                                      guestConfirmPasswordController:
-                                                          guestConfirmPasswordController,
-                                                      guestPasswordNode:
-                                                          guestPasswordNode,
-                                                      guestConfirmPasswordNode:
-                                                          guestConfirmPasswordNode,
-                                                      variationPrice:
-                                                          isPassedVariationPrice
-                                                          ? variations
-                                                          : 0,
-                                                      deliveryChargeForView:
-                                                          _deliveryChargeForView,
-                                                      badWeatherCharge:
-                                                          badWeatherChargeForToolTip,
-                                                      extraChargeForToolTip:
-                                                          extraChargeForToolTip,
-                                                    ),
+                                                  TopSection(
+                                                    checkoutController:
+                                                        checkoutController,
+                                                    charge: originalCharge,
+                                                    deliveryCharge:
+                                                        deliveryCharge,
+                                                    addressList: addressList,
+                                                    tomorrowClosed:
+                                                        tomorrowClosed,
+                                                    todayClosed: todayClosed,
+                                                    module: module,
+                                                    price: price,
+                                                    discount: discount,
+                                                    addOns: addOns,
+                                                    address: address,
+                                                    cartList: _cartList,
+                                                    isCashOnDeliveryActive:
+                                                        _isCashOnDeliveryActive!,
+                                                    isDigitalPaymentActive:
+                                                        _isDigitalPaymentActive!,
+                                                    isWalletActive:
+                                                        _isWalletActive,
+                                                    storeId: widget.storeId,
+                                                    total: total,
+                                                    isOfflinePaymentActive:
+                                                        _isOfflinePaymentActive,
+                                                    guestNameTextEditingController:
+                                                        guestContactPersonNameController,
+                                                    guestNumberTextEditingController:
+                                                        guestContactPersonNumberController,
+                                                    guestNumberNode:
+                                                        guestNumberNode,
+                                                    guestEmailController:
+                                                        guestEmailController,
+                                                    guestEmailNode:
+                                                        guestEmailNode,
+                                                    tooltipController1:
+                                                        tooltipController1,
+                                                    tooltipController2:
+                                                        tooltipController2,
+                                                    dmTipsTooltipController:
+                                                        tooltipController3,
+                                                    guestPasswordController:
+                                                        guestPasswordController,
+                                                    guestConfirmPasswordController:
+                                                        guestConfirmPasswordController,
+                                                    guestPasswordNode:
+                                                        guestPasswordNode,
+                                                    guestConfirmPasswordNode:
+                                                        guestConfirmPasswordNode,
+                                                    variationPrice:
+                                                        isPassedVariationPrice
+                                                        ? variations
+                                                        : 0,
+                                                    deliveryChargeForView:
+                                                        _deliveryChargeForView,
+                                                    badWeatherCharge:
+                                                        badWeatherChargeForToolTip,
+                                                    extraChargeForToolTip:
+                                                        extraChargeForToolTip,
                                                   ),
-                                                  const SizedBox(
-                                                    width: Dimensions
-                                                        .paddingSizeLarge,
-                                                  ),
-                                                  Expanded(
-                                                    flex: 4,
-                                                    child: BottomSection(
-                                                      checkoutController:
+                                                  BottomSection(
+                                                    checkoutController:
+                                                        checkoutController,
+                                                    total: total,
+                                                    module: module!,
+                                                    subTotal: subTotal,
+                                                    discount: discount,
+                                                    couponController:
+                                                        couponController,
+                                                    taxIncluded: taxIncluded,
+                                                    tax: tax,
+                                                    deliveryCharge:
+                                                        deliveryCharge,
+                                                    todayClosed: todayClosed,
+                                                    tomorrowClosed:
+                                                        tomorrowClosed,
+                                                    orderAmount: orderAmount,
+                                                    maxCodOrderAmount:
+                                                        maxCodOrderAmount,
+                                                    storeId: widget.storeId,
+                                                    taxPercent: _taxPercent,
+                                                    price: price,
+                                                    addOns: addOns,
+                                                    isPrescriptionRequired:
+                                                        isPrescriptionRequired,
+                                                    checkoutButton:
+                                                        _orderPlaceButton(
                                                           checkoutController,
-                                                      total: total,
-                                                      module: module!,
-                                                      subTotal: subTotal,
-                                                      discount: discount,
-                                                      couponController:
-                                                          couponController,
-                                                      taxIncluded: taxIncluded,
-                                                      tax: tax,
-                                                      deliveryCharge:
-                                                          deliveryCharge,
-                                                      todayClosed: todayClosed,
-                                                      tomorrowClosed:
+                                                          todayClosed,
                                                           tomorrowClosed,
-                                                      orderAmount: orderAmount,
-                                                      maxCodOrderAmount:
+                                                          orderAmount,
+                                                          deliveryCharge,
+                                                          tax,
+                                                          discount,
+                                                          total,
                                                           maxCodOrderAmount,
-                                                      storeId: widget.storeId,
-                                                      taxPercent: _taxPercent,
-                                                      price: price,
-                                                      addOns: addOns,
-                                                      isPrescriptionRequired:
                                                           isPrescriptionRequired,
-                                                      checkoutButton:
-                                                          _orderPlaceButton(
-                                                            checkoutController,
-                                                            todayClosed,
-                                                            tomorrowClosed,
-                                                            orderAmount,
-                                                            deliveryCharge,
-                                                            tax,
-                                                            discount,
-                                                            total,
-                                                            maxCodOrderAmount,
-                                                            isPrescriptionRequired,
-                                                          ),
-                                                      referralDiscount:
-                                                          referralDiscount,
-                                                      variationPrice:
-                                                          isPassedVariationPrice
-                                                          ? variations
-                                                          : 0,
-                                                    ),
+                                                        ),
+                                                    referralDiscount:
+                                                        referralDiscount,
+                                                    variationPrice:
+                                                        isPassedVariationPrice
+                                                        ? variations
+                                                        : 0,
                                                   ),
                                                 ],
                                               ),
-                                            )
-                                          : Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                TopSection(
-                                                  checkoutController:
-                                                      checkoutController,
-                                                  charge: originalCharge,
-                                                  deliveryCharge:
-                                                      deliveryCharge,
-                                                  addressList: addressList,
-                                                  tomorrowClosed:
-                                                      tomorrowClosed,
-                                                  todayClosed: todayClosed,
-                                                  module: module,
-                                                  price: price,
-                                                  discount: discount,
-                                                  addOns: addOns,
-                                                  address: address,
-                                                  cartList: _cartList,
-                                                  isCashOnDeliveryActive:
-                                                      _isCashOnDeliveryActive!,
-                                                  isDigitalPaymentActive:
-                                                      _isDigitalPaymentActive!,
-                                                  isWalletActive:
-                                                      _isWalletActive,
-                                                  storeId: widget.storeId,
-                                                  total: total,
-                                                  isOfflinePaymentActive:
-                                                      _isOfflinePaymentActive,
-                                                  guestNameTextEditingController:
-                                                      guestContactPersonNameController,
-                                                  guestNumberTextEditingController:
-                                                      guestContactPersonNumberController,
-                                                  guestNumberNode:
-                                                      guestNumberNode,
-                                                  guestEmailController:
-                                                      guestEmailController,
-                                                  guestEmailNode:
-                                                      guestEmailNode,
-                                                  tooltipController1:
-                                                      tooltipController1,
-                                                  tooltipController2:
-                                                      tooltipController2,
-                                                  dmTipsTooltipController:
-                                                      tooltipController3,
-                                                  guestPasswordController:
-                                                      guestPasswordController,
-                                                  guestConfirmPasswordController:
-                                                      guestConfirmPasswordController,
-                                                  guestPasswordNode:
-                                                      guestPasswordNode,
-                                                  guestConfirmPasswordNode:
-                                                      guestConfirmPasswordNode,
-                                                  variationPrice:
-                                                      isPassedVariationPrice
-                                                      ? variations
-                                                      : 0,
-                                                  deliveryChargeForView:
-                                                      _deliveryChargeForView,
-                                                  badWeatherCharge:
-                                                      badWeatherChargeForToolTip,
-                                                  extraChargeForToolTip:
-                                                      extraChargeForToolTip,
-                                                ),
-                                                BottomSection(
-                                                  checkoutController:
-                                                      checkoutController,
-                                                  total: total,
-                                                  module: module!,
-                                                  subTotal: subTotal,
-                                                  discount: discount,
-                                                  couponController:
-                                                      couponController,
-                                                  taxIncluded: taxIncluded,
-                                                  tax: tax,
-                                                  deliveryCharge:
-                                                      deliveryCharge,
-                                                  todayClosed: todayClosed,
-                                                  tomorrowClosed:
-                                                      tomorrowClosed,
-                                                  orderAmount: orderAmount,
-                                                  maxCodOrderAmount:
-                                                      maxCodOrderAmount,
-                                                  storeId: widget.storeId,
-                                                  taxPercent: _taxPercent,
-                                                  price: price,
-                                                  addOns: addOns,
-                                                  isPrescriptionRequired:
-                                                      isPrescriptionRequired,
-                                                  checkoutButton:
-                                                      _orderPlaceButton(
-                                                        checkoutController,
-                                                        todayClosed,
-                                                        tomorrowClosed,
-                                                        orderAmount,
-                                                        deliveryCharge,
-                                                        tax,
-                                                        discount,
-                                                        total,
-                                                        maxCodOrderAmount,
-                                                        isPrescriptionRequired,
-                                                      ),
-                                                  referralDiscount:
-                                                      referralDiscount,
-                                                  variationPrice:
-                                                      isPassedVariationPrice
-                                                      ? variations
-                                                      : 0,
-                                                ),
-                                              ],
-                                            ),
+                                      ),
                                     ),
-                                  ),
                                   ),
                                 ),
                               ),
@@ -1304,7 +1328,9 @@ class CheckoutScreenState extends State<CheckoutScreen> {
   }) {
     List<AddressModel> address = [];
 
-    address.add(AddressHelper.getUserAddressFromSharedPref()!);
+    if (AddressHelper.getUserAddressFromSharedPref() != null) {
+      address.add(AddressHelper.getUserAddressFromSharedPref()!);
+    }
 
     if (addressList != null && store != null) {
       for (int index = 0; index < addressList.length; index++) {
@@ -1316,11 +1342,10 @@ class CheckoutScreenState extends State<CheckoutScreen> {
     return address;
   }
 
-  Pivot? _getModuleData({required Store? store}) {
+  Pivot? _getModuleData({required Store? store, required AddressModel? address}) {
     Pivot? moduleData;
-    if (store != null) {
-      for (ZoneData zData
-          in AddressHelper.getUserAddressFromSharedPref()!.zoneData!) {
+    if (store != null && address != null) {
+      for (ZoneData zData in address.zoneData ?? []) {
         for (Modules m in zData.modules!) {
           if (m.id == Get.find<SplashController>().module!.id &&
               m.pivot!.zoneId == store.zoneId) {
@@ -1333,11 +1358,10 @@ class CheckoutScreenState extends State<CheckoutScreen> {
     return moduleData;
   }
 
-  bool _checkCODActive({required Store? store}) {
+  bool _checkCODActive({required Store? store, required AddressModel? address}) {
     bool isCashOnDeliveryActive = false;
-    if (store != null) {
-      for (ZoneData zData
-          in AddressHelper.getUserAddressFromSharedPref()!.zoneData!) {
+    if (store != null && address != null) {
+      for (ZoneData zData in address.zoneData ?? []) {
         if (zData.id == store.zoneId) {
           isCashOnDeliveryActive =
               zData.cashOnDelivery! &&
@@ -1349,15 +1373,13 @@ class CheckoutScreenState extends State<CheckoutScreen> {
     return isCashOnDeliveryActive;
   }
 
-  bool _checkDigitalPaymentActive({required Store? store}) {
+  bool _checkDigitalPaymentActive({
+    required Store? store,
+    required AddressModel? address,
+  }) {
     bool isDigitalPaymentActive = false;
-    if (store != null) {
-      for (ZoneData zData
-          in AddressHelper.getUserAddressFromSharedPref()!.zoneData!) {
-        "==Get.find<SplashController>().configModel!.digitalPayment"
-                " ${Get.find<SplashController>().configModel!.digitalPayment}"
-                " zData.digitalPayment == ${store.zoneId} === ${zData.id}"
-            .print;
+    if (store != null && address != null) {
+      for (ZoneData zData in address.zoneData ?? []) {
         if (zData.id == store.zoneId) {
           isDigitalPaymentActive =
               zData.digitalPayment! &&
@@ -1716,7 +1738,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
 
   num _calculateOriginalDeliveryCharge({
     required Store? store,
-    required AddressModel address,
+    required AddressModel? address,
     required num? distance,
     required num? extraCharge,
   }) {
@@ -1724,7 +1746,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
 
     Pivot? moduleData;
     ZoneData? zoneData;
-    if (store != null) {
+    if (store != null && address != null) {
       for (ZoneData zData in address.zoneData ?? []) {
         for (Modules m in zData.modules!) {
           if (m.id == Get.find<SplashController>().module!.id &&
@@ -1742,14 +1764,14 @@ class CheckoutScreenState extends State<CheckoutScreen> {
     num perKmCharge = 0;
     num minimumCharge = 0;
     num? maximumCharge = 0;
-    if (store != null &&
+    /*if (store != null &&
         distance != null &&
         distance != -1 &&
         store.selfDeliverySystem == 1) {
       perKmCharge = store.perKmShippingCharge ?? 0;
       minimumCharge = store.minimumShippingCharge ?? 0;
       maximumCharge = store.maximumShippingCharge;
-    } else if (store != null &&
+    } else*/ if (store != null &&
         distance != null &&
         distance != -1 &&
         moduleData != null) {
@@ -1759,19 +1781,28 @@ class CheckoutScreenState extends State<CheckoutScreen> {
     }
     if (store != null && distance != null) {
       deliveryCharge = distance * perKmCharge;
-      print("===>>> here calculation 6 $distance $deliveryCharge");
+      debugPrint('--- Delivery Charge Calculation ---');
+      debugPrint('Distance: $distance km');
+      debugPrint('Per KM Charge: $perKmCharge');
+      debugPrint('Minimum Charge: $minimumCharge');
+      debugPrint('Maximum Charge: $maximumCharge');
+      debugPrint('Initial Calculated (dist * perKm): $deliveryCharge');
+
       if (deliveryCharge < minimumCharge) {
         deliveryCharge = minimumCharge;
+        debugPrint('Applied Minimum Charge: $deliveryCharge');
       } else if (maximumCharge != null && deliveryCharge > maximumCharge) {
         deliveryCharge = maximumCharge;
+        debugPrint('Applied Maximum Charge: $deliveryCharge');
       }
     }
-    print("===>>> here calculation 7 $deliveryCharge");
 
     if (store != null && store.selfDeliverySystem == 0 && extraCharge != null) {
       extraChargeForToolTip = extraCharge;
       deliveryCharge = deliveryCharge + extraCharge;
+      debugPrint('Added Extra Charge: $extraCharge, New Total: $deliveryCharge');
     }
+
     print("===>>> here calculation 8 $deliveryCharge");
     if (store != null &&
         store.selfDeliverySystem == 0 &&
@@ -1783,17 +1814,18 @@ class CheckoutScreenState extends State<CheckoutScreen> {
           deliveryCharge +
           (deliveryCharge * (zoneData.increaseDeliveryFee! / 100));
     }
+
     print("===>>> here calculation  $deliveryCharge");
     return deliveryCharge;
   }
 
   num _calculateDeliveryCharge({
     required Store? store,
-    required AddressModel address,
+    required AddressModel? address,
     required num? distance,
     required num? extraCharge,
-    required num orderAmount,
     required String orderType,
+    required num orderAmount,
   }) {
     num deliveryCharge = _calculateOriginalDeliveryCharge(
       store: store,
@@ -1829,6 +1861,14 @@ class CheckoutScreenState extends State<CheckoutScreen> {
             (configModel!.adminFreeDelivery?.freeDeliveryKm != null &&
                 (configModel.adminFreeDelivery?.freeDeliveryKm ?? 0) >=
                     (distance ?? 0))) ||
+        /// below condition is to give free delivery for
+        /// store wise
+        (configModel?.adminFreeDelivery?.status == true &&
+            (configModel?.adminFreeDelivery?.type != null &&
+                configModel?.adminFreeDelivery?.type ==
+                    'free_delivery_by_store') &&
+            (configModel!.adminFreeDelivery?.storeIds != null &&
+                configModel.adminFreeDelivery!.storeIds!.contains(store?.id))) ||
         Get.find<CouponController>().freeDelivery ||
         (AuthHelper.isGuestLoggedIn() &&
             (Get.find<CheckoutController>().guestAddress == null &&
@@ -1853,7 +1893,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
   }) {
     return PriceConverter.toFixed(
       subTotal +
-          deliveryCharge -
+          (deliveryCharge == -1 ? 0 : deliveryCharge) -
           discount -
           couponDiscount +
           (taxIncluded ? 0 : tax) +
@@ -1872,7 +1912,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
   }) {
     bool? status = false;
     ZoneData? zoneData;
-    for (var data in addressModel!.zoneData!) {
+    for (var data in addressModel?.zoneData ?? []) {
       if (data.id == checkoutController.store?.zoneId) {
         zoneData = data;
         break;

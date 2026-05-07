@@ -9,6 +9,7 @@ import 'package:friday_sa/util/app_constants.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/styles.dart';
 import 'package:friday_sa/common/widgets/custom_image.dart';
+import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
 
 class WebRecommendedStoreView extends StatelessWidget {
@@ -85,19 +86,32 @@ class WebRecommendedStoreView extends StatelessWidget {
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
-                                    Get.toNamed(
-                                      RouteHelper.getStoreRoute(
-                                        id: storeController
-                                            .recommendedStoreList![index]
-                                            .id,
-                                        page: 'store',
-                                      ),
-                                      arguments: StoreScreen(
-                                        store: storeController
-                                            .recommendedStoreList![index],
-                                        fromModule: false,
-                                      ),
-                                    );
+                                    if (storeController
+                                                .recommendedStoreList![index]
+                                                .open ==
+                                            0 ||
+                                        storeController
+                                                .recommendedStoreList![index]
+                                                .active ==
+                                            false) {
+                                      showCustomSnackBar(
+                                        'this_store_is_closed_now'.tr,
+                                      );
+                                    } else {
+                                      Get.toNamed(
+                                        RouteHelper.getStoreRoute(
+                                          id: storeController
+                                              .recommendedStoreList![index]
+                                              .id,
+                                          page: 'store',
+                                        ),
+                                        arguments: StoreScreen(
+                                          store: storeController
+                                              .recommendedStoreList![index],
+                                          fromModule: false,
+                                        ),
+                                      );
+                                    }
                                   },
                                   child: TextHover(
                                     builder: (hovered) {

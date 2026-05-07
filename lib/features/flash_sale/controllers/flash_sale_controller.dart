@@ -33,6 +33,7 @@ class FlashSaleController extends GetxController implements GetxService {
     if (fromModule) {
       _flashSaleModel = null;
     }
+    update();
   }
 
   Future<void> getFlashSale(

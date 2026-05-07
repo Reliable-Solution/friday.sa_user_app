@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:friday_sa/common/widgets/custom_ink_well.dart';
 import 'package:friday_sa/common/widgets/hover/text_hover.dart';
@@ -62,20 +63,24 @@ class StoreCardWidget extends StatelessWidget {
                 child: CustomInkWell(
                   onTap: () {
                     if (store != null) {
-                      if (Get.find<SplashController>().moduleList != null) {
-                        for (ModuleModel module
-                            in Get.find<SplashController>().moduleList!) {
-                          if (module.id == store!.moduleId) {
-                            Get.find<SplashController>().setModule(module);
-                            HomeScreen.loadData(false);
-                            break;
+                      if (store!.open == 0 || store!.active == false) {
+                        showCustomSnackBar('this_store_is_closed_now'.tr);
+                      } else {
+                        if (Get.find<SplashController>().moduleList != null) {
+                          for (ModuleModel module
+                              in Get.find<SplashController>().moduleList!) {
+                            if (module.id == store!.moduleId) {
+                              Get.find<SplashController>().setModule(module);
+                              HomeScreen.loadData(false);
+                              break;
+                            }
                           }
                         }
+                        Get.toNamed(
+                          RouteHelper.getStoreRoute(id: store!.id, page: 'item'),
+                          arguments: StoreScreen(store: store, fromModule: true),
+                        );
                       }
-                      Get.toNamed(
-                        RouteHelper.getStoreRoute(id: store!.id, page: 'item'),
-                        arguments: StoreScreen(store: store, fromModule: true),
-                      );
                     }
                   },
                   radius: Dimensions.radiusDefault,
@@ -270,7 +275,7 @@ class StoreCardWidget extends StatelessWidget {
                               ),
                               Row(
                                 children: [
-                                  store!.freeDelivery!
+                                  FreeDeliveryHelper.isFreeDelivery(store)
                                       ? Row(
                                           children: [
                                             Image.asset(
@@ -299,7 +304,7 @@ class StoreCardWidget extends StatelessWidget {
                                         )
                                       : const SizedBox(),
                                   SizedBox(
-                                    width: store!.freeDelivery!
+                                    width: FreeDeliveryHelper.isFreeDelivery(store)
                                         ? Dimensions.paddingSizeSmall
                                         : 0,
                                   ),

@@ -126,70 +126,70 @@ class SignUpWidgetState extends State<SignUpWidget> {
                             : Dimensions.paddingSizeSmall,
                       ),
 
-                      // Row(
-                      //   crossAxisAlignment: CrossAxisAlignment.start,
-                      //   children: [
-                      //     Expanded(
-                      //       child: CustomTextField(
-                      //         titleText: 'ex_jhon'.tr,
-                      //         labelText: 'user_name'.tr,
-                      //         showLabelText: true,
-                      //         required: true,
-                      //         controller: _nameController,
-                      //         focusNode: _nameFocus,
-                      //         nextFocus: isDesktop
-                      //             ? _referCodeFocus
-                      //             : _phoneFocus,
-                      //         inputType: TextInputType.name,
-                      //         capitalization: TextCapitalization.words,
-                      //         prefixIcon: CupertinoIcons.person_alt_circle_fill,
-                      //         validator: (value) =>
-                      //             ValidateCheck.validateEmptyText(
-                      //               value,
-                      //               "please_enter_your_name".tr,
-                      //             ),
-                      //       ),
-                      //     ),
-                      //     SizedBox(
-                      //       width:
-                      //           Get.find<SplashController>()
-                      //                       .configModel!
-                      //                       .refEarningStatus ==
-                      //                   1 &&
-                      //               isDesktop
-                      //           ? Dimensions.paddingSizeSmall
-                      //           : 0,
-                      //     ),
-                      //     (Get.find<SplashController>()
-                      //                     .configModel!
-                      //                     .refEarningStatus ==
-                      //                 1 &&
-                      //             isDesktop)
-                      //         ? Expanded(
-                      //             child: CustomTextField(
-                      //               titleText: 'refer_code'.tr,
-                      //               labelText: 'refer_code'.tr,
-                      //               showLabelText: true,
-                      //               controller: _referCodeController,
-                      //               focusNode: _referCodeFocus,
-                      //               nextFocus: isDesktop
-                      //                   ? _emailFocus
-                      //                   : _phoneFocus,
-                      //               inputType: TextInputType.text,
-                      //               capitalization: TextCapitalization.words,
-                      //               prefixImage: Images.referCode,
-                      //               divider: false,
-                      //               prefixSize: 14,
-                      //             ),
-                      //           )
-                      //         : const SizedBox(),
-                      //   ],
-                      // ),
-                      // SizedBox(
-                      //   height: isDesktop
-                      //       ? Dimensions.paddingSizeExtraLarge
-                      //       : Dimensions.paddingSizeLarge,
-                      // ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: CustomTextField(
+                              titleText: 'ex_jhon'.tr,
+                              labelText: 'user_name'.tr,
+                              showLabelText: true,
+                              required: true,
+                              controller: _nameController,
+                              focusNode: _nameFocus,
+                              nextFocus: isDesktop
+                                  ? _referCodeFocus
+                                  : _phoneFocus,
+                              inputType: TextInputType.name,
+                              capitalization: TextCapitalization.words,
+                              prefixIcon: CupertinoIcons.person_alt_circle_fill,
+                              validator: (value) =>
+                                  ValidateCheck.validateEmptyText(
+                                    value,
+                                    "please_enter_your_name".tr,
+                                  ),
+                            ),
+                          ),
+                          SizedBox(
+                            width:
+                                Get.find<SplashController>()
+                                            .configModel!
+                                            .refEarningStatus ==
+                                        1 &&
+                                    isDesktop
+                                ? Dimensions.paddingSizeSmall
+                                : 0,
+                          ),
+                          (Get.find<SplashController>()
+                                          .configModel!
+                                          .refEarningStatus ==
+                                      1 &&
+                                  isDesktop)
+                              ? Expanded(
+                                  child: CustomTextField(
+                                    titleText: 'refer_code'.tr,
+                                    labelText: 'refer_code'.tr,
+                                    showLabelText: true,
+                                    controller: _referCodeController,
+                                    focusNode: _referCodeFocus,
+                                    nextFocus: isDesktop
+                                        ? _emailFocus
+                                        : _phoneFocus,
+                                    inputType: TextInputType.text,
+                                    capitalization: TextCapitalization.words,
+                                    prefixImage: Images.referCode,
+                                    divider: false,
+                                    prefixSize: 14,
+                                  ),
+                                )
+                              : const SizedBox(),
+                        ],
+                      ),
+                      SizedBox(
+                        height: isDesktop
+                            ? Dimensions.paddingSizeExtraLarge
+                            : Dimensions.paddingSizeLarge,
+                      ),
                       Row(
                         children: [
                           //     isDesktop
@@ -627,16 +627,16 @@ class SignUpWidgetState extends State<SignUpWidget> {
     numberWithCountryCode = phoneValid.phone;
 
     if (_formKeySignUp!.currentState!.validate()) {
-      // if (name.isEmpty) {
-      //   showCustomSnackBar('please_enter_your_name'.tr);
-      // }
+      if (name.isEmpty) {
+        showCustomSnackBar('please_enter_your_name'.tr);
+      }
       // else if (email.isEmpty) {
       //   showCustomSnackBar('enter_email_address'.tr);
       // }
       // else if (!GetUtils.isEmail(email)) {
       //   showCustomSnackBar('enter_a_valid_email_address'.tr);
       // }
-      if (number.isEmpty) {
+      else if (number.isEmpty) {
         showCustomSnackBar('enter_phone_number'.tr);
       } else if (!phoneValid.isValid) {
         showCustomSnackBar('invalid_phone_number'.tr);
@@ -652,9 +652,11 @@ class SignUpWidgetState extends State<SignUpWidget> {
         showCustomSnackBar('invalid_refer_code'.tr);
       } else {
         SignUpBodyModel signUpBody = SignUpBodyModel(
-          // name: name,
-          // email: email,
+          fName: name,
+          lName: '',
+          name: name,
           phone: numberWithCountryCode,
+          // email: email,
           // password: password,
           refCode: referCode,
         );

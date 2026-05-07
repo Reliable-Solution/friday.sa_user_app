@@ -70,32 +70,39 @@ class BannerView extends StatelessWidget {
                                           .navigateToItemPage(item, context);
                                     } else if (bannerDataList[index] is Store) {
                                       Store? store = bannerDataList[index];
-                                      if (isFeatured &&
-                                          Get.find<SplashController>()
-                                                  .moduleList !=
-                                              null) {
-                                        for (ModuleModel module
-                                            in Get.find<SplashController>()
-                                                .moduleList!) {
-                                          if (module.id == store!.moduleId) {
+                                      if (store!.open == 0 ||
+                                          store.active == false) {
+                                        showCustomSnackBar(
+                                          'this_store_is_closed_now'.tr,
+                                        );
+                                      } else {
+                                        if (isFeatured &&
                                             Get.find<SplashController>()
-                                                .setModule(module);
-                                            break;
+                                                    .moduleList !=
+                                                null) {
+                                          for (ModuleModel module
+                                              in Get.find<SplashController>()
+                                                  .moduleList!) {
+                                            if (module.id == store.moduleId) {
+                                              Get.find<SplashController>()
+                                                  .setModule(module);
+                                              break;
+                                            }
                                           }
                                         }
+                                        Get.toNamed(
+                                          RouteHelper.getStoreRoute(
+                                            id: store.id,
+                                            page: isFeatured
+                                                ? 'module'
+                                                : 'banner',
+                                          ),
+                                          arguments: StoreScreen(
+                                            store: store,
+                                            fromModule: isFeatured,
+                                          ),
+                                        );
                                       }
-                                      Get.toNamed(
-                                        RouteHelper.getStoreRoute(
-                                          id: store!.id,
-                                          page: isFeatured
-                                              ? 'module'
-                                              : 'banner',
-                                        ),
-                                        arguments: StoreScreen(
-                                          store: store,
-                                          fromModule: isFeatured,
-                                        ),
-                                      );
                                     } else if (bannerDataList[index]
                                         is BasicCampaignModel) {
                                       BasicCampaignModel campaign =

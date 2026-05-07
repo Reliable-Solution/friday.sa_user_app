@@ -5,6 +5,7 @@ import 'package:friday_sa/features/item/controllers/item_controller.dart';
 import 'package:friday_sa/features/item/domain/models/item_model.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/styles.dart';
+import 'package:friday_sa/features/store/controllers/store_controller.dart';
 
 class CartCountView extends StatelessWidget {
   const CartCountView({
@@ -45,24 +46,28 @@ class CartCountView extends StatelessWidget {
                         onTap: cartController.isLoading
                             ? null
                             : () {
-                                if (cartController
-                                        .cartList[cartIndex]
-                                        .quantity! >
-                                    1) {
-                                  cartController.setDirectlyAddToCartIndex(
-                                    index,
-                                  );
-                                  cartController.setQuantity(
-                                    false,
-                                    cartIndex,
-                                    cartController.cartList[cartIndex].stock,
-                                    cartController
-                                        .cartList[cartIndex]
-                                        .item!
-                                        .quantityLimit,
-                                  );
+                                if (item.storeOpen == 0 || item.storeActive == false || (item.storeOpen == null && Get.find<StoreController>().store != null && item.storeId == Get.find<StoreController>().store!.id && (Get.find<StoreController>().store!.open == 0 || Get.find<StoreController>().store!.active == false))) {
+                                  Get.find<ItemController>().showStoreClosedSnackbar();
                                 } else {
-                                  cartController.removeFromCart(cartIndex);
+                                  if (cartController
+                                          .cartList[cartIndex]
+                                          .quantity! >
+                                      1) {
+                                    cartController.setDirectlyAddToCartIndex(
+                                      index,
+                                    );
+                                    cartController.setQuantity(
+                                      false,
+                                      cartIndex,
+                                      cartController.cartList[cartIndex].stock,
+                                      cartController
+                                          .cartList[cartIndex]
+                                          .item!
+                                          .quantityLimit,
+                                    );
+                                  } else {
+                                    cartController.removeFromCart(cartIndex);
+                                  }
                                 }
                               },
                         child: Container(
@@ -109,15 +114,19 @@ class CartCountView extends StatelessWidget {
                         onTap: cartController.isLoading
                             ? null
                             : () {
-                                cartController.setDirectlyAddToCartIndex(index);
-                                cartController.setQuantity(
-                                  true,
-                                  cartIndex,
-                                  cartController.cartList[cartIndex].stock,
-                                  cartController
-                                      .cartList[cartIndex]
-                                      .quantityLimit,
-                                );
+                                if (item.storeOpen == 0 || item.storeActive == false || (item.storeOpen == null && Get.find<StoreController>().store != null && item.storeId == Get.find<StoreController>().store!.id && (Get.find<StoreController>().store!.open == 0 || Get.find<StoreController>().store!.active == false))) {
+                                  Get.find<ItemController>().showStoreClosedSnackbar();
+                                } else {
+                                  cartController.setDirectlyAddToCartIndex(index);
+                                  cartController.setQuantity(
+                                    true,
+                                    cartIndex,
+                                    cartController.cartList[cartIndex].stock,
+                                    cartController
+                                        .cartList[cartIndex]
+                                        .quantityLimit,
+                                  );
+                                }
                               },
                         child: Container(
                           decoration: BoxDecoration(
@@ -143,10 +152,14 @@ class CartCountView extends StatelessWidget {
               )
             : InkWell(
                 onTap: () {
-                  Get.find<ItemController>().itemDirectlyAddToCart(
-                    item,
-                    context,
-                  );
+                  if (item.storeOpen == 0 || item.storeActive == false || (item.storeOpen == null && Get.find<StoreController>().store != null && item.storeId == Get.find<StoreController>().store!.id && (Get.find<StoreController>().store!.open == 0 || Get.find<StoreController>().store!.active == false))) {
+                    Get.find<ItemController>().showStoreClosedSnackbar();
+                  } else {
+                    Get.find<ItemController>().itemDirectlyAddToCart(
+                      item,
+                      context,
+                    );
+                  }
                 },
                 child:
                     child ??

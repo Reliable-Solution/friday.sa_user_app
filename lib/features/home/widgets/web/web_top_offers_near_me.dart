@@ -10,6 +10,7 @@ import 'package:friday_sa/common/widgets/custom_image.dart';
 import 'package:friday_sa/common/widgets/hover/on_hover.dart';
 import 'package:friday_sa/common/widgets/hover/text_hover.dart';
 import 'package:friday_sa/common/widgets/rating_bar.dart';
+import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 import 'package:friday_sa/common/widgets/title_widget.dart';
 import 'package:friday_sa/features/home/widgets/web/widgets/arrow_icon_button.dart';
 import 'package:friday_sa/features/language/controllers/language_controller.dart';
@@ -215,19 +216,23 @@ class _WebTopOffersNearMeState extends State<WebTopOffersNearMe> {
           return InkWell(
             hoverColor: Colors.transparent,
             onTap: () {
-              if (Get.find<SplashController>().moduleList != null) {
-                for (ModuleModel module
-                    in Get.find<SplashController>().moduleList!) {
-                  if (module.id == store.moduleId) {
-                    Get.find<SplashController>().setModule(module);
-                    break;
+              if (store.open == 0 || store.active == false) {
+                showCustomSnackBar('this_store_is_closed_now'.tr);
+              } else {
+                if (Get.find<SplashController>().moduleList != null) {
+                  for (ModuleModel module
+                      in Get.find<SplashController>().moduleList!) {
+                    if (module.id == store.moduleId) {
+                      Get.find<SplashController>().setModule(module);
+                      break;
+                    }
                   }
                 }
+                Get.toNamed(
+                  RouteHelper.getStoreRoute(id: store.id, page: 'store'),
+                  arguments: StoreScreen(store: store, fromModule: false),
+                );
               }
-              Get.toNamed(
-                RouteHelper.getStoreRoute(id: store.id, page: 'store'),
-                arguments: StoreScreen(store: store, fromModule: false),
-              );
             },
             child: Stack(
               children: [

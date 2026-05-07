@@ -869,20 +869,28 @@ class AdminFreeDelivery {
     this.type,
     this.freeDeliveryOver,
     this.freeDeliveryKm,
+    this.storeIds,
   });
 
   factory AdminFreeDelivery.fromJson(Map<String, dynamic> json) {
+    List<int>? storeIds;
+    if (json['store_ids'] != null) {
+      storeIds = [];
+      json['store_ids'].forEach((v) => storeIds!.add(int.parse(v.toString())));
+    }
     return AdminFreeDelivery(
       status: json['status'],
       type: json['type'],
       freeDeliveryOver: json['free_delivery_over'] as num?,
       freeDeliveryKm: json['free_delivery_km'] as num?,
+      storeIds: storeIds,
     );
   }
   final bool? status;
   final String? type;
   final num? freeDeliveryKm;
   final num? freeDeliveryOver;
+  final List<int>? storeIds;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -890,6 +898,7 @@ class AdminFreeDelivery {
     data['type'] = type;
     data['free_delivery_over'] = freeDeliveryOver;
     data['free_delivery_km'] = freeDeliveryKm;
+    data['store_ids'] = storeIds;
     return data;
   }
 }

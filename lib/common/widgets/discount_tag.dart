@@ -70,13 +70,11 @@ class DiscountTag extends StatelessWidget {
                       ),
               ),
               child: Text(
-                (discount ?? 0) > 0
-                    ? '${(isRightSide || discountType == 'percent') ? '' : currencySymbol}$discount${discountType == 'percent'
-                          ? '%'
-                          : isRightSide
-                          ? currencySymbol
-                          : ''} ${'off'.tr}'
-                    : 'free_delivery'.tr,
+                ((discount ?? 0) > 0 && (freeDelivery ?? false))
+                    ? '${(isRightSide || discountType == 'percent') ? '' : currencySymbol}$discount${discountType == 'percent' ? '%' : isRightSide ? currencySymbol : ''} ${'off'.tr} + ${'free'.tr}'
+                    : (discount ?? 0) > 0
+                        ? '${(isRightSide || discountType == 'percent') ? '' : currencySymbol}$discount${discountType == 'percent' ? '%' : isRightSide ? currencySymbol : ''} ${'off'.tr}'
+                        : 'free_delivery'.tr,
                 style: robotoMedium.copyWith(
                   color: Colors.white,
                   fontSize:

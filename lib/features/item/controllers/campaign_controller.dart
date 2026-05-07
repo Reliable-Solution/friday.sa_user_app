@@ -31,6 +31,7 @@ class CampaignController extends GetxController implements GetxService {
   void itemAndBasicCampaignNull() {
     _itemCampaignList = null;
     _basicCampaignList = null;
+    update();
   }
 
   Future<void> getBasicCampaignList(

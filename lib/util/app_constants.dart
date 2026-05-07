@@ -379,3 +379,17 @@ class AppConstants {
   //taxi seats..
   static List<String> seats = ['1-4', '5-8', '9-13', '14+'];
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

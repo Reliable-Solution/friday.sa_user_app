@@ -39,6 +39,7 @@ import 'package:friday_sa/features/cart/widgets/web_cart_items_widget.dart';
 import 'package:friday_sa/features/cart/widgets/web_suggested_item_view_widget.dart';
 import 'package:friday_sa/features/home/screens/home_screen.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key, required this.fromNav});
@@ -1096,7 +1097,7 @@ class CheckoutButton extends StatelessWidget {
             distance: distance,
             extraCharge: extraCharge,
           );
-          if (!(storeController.store?.freeDelivery ?? false) &&
+          if (!(FreeDeliveryHelper.isFreeDelivery(storeController.store)) &&
               ((adminFreeDelivery?.status ?? false) &&
                   (adminFreeDelivery?.type ==
                       'free_delivery_by_order_amount') &&

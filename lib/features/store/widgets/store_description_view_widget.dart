@@ -12,6 +12,7 @@ import 'package:friday_sa/util/images.dart';
 import 'package:friday_sa/util/styles.dart';
 import 'package:friday_sa/common/widgets/custom_image.dart';
 import 'package:friday_sa/common/widgets/custom_snackbar.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -254,6 +255,27 @@ class StoreDescriptionViewWidget extends StatelessWidget {
                             ),
                           ],
                         ),
+                        if (FreeDeliveryHelper.isFreeDelivery(store))
+                          Padding(
+                            padding: const EdgeInsets.only(top: Dimensions.paddingSizeExtraSmall),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  color: textColor ?? Theme.of(context).primaryColor,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                Text(
+                                  'free_delivery'.tr,
+                                  style: robotoMedium.copyWith(
+                                    fontSize: Dimensions.fontSizeExtraSmall,
+                                    color: textColor ?? Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -379,7 +401,7 @@ class StoreDescriptionViewWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    (store!.delivery! && store!.freeDelivery!)
+                    /* (store!.delivery! && store!.freeDelivery!)
                         ? const Expanded(child: SizedBox())
                         : const SizedBox(),
                     (store!.delivery! && store!.freeDelivery!)
@@ -411,7 +433,7 @@ class StoreDescriptionViewWidget extends StatelessWidget {
                               ),
                             ],
                           )
-                        : const SizedBox(),
+                        : const SizedBox(), */
                     const Expanded(child: SizedBox()),
                   ],
                 ),
@@ -531,7 +553,7 @@ class StoreDescriptionViewWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  (store!.delivery! && store!.freeDelivery!)
+                  /* (store!.delivery! && store!.freeDelivery!)
                       ? const Expanded(child: SizedBox())
                       : const SizedBox(),
                   (store!.delivery! && store!.freeDelivery!)
@@ -554,7 +576,7 @@ class StoreDescriptionViewWidget extends StatelessWidget {
                             ),
                           ],
                         )
-                      : const SizedBox(),
+                      : const SizedBox(), */
                   const Expanded(child: SizedBox()),
                 ],
               ),

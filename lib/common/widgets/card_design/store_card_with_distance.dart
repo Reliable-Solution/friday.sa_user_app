@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:friday_sa/common/widgets/custom_ink_well.dart';
 import 'package:friday_sa/common/widgets/hover/text_hover.dart';
 import 'package:friday_sa/features/language/controllers/language_controller.dart';
@@ -63,19 +64,23 @@ class StoreCardWithDistance extends StatelessWidget {
           ),
           child: CustomInkWell(
             onTap: () {
-              if (Get.find<SplashController>().moduleList != null) {
-                for (ModuleModel module
-                    in Get.find<SplashController>().moduleList!) {
-                  if (module.id == store.moduleId) {
-                    Get.find<SplashController>().setModule(module);
-                    break;
+              if (store.open == 0 || store.active == false) {
+                showCustomSnackBar('this_store_is_closed_now'.tr);
+              } else {
+                if (Get.find<SplashController>().moduleList != null) {
+                  for (ModuleModel module
+                      in Get.find<SplashController>().moduleList!) {
+                    if (module.id == store.moduleId) {
+                      Get.find<SplashController>().setModule(module);
+                      break;
+                    }
                   }
                 }
+                Get.toNamed(
+                  RouteHelper.getStoreRoute(id: store.id, page: 'store'),
+                  arguments: StoreScreen(store: store, fromModule: false),
+                );
               }
-              Get.toNamed(
-                RouteHelper.getStoreRoute(id: store.id, page: 'store'),
-                arguments: StoreScreen(store: store, fromModule: false),
-              );
             },
             radius: Dimensions.radiusDefault,
             child: TextHover(
@@ -105,7 +110,7 @@ class StoreCardWithDistance extends StatelessWidget {
                                         .getDiscount(store),
                                     discountType: Get.find<StoreController>()
                                         .getDiscountType(store),
-                                    freeDelivery: store.freeDelivery,
+                                    freeDelivery: FreeDeliveryHelper.isFreeDelivery(store),
                                   )
                                 : const SizedBox(),
                             Get.find<StoreController>().isOpenNow(store)
@@ -142,7 +147,9 @@ class StoreCardWithDistance extends StatelessWidget {
                                                   : isRightSide
                                                   ? currencySymbol
                                                   : ''} ${'off'.tr}'
-                                            : 'free_delivery'.tr,
+                                            : FreeDeliveryHelper.isFreeDelivery(store)
+                                                ? 'free_delivery'.tr
+                                                : '',
                                         style: robotoMedium.copyWith(
                                           color: Theme.of(context).cardColor,
                                           fontSize: Dimensions.fontSizeSmall,
@@ -261,6 +268,27 @@ class StoreCardWithDistance extends StatelessWidget {
                                           ],
                                         )
                                       : const SizedBox(),
+                                  if (FreeDeliveryHelper.isFreeDelivery(store))
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.check_circle,
+                                            color: Theme.of(context).primaryColor,
+                                            size: 12,
+                                          ),
+                                          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                          Text(
+                                            'free_delivery'.tr,
+                                            style: robotoMedium.copyWith(
+                                              color: Theme.of(context).primaryColor,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),

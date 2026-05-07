@@ -53,6 +53,7 @@ class HomeScreen extends StatefulWidget {
 
   final bool isLoad;
 
+  
   static Future<void> loadData(bool reload, {bool fromModule = false}) async {
     Get.find<LocationController>().syncZoneData();  
     Get.find<FlashSaleController>().setEmptyFlashSale(fromModule: fromModule);
@@ -174,22 +175,18 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     _scrollController.addListener(() {
-      if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
+      if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
         if (Get.find<HomeController>().showFavButton) {
           Get.find<HomeController>().changeFavVisibility();
-          Future.delayed(
-            const Duration(milliseconds: 800),
-            () => Get.find<HomeController>().changeFavVisibility(),
-          );
+          Future.delayed(const Duration(milliseconds: 800), () {
+            if(!Get.find<HomeController>().showFavButton) {
+              Get.find<HomeController>().changeFavVisibility();
+            }
+          });
         }
       } else {
-        if (Get.find<HomeController>().showFavButton) {
+        if (!Get.find<HomeController>().showFavButton) {
           Get.find<HomeController>().changeFavVisibility();
-          Future.delayed(
-            const Duration(milliseconds: 800),
-            () => Get.find<HomeController>().changeFavVisibility(),
-          );
         }
       }
     });
@@ -303,10 +300,10 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: Theme.of(context).colorScheme.surface,
               body: isParcel
                   ? const ParcelCategoryScreen()
-                  : SafeArea(
-                      child: RefreshIndicator(
+                  : RefreshIndicator(
                         onRefresh: () async {
                           splashController.setRefreshing(true);
+                          await Get.find<SplashController>().getConfigData();
                           if (Get.find<SplashController>().module != null &&
                               !isTaxi) {
                             await Get.find<LocationController>().syncZoneData();
@@ -352,6 +349,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               await Get.find<NotificationController>()
                                   .getNotificationList(true);
                               Get.find<CouponController>().getCouponList();
+                              await Get.find<StoreController>()
+                                  .getVisitAgainStoreList(fromModule: true);
                             }
                             if (isPharmacy) {
                               Get.find<ItemController>().getBasicMedicine(
@@ -394,7 +393,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 slivers: [
                                   /// App Bar
                                   SliverAppBar(
-                                    floating: true,
+                                    pinned: true,
                                     elevation: 0,
                                     automaticallyImplyLeading: false,
                                     surfaceTintColor: Theme.of(
@@ -872,7 +871,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ],
                               ),
-                      ),
                     ),
               floatingActionButton:
                   AuthHelper.isLoggedIn() &&

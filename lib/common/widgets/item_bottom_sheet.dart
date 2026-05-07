@@ -26,6 +26,8 @@ import 'package:friday_sa/common/widgets/rating_bar.dart';
 import 'package:friday_sa/features/checkout/screens/checkout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../features/store/controllers/store_controller.dart';
+import '../../features/store/domain/models/store_model.dart' as store_model;
 
 class ItemBottomSheet extends StatefulWidget {
   const ItemBottomSheet({
@@ -99,6 +101,7 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
             .newVariation ??
         false;
     Get.find<ItemController>().initData(widget.item, widget.cart);
+    Get.find<StoreController>().getStoreDetails(store_model.Store(id: widget.item!.storeId), false);
     _initInitialState();
   }
 
@@ -1152,58 +1155,65 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                       ),
 
                                       Expanded(
-                                        child: GetBuilder<CartController>(
-                                          builder: (cartController) {
-                                            return CustomButton(
-                                              width:
-                                                  ResponsiveHelper.isDesktop(
-                                                    context,
-                                                  )
-                                                  ? MediaQuery.of(
-                                                          context,
-                                                        ).size.width /
-                                                        2.0
-                                                  : null,
-                                              /*buttonText: isCampaign ? 'order_now'.tr : isExistInCart ? 'already_added_in_cart'.tr : fromCart
+                                        child: GetBuilder<StoreController>(
+                                          builder: (storeController) {
+                                            bool isStoreClosed = (widget.item!.storeOpen == 0 || widget.item!.storeActive == false) || (storeController.store != null && (storeController.store!.open == 0 || storeController.store!.active == false));
+
+
+                                            return GetBuilder<CartController>(
+                                              builder: (cartController) {
+                                                return CustomButton(
+                                                  width:
+                                                      ResponsiveHelper.isDesktop(
+                                                        context,
+                                                      )
+                                                      ? MediaQuery.of(
+                                                              context,
+                                                            ).size.width /
+                                                            2.0
+                                                      : null,
+                                                  /*buttonText: isCampaign ? 'order_now'.tr : isExistInCart ? 'already_added_in_cart'.tr : fromCart
                                           ? 'update_in_cart'.tr : 'add_to_cart'.tr,*/
-                                              isLoading:
-                                                  cartController.isLoading,
-                                              buttonText:
-                                                  (Get.find<SplashController>()
-                                                          .configModel!
-                                                          .moduleConfig!
-                                                          .module!
-                                                          .stock! &&
-                                                      stock! <= 0)
-                                                  ? 'out_of_stock'.tr
-                                                  : widget.isCampaign
-                                                  ? 'order_now'.tr
-                                                  : (widget.cart != null ||
-                                                        itemController
-                                                                .cartIndex !=
-                                                            -1)
-                                                  ? 'update_in_cart'.tr
-                                                  : 'add_to_cart'.tr,
-                                              color:
-                                                  (itemController.cartIndex !=
-                                                          -1 &&
-                                                      !isChanged)
-                                                  ? Theme.of(
-                                                      context,
-                                                    ).disabledColor
-                                                  : Theme.of(
-                                                      context,
-                                                    ).primaryColor,
-                                              onPressed:
-                                                  (stock! > 0 &&
-                                                      (itemController
-                                                                  .cartIndex !=
-                                                              -1
-                                                          ? isChanged
-                                                          : itemController
-                                                                    .quantity! >
-                                                                0))
-                                                  ? () async {
+                                                  isLoading:
+                                                      cartController.isLoading,
+                                                  buttonText: isStoreClosed
+                                                      ? 'this_store_is_closed_now'.tr
+                                                      : (Get.find<SplashController>()
+                                                              .configModel!
+                                                              .moduleConfig!
+                                                              .module!
+                                                              .stock! &&
+                                                          stock! <= 0)
+                                                      ? 'out_of_stock'.tr
+                                                      : widget.isCampaign
+                                                      ? 'order_now'.tr
+                                                      : (widget.cart != null ||
+                                                            itemController
+                                                                    .cartIndex !=
+                                                                -1)
+                                                      ? 'update_in_cart'.tr
+                                                      : 'add_to_cart'.tr,
+                                                  color: isStoreClosed
+                                                      ? Theme.of(context).disabledColor
+                                                      : (itemController.cartIndex !=
+                                                              -1 &&
+                                                          !isChanged)
+                                                      ? Theme.of(
+                                                          context,
+                                                        ).disabledColor
+                                                      : Theme.of(
+                                                          context,
+                                                        ).primaryColor,
+                                                  onPressed: isStoreClosed ? null :
+                                                      (stock! > 0 &&
+                                                          (itemController
+                                                                      .cartIndex !=
+                                                                  -1
+                                                              ? isChanged
+                                                              : itemController
+                                                                        .quantity! >
+                                                                    0))
+                                                      ? () async {
                                                       String? invalid;
                                                       if (_newVariation) {
                                                         for (
@@ -1524,12 +1534,14 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                                       }
                                                     }
                                                   : null,
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                               );
+                                             },
+                                           );
+                                         },
+                                       ),
+                                     ),
+                                   ],
+                                 ),
                                 ),
                               ],
                             ),

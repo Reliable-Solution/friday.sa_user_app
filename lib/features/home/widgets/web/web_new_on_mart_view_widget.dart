@@ -13,6 +13,7 @@ import 'package:friday_sa/util/images.dart';
 import 'package:friday_sa/util/styles.dart';
 import 'package:friday_sa/common/widgets/add_favourite_view.dart';
 import 'package:friday_sa/common/widgets/custom_image.dart';
+import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 import 'package:friday_sa/common/widgets/hover/on_hover.dart';
 import 'package:friday_sa/common/widgets/rating_bar.dart';
 import 'package:friday_sa/common/widgets/title_widget.dart';
@@ -133,32 +134,40 @@ class _WebNewOnMartViewWidgetState extends State<WebNewOnMartViewWidget> {
                                         return InkWell(
                                           hoverColor: Colors.transparent,
                                           onTap: () {
-                                            if (Get.find<SplashController>()
-                                                    .moduleList !=
-                                                null) {
-                                              for (ModuleModel module
-                                                  in Get.find<
-                                                        SplashController
-                                                      >()
-                                                      .moduleList!) {
-                                                if (module.id ==
-                                                    storeList[index].moduleId) {
-                                                  Get.find<SplashController>()
-                                                      .setModule(module);
-                                                  break;
+                                            if (storeList[index].open == 0 ||
+                                                storeList[index].active ==
+                                                    false) {
+                                              showCustomSnackBar(
+                                                'this_store_is_closed_now'.tr,
+                                              );
+                                            } else {
+                                              if (Get.find<SplashController>()
+                                                      .moduleList !=
+                                                  null) {
+                                                for (ModuleModel module
+                                                    in Get.find<
+                                                          SplashController
+                                                        >()
+                                                        .moduleList!) {
+                                                  if (module.id ==
+                                                      storeList[index].moduleId) {
+                                                    Get.find<SplashController>()
+                                                        .setModule(module);
+                                                    break;
+                                                  }
                                                 }
                                               }
+                                              Get.toNamed(
+                                                RouteHelper.getStoreRoute(
+                                                  id: storeList[index].id,
+                                                  page: 'store',
+                                                ),
+                                                arguments: StoreScreen(
+                                                  store: storeList[index],
+                                                  fromModule: false,
+                                                ),
+                                              );
                                             }
-                                            Get.toNamed(
-                                              RouteHelper.getStoreRoute(
-                                                id: storeList[index].id,
-                                                page: 'store',
-                                              ),
-                                              arguments: StoreScreen(
-                                                store: storeList[index],
-                                                fromModule: false,
-                                              ),
-                                            );
                                           },
                                           child: Stack(
                                             children: [

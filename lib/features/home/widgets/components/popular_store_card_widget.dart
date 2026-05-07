@@ -1,3 +1,4 @@
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/common/widgets/custom_ink_well.dart';
@@ -8,7 +9,10 @@ import 'package:friday_sa/helper/route_helper.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/styles.dart';
 import 'package:friday_sa/common/widgets/custom_image.dart';
+import 'package:friday_sa/common/widgets/discount_tag.dart';
+import 'package:friday_sa/features/store/controllers/store_controller.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
+import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 
 class PopularStoreCard extends StatelessWidget {
   const PopularStoreCard({super.key, required this.store});
@@ -34,10 +38,14 @@ class PopularStoreCard extends StatelessWidget {
         builder: (hovered) {
           return CustomInkWell(
             onTap: () {
-              Get.toNamed(
-                RouteHelper.getStoreRoute(id: store.id, page: 'store'),
-                arguments: StoreScreen(store: store, fromModule: false),
-              );
+              if (store.open == 0 || store.active == false) {
+                showCustomSnackBar('this_store_is_closed_now'.tr);
+              } else {
+                Get.toNamed(
+                  RouteHelper.getStoreRoute(id: store.id, page: 'store'),
+                  arguments: StoreScreen(store: store, fromModule: false),
+                );
+              }
             },
             radius: Dimensions.radiusDefault,
             child: ClipRRect(
@@ -50,6 +58,11 @@ class PopularStoreCard extends StatelessWidget {
                     fit: BoxFit.cover,
                     width: double.infinity,
                     height: 170,
+                  ),
+                  DiscountTag(
+                    discount: Get.find<StoreController>().getDiscount(store),
+                    discountType: Get.find<StoreController>().getDiscountType(store),
+                    freeDelivery: FreeDeliveryHelper.isFreeDelivery(store),
                   ),
                   Positioned(
                     bottom: 0,
@@ -66,16 +79,20 @@ class PopularStoreCard extends StatelessWidget {
                       ),
                       child: CustomInkWell(
                         onTap: () {
-                          Get.toNamed(
-                            RouteHelper.getStoreRoute(
-                              id: store.id,
-                              page: 'store',
-                            ),
-                            arguments: StoreScreen(
-                              store: store,
-                              fromModule: false,
-                            ),
-                          );
+                          if (store.open == 0 || store.active == false) {
+                            showCustomSnackBar('this_store_is_closed_now'.tr);
+                          } else {
+                            Get.toNamed(
+                              RouteHelper.getStoreRoute(
+                                id: store.id,
+                                page: 'store',
+                              ),
+                              arguments: StoreScreen(
+                                store: store,
+                                fromModule: false,
+                              ),
+                            );
+                          }
                         },
                         radius: Dimensions.radiusDefault,
                         child: Padding(

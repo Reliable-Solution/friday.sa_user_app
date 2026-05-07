@@ -114,10 +114,15 @@ class ApiClient extends GetxService {
   }
 
   late dio.Dio _dio;
-  final String appBaseUrl;
+  String appBaseUrl;
   final SharedPreferences sharedPreferences;
   static final String noInternetMessage = 'connection_to_api_server_failed'.tr;
   final int timeoutInSeconds = 30;
+
+  void updateBaseUrl(String baseUrl) {
+    appBaseUrl = baseUrl;
+    _dio.options.baseUrl = baseUrl;
+  }
 
   String? token;
   late Map<String, String> _mainHeaders;

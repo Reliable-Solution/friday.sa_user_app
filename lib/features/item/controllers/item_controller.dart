@@ -22,6 +22,7 @@ import 'package:friday_sa/common/widgets/item_bottom_sheet.dart';
 import 'package:friday_sa/features/item/screens/item_details_screen.dart';
 import 'package:friday_sa/features/item/domain/services/item_service_interface.dart';
 import 'package:friday_sa/features/store/controllers/store_controller.dart';
+import 'package:friday_sa/features/store/domain/models/store_model.dart' as store_model;
 
 class ItemController extends GetxController implements GetxService {
   ItemController({required this.itemServiceInterface});
@@ -137,12 +138,20 @@ class ItemController extends GetxController implements GetxService {
     }
   }
 
+  void showStoreClosedSnackbar() {
+    showCustomSnackBar('this_store_is_closed_now'.tr);
+  }
+
   void clearItemLists() {
     _popularItemList = null;
     _reviewedItemList = null;
     _discountedItemList = null;
     _featuredCategoriesItem = null;
     _recommendedItemList = null;
+    _basicMedicineModel = null;
+    _commonConditions = null;
+    _conditionWiseProduct = null;
+    update();
   }
 
   Future<void> getPopularItemList(
@@ -737,7 +746,32 @@ class ItemController extends GetxController implements GetxService {
     bool inStore = false,
     bool isCampaign = false,
   }) {
-    if (((item!.foodVariations != null && item.foodVariations!.isEmpty) &&
+    if (item!.storeOpen == 0 || item.storeActive == false) {
+      showStoreClosedSnackbar();
+    } else if (item.storeOpen == null) {
+      Get.find<StoreController>()
+          .getStoreDetails(store_model.Store(id: item.storeId), false)
+          .then((value) {
+        if (Get.find<StoreController>().store != null &&
+            (Get.find<StoreController>().store!.open == 0 ||
+                Get.find<StoreController>().store!.active == false)) {
+          showStoreClosedSnackbar();
+        } else {
+          _executeAddToCart(item, context, inStore, isCampaign);
+        }
+      });
+    } else {
+      _executeAddToCart(item, context, inStore, isCampaign);
+    }
+  }
+
+  void _executeAddToCart(
+    Item item,
+    BuildContext context,
+    bool inStore,
+    bool isCampaign,
+  ) {
+    if (((item.foodVariations != null && item.foodVariations!.isEmpty) &&
             item.moduleType == AppConstants.food) ||
         (item.variations != null &&
             item.variations!.isEmpty &&
@@ -833,23 +867,23 @@ class ItemController extends GetxController implements GetxService {
         item.moduleType == AppConstants.food) {
       ResponsiveHelper.isMobile(context)
           ? Get.bottomSheet(
-              ItemBottomSheet(
+            ItemBottomSheet(
+              item: item,
+              inStorePage: inStore,
+              isCampaign: isCampaign,
+            ),
+            backgroundColor: Colors.transparent,
+            isScrollControlled: true,
+          )
+          : Get.dialog(
+            Dialog(
+              child: ItemBottomSheet(
                 item: item,
                 inStorePage: inStore,
                 isCampaign: isCampaign,
               ),
-              backgroundColor: Colors.transparent,
-              isScrollControlled: true,
-            )
-          : Get.dialog(
-              Dialog(
-                child: ItemBottomSheet(
-                  item: item,
-                  inStorePage: inStore,
-                  isCampaign: isCampaign,
-                ),
-              ),
-            );
+            ),
+          );
     } else {
       Get.toNamed(
         RouteHelper.getItemDetailsRoute(item.id, inStore),

@@ -109,7 +109,7 @@ class _WebSpecialOfferViewState extends State<WebSpecialOfferView> {
                                   ),
                                 ),
                                 SizedBox(
-                                  height: 285,
+                                  height: 245,
                                   width: Get.width,
                                   child: ListView.builder(
                                     controller: scrollController,
@@ -131,6 +131,7 @@ class _WebSpecialOfferViewState extends State<WebSpecialOfferView> {
                                           item: discountedItemList[index],
                                           isShop: widget.isShop,
                                           isFood: widget.isFood,
+                                          width: 125,
                                         ),
                                       );
                                     },
@@ -219,8 +220,8 @@ class WebItemShimmerView extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    height: 285,
-                    width: Get.width,
+                    height: 245,
+                    width: double.infinity,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       physics: const NeverScrollableScrollPhysics(),
@@ -236,8 +237,8 @@ class WebItemShimmerView extends StatelessWidget {
                             top: Dimensions.paddingSizeExtraSmall,
                           ),
                           child: Container(
-                            height: 285,
-                            width: 200,
+                            height: 245,
+                            width: 125,
                             decoration: BoxDecoration(
                               color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(
@@ -247,7 +248,7 @@ class WebItemShimmerView extends StatelessWidget {
                             child: Column(
                               children: [
                                 Container(
-                                  height: 150,
+                                  height: 125,
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     color: Colors.grey[300],

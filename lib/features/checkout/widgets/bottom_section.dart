@@ -194,17 +194,25 @@ class BottomSection extends StatelessWidget {
                                     ),
                             ],
                           ),
-                          PriceConverter.convertAnimationPrice(
-                            checkoutController.viewTotalPrice,
-                            textStyle: robotoMedium.copyWith(
-                              fontSize: Dimensions.fontSizeLarge,
-                              color: checkoutController.isPartialPay
-                                  ? Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium!.color
-                                  : Theme.of(context).primaryColor,
-                            ),
-                          ),
+                          checkoutController.distance == -1
+                              ? Text(
+                                  'calculating'.tr,
+                                  style: robotoMedium.copyWith(
+                                    fontSize: Dimensions.fontSizeLarge,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                )
+                              : PriceConverter.convertAnimationPrice(
+                                  checkoutController.viewTotalPrice,
+                                  textStyle: robotoMedium.copyWith(
+                                    fontSize: Dimensions.fontSizeLarge,
+                                    color: checkoutController.isPartialPay
+                                        ? Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium!.color
+                                        : Theme.of(context).primaryColor,
+                                  ),
+                                ),
                         ],
                       )
                     : const SizedBox(),
@@ -546,15 +554,29 @@ class BottomSection extends StatelessWidget {
                                 : Theme.of(context).primaryColor,
                           ),
                         ),
-                        PriceConverter.convertAnimationPrice(
-                          checkoutController.viewTotalPrice,
-                          textStyle: robotoMedium.copyWith(
-                            fontSize: Dimensions.fontSizeLarge,
-                            color: !ResponsiveHelper.isDesktop(context)
-                                ? Theme.of(context).textTheme.bodyMedium!.color
-                                : Theme.of(context).primaryColor,
-                          ),
-                        ),
+                        checkoutController.distance == -1
+                            ? Text(
+                                'calculating'.tr,
+                                style: robotoMedium.copyWith(
+                                  fontSize: Dimensions.fontSizeLarge,
+                                  color: !ResponsiveHelper.isDesktop(context)
+                                      ? Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium!.color
+                                      : Theme.of(context).primaryColor,
+                                ),
+                              )
+                            : PriceConverter.convertAnimationPrice(
+                                checkoutController.viewTotalPrice,
+                                textStyle: robotoMedium.copyWith(
+                                  fontSize: Dimensions.fontSizeLarge,
+                                  color: !ResponsiveHelper.isDesktop(context)
+                                      ? Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium!.color
+                                      : Theme.of(context).primaryColor,
+                                ),
+                              ),
                       ],
                     )
                   : const SizedBox(),

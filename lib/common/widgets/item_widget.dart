@@ -28,6 +28,9 @@ import 'package:friday_sa/common/widgets/organic_tag.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
+
+import 'custom_snackbar.dart';
 
 class ItemWidget extends StatelessWidget {
   const ItemWidget({
@@ -119,44 +122,52 @@ class ItemWidget extends StatelessWidget {
             onTap: () {
               if (isStore) {
                 if (store != null) {
+                  if (store!.open == 0 || store!.active == false) {
+                    showCustomSnackBar('this_store_is_closed_now'.tr);
+                  } else {
+                    if (isFeatured &&
+                        Get.find<SplashController>().moduleList != null) {
+                      for (ModuleModel module
+                          in Get.find<SplashController>().moduleList!) {
+                        if (module.id == store!.moduleId) {
+                          Get.find<SplashController>().setModule(module);
+                          break;
+                        }
+                      }
+                    }
+                    Get.toNamed(
+                      RouteHelper.getStoreRoute(
+                        id: store!.id,
+                        page: isFeatured ? 'module' : 'item',
+                      ),
+                      arguments: StoreScreen(
+                        store: store,
+                        fromModule: isFeatured,
+                      ),
+                    );
+                  }
+                }
+              } else {
+                if (item!.storeOpen == 0 || item!.storeActive == false) {
+                  showCustomSnackBar('this_store_is_closed_now'.tr);
+                } else {
                   if (isFeatured &&
                       Get.find<SplashController>().moduleList != null) {
                     for (ModuleModel module
                         in Get.find<SplashController>().moduleList!) {
-                      if (module.id == store!.moduleId) {
+                      if (module.id == item!.moduleId) {
                         Get.find<SplashController>().setModule(module);
                         break;
                       }
                     }
                   }
-                  Get.toNamed(
-                    RouteHelper.getStoreRoute(
-                      id: store!.id,
-                      page: isFeatured ? 'module' : 'item',
-                    ),
-                    arguments: StoreScreen(
-                      store: store,
-                      fromModule: isFeatured,
-                    ),
+                  Get.find<ItemController>().navigateToItemPage(
+                    item,
+                    context,
+                    inStore: inStore,
+                    isCampaign: isCampaign,
                   );
                 }
-              } else {
-                if (isFeatured &&
-                    Get.find<SplashController>().moduleList != null) {
-                  for (ModuleModel module
-                      in Get.find<SplashController>().moduleList!) {
-                    if (module.id == item!.moduleId) {
-                      Get.find<SplashController>().setModule(module);
-                      break;
-                    }
-                  }
-                }
-                Get.find<ItemController>().navigateToItemPage(
-                  item,
-                  context,
-                  inStore: inStore,
-                  isCampaign: isCampaign,
-                );
               }
             },
             radius: Dimensions.radiusDefault,
@@ -214,7 +225,7 @@ class ItemWidget extends StatelessWidget {
                                         discount: discount,
                                         discountType: discountType,
                                         freeDelivery: isStore
-                                            ? store!.freeDelivery
+                                            ? FreeDeliveryHelper.isFreeDelivery(store)
                                             : false,
                                       )
                                     : const SizedBox(),
@@ -538,7 +549,7 @@ class ItemWidget extends StatelessWidget {
                   elevation: 0,
                   discount: discount,
                   discountType: discountType,
-                  freeDelivery: isStore ? store!.freeDelivery : false,
+                  freeDelivery: isStore ? FreeDeliveryHelper.isFreeDelivery(store) : false,
                 ),
               )
             : const SizedBox(),

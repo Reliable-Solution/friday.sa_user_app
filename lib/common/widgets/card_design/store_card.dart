@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:friday_sa/common/widgets/custom_ink_well.dart';
 import 'package:friday_sa/common/widgets/hover/text_hover.dart';
@@ -317,7 +318,9 @@ class StoreCard extends StatelessWidget {
                                                     : isRightSide
                                                     ? currencySymbol
                                                     : ''} ${'off'.tr}'
-                                              : 'free_delivery'.tr,
+                                              : FreeDeliveryHelper.isFreeDelivery(store)
+                                                  ? 'free_delivery'.tr
+                                                  : '',
                                           style: robotoMedium.copyWith(
                                             color: Theme.of(context).cardColor,
                                             fontSize: Dimensions.fontSizeSmall,

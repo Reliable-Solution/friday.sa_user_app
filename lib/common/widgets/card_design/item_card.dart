@@ -27,6 +27,7 @@ class ItemCard extends StatelessWidget {
     required this.isShop,
     this.isPopularItemCart = false,
     this.index,
+    this.width = 200,
   });
   final Item item;
   final bool isPopularItem;
@@ -34,6 +35,7 @@ class ItemCard extends StatelessWidget {
   final bool isShop;
   final bool isPopularItemCart;
   final int? index;
+  final double width;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +51,7 @@ class ItemCard extends StatelessWidget {
       child: Stack(
         children: [
           Container(
-            width: 200,
+            width: width,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
               color: Theme.of(context).cardColor,

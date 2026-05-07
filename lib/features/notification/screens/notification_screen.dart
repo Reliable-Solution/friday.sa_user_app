@@ -46,6 +46,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     _loadData();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return PopScope(

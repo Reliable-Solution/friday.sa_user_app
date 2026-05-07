@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:friday_sa/common/widgets/hover/text_hover.dart';
@@ -24,6 +25,8 @@ import 'package:friday_sa/common/widgets/discount_tag.dart';
 import 'package:friday_sa/common/widgets/hover/on_hover.dart';
 import 'package:friday_sa/common/widgets/title_widget.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
+
+import '../../../../common/widgets/custom_snackbar.dart';
 
 class WebBestStoreNearbyViewWidget extends StatefulWidget {
   const WebBestStoreNearbyViewWidget({super.key});
@@ -280,44 +283,55 @@ class _WebBestStoreNearbyViewWidgetState
                                                           hoverColor: Colors
                                                               .transparent,
                                                           onTap: () {
-                                                            if (Get.find<
-                                                                      SplashController
-                                                                    >()
-                                                                    .moduleList !=
-                                                                null) {
-                                                              for (ModuleModel
-                                                                  module
-                                                                  in Get.find<
+                                                            if (storeList[index]
+                                                                        .open ==
+                                                                    0 ||
+                                                                storeList[index]
+                                                                        .active ==
+                                                                    false) {
+                                                              showCustomSnackBar(
+                                                                'this_store_is_closed_now'.tr,
+                                                              );
+                                                            } else {
+                                                              if (Get.find<
                                                                         SplashController
                                                                       >()
-                                                                      .moduleList!) {
-                                                                if (module.id ==
-                                                                    storeList[index]
-                                                                        .moduleId) {
-                                                                  Get.find<
-                                                                        SplashController
-                                                                      >()
-                                                                      .setModule(
-                                                                        module,
-                                                                      );
-                                                                  break;
+                                                                      .moduleList !=
+                                                                  null) {
+                                                                for (ModuleModel
+                                                                    module
+                                                                    in Get.find<
+                                                                          SplashController
+                                                                        >()
+                                                                        .moduleList!) {
+                                                                  if (module.id ==
+                                                                      storeList[index]
+                                                                          .moduleId) {
+                                                                    Get.find<
+                                                                          SplashController
+                                                                        >()
+                                                                        .setModule(
+                                                                          module,
+                                                                        );
+                                                                    break;
+                                                                  }
                                                                 }
                                                               }
+                                                              Get.toNamed(
+                                                                RouteHelper.getStoreRoute(
+                                                                  id: storeList[index]
+                                                                      .id,
+                                                                  page: 'store',
+                                                                ),
+                                                                arguments:
+                                                                    StoreScreen(
+                                                                  store: storeList[
+                                                                      index],
+                                                                  fromModule:
+                                                                      true,
+                                                                ),
+                                                              );
                                                             }
-                                                            Get.toNamed(
-                                                              RouteHelper.getStoreRoute(
-                                                                id: storeList[index]
-                                                                    .id,
-                                                                page: 'store',
-                                                              ),
-                                                              arguments:
-                                                                  StoreScreen(
-                                                                    store:
-                                                                        storeList[index],
-                                                                    fromModule:
-                                                                        true,
-                                                                  ),
-                                                            );
                                                           },
                                                           child: Stack(
                                                             children: [
@@ -418,7 +432,7 @@ class _WebBestStoreNearbyViewWidgetState
                                                                                   discountType: storeController.getDiscountType(
                                                                                     storeList[index],
                                                                                   ),
-                                                                                  freeDelivery: storeList[index].freeDelivery,
+                                                                                  freeDelivery: FreeDeliveryHelper.isFreeDelivery(storeList[index]),
                                                                                 ),
                                                                               ],
                                                                             ),
