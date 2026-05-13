@@ -13,10 +13,12 @@ class NotAvailableWidget extends StatelessWidget {
     this.isAllSideRound = true,
     this.radius = Dimensions.radiusSmall,
     this.store,
+    this.isOutOfStock = false,
   });
   final double fontSize;
   final bool isStore;
   final bool isAllSideRound;
+  final bool isOutOfStock;
   final double? radius;
   final Store? store;
 
@@ -36,13 +38,15 @@ class NotAvailableWidget extends StatelessWidget {
           color: Colors.black.withValues(alpha: 0.6),
         ),
         child: Text(
-          isStore
-              ? store != null
-                    ? store!.storeOpeningTime == 'closed'
-                          ? 'closed_now'.tr
-                          : '${'closed_now'.tr} ${!store!.active! ? '' : '(${'open_at'.tr} ${DateConverter.convertRestaurantOpenTime(store!.storeOpeningTime!)})'}'
-                    : 'closed_now'.tr
-              : 'not_available_now_break'.tr,
+          isOutOfStock
+              ? 'out_of_stock'.tr
+              : isStore
+                  ? store != null
+                        ? store!.storeOpeningTime == 'closed'
+                              ? 'closed_now'.tr
+                              : '${'closed_now'.tr} ${!store!.active! ? '' : '(${'open_at'.tr} ${DateConverter.convertRestaurantOpenTime(store!.storeOpeningTime!)})'}'
+                        : 'closed_now'.tr
+                  : 'not_available_now_break'.tr,
           textAlign: TextAlign.center,
           style: robotoMedium.copyWith(color: Colors.white, fontSize: fontSize),
         ),

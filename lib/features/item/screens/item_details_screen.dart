@@ -60,7 +60,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
 
     Get.find<ItemController>().getProductDetails(widget.item!);
     Get.find<ItemController>().setSelect(0, false);
-    Get.find<StoreController>().getStoreDetails(store_model.Store(id: widget.item!.storeId), false);
+    if (!widget.inStorePage) {
+      Get.find<StoreController>().getStoreDetails(store_model.Store(id: widget.item!.storeId), false);
+    }
 
     _initInitialState();
   }

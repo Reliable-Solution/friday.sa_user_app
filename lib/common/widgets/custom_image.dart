@@ -13,12 +13,14 @@ class CustomImage extends StatelessWidget {
     this.isNotification = false,
     this.placeholder = '',
     this.isHovered = false,
+    this.alignment = Alignment.center,
     this.color,
   });
   final String image;
   final double? height;
   final double? width;
   final BoxFit? fit;
+  final Alignment alignment;
   final Color? color;
   final bool isNotification;
   final String placeholder;
@@ -38,6 +40,7 @@ class CustomImage extends StatelessWidget {
         height: height,
         width: width,
         fit: fit,
+        alignment: alignment,
         color: color,
       );
     }
@@ -52,6 +55,7 @@ class CustomImage extends StatelessWidget {
               height: height,
               width: width,
               fit: fit,
+              alignment: alignment,
               color: color,
               errorBuilder: (context, error, stackTrace) {
                 return Image.asset(
@@ -63,6 +67,7 @@ class CustomImage extends StatelessWidget {
                   height: height,
                   width: width,
                   fit: fit,
+                  alignment: alignment,
                 );
               },
             )
@@ -71,6 +76,7 @@ class CustomImage extends StatelessWidget {
               height: height,
               width: width,
               fit: fit,
+              alignment: alignment,
               color: color,
               placeholder: (context, url) => Image.asset(
                 placeholder.isNotEmpty
@@ -81,6 +87,7 @@ class CustomImage extends StatelessWidget {
                 height: height,
                 width: width,
                 fit: fit,
+                alignment: alignment,
               ),
               errorWidget: (context, url, error) => Image.asset(
                 placeholder.isNotEmpty
@@ -91,6 +98,7 @@ class CustomImage extends StatelessWidget {
                 height: height,
                 width: width,
                 fit: fit,
+                alignment: alignment,
               ),
             ),
     );

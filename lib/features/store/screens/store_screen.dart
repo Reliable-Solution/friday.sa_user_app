@@ -201,15 +201,16 @@ class _StoreScreenState extends State<StoreScreen> {
                                                     ),
                                                 child: Stack(
                                                   children: [
-                                                    CustomImage(
-                                                      fit: BoxFit.cover,
-                                                      height: 240,
-                                                      width: 590,
-                                                      image:
-                                                          store
-                                                              ?.coverPhotoFullUrl ??
-                                                          '',
-                                                    ),
+                                                      CustomImage(
+                                                        fit: BoxFit.fill,
+                                                        alignment: Alignment.center,
+                                                        height: 240,
+                                                        width: 590,
+                                                        image:
+                                                            store
+                                                                ?.coverPhotoFullUrl ??
+                                                            '',
+                                                      ),
                                                     store?.discount != null
                                                         ? Positioned(
                                                             bottom: 0,
@@ -273,7 +274,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                 ),
                               )
                             : SliverAppBar(
-                                expandedHeight: 300,
+                                expandedHeight: 250,
                                 toolbarHeight: 100,
                                 pinned: true,
                                 floating: false,
@@ -303,7 +304,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                     builder: (context, scrollingRate) {
                                       return Container(
                                         height: store!.discount != null
-                                            ? 145
+                                            ? 140
                                             : 100,
                                         decoration: BoxDecoration(
                                           color: Theme.of(context).cardColor,
@@ -436,7 +437,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                                                   70 -
                                                                   (scrollingRate *
                                                                       15),
-                                                              fit: BoxFit.cover,
+                                                              fit: BoxFit.contain,
                                                             ),
                                                             storeController.isStoreOpenNow(
                                                                   store.active!,
@@ -736,9 +737,25 @@ class _StoreScreenState extends State<StoreScreen> {
                                       );
                                     },
                                   ),
-                                  background: CustomImage(
-                                    fit: BoxFit.cover,
-                                    image: '${store!.coverPhotoFullUrl}',
+                                  background: Container(
+                                    color: Theme.of(context).cardColor,
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          child: CustomImage(
+                                            fit: BoxFit.fitWidth,
+                                            alignment: Alignment.bottomCenter,
+                                            image: '${store!.coverPhotoFullUrl}',
+                                            width: double.infinity,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: store.discount != null
+                                              ? 140
+                                              : 100,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 actions: const [SizedBox()],

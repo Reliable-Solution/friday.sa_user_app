@@ -102,47 +102,25 @@ class CatSubCategoryWidget extends StatelessWidget {
                           //   'category'.tr,
                           //   style: const TextStyle(fontWeight: FontWeight.w500),
                           // ),
-                        Expanded(
-                          child: SizedBox(
-                            height: 30,
-                            child: ListView.builder(
-                              controller: storeController.subCatScrollController,
-                              scrollDirection: Axis.horizontal,
-                              itemCount: storeController.isSubCatLoad
-                                  ? 10
-                                  : storeController.subCategoryList.length,
-                              padding: const EdgeInsets.only(
-                                left: Dimensions.paddingSizeSmall,
-                              ),
-                              physics: const BouncingScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return storeController.isSubCatLoad
-                                    ? Container(
-                                        height: 35,
-                                        width: 50,
-                                        alignment: Alignment.center,
-                                        margin: const EdgeInsets.only(
-                                          right: Dimensions.paddingSizeSmall,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            Dimensions.radiusDefault,
-                                          ),
-                                          color: Colors.black.withValues(
-                                            alpha: .05,
-                                          ),
-                                        ),
-                                      )
-                                    : InkWell(
-                                        onTap: () => storeController
-                                            .setSubCategoryIndex(index),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal:
-                                                Dimensions.paddingSizeSmall,
-                                            vertical: Dimensions
-                                                .paddingSizeExtraSmall,
-                                          ),
+                          Expanded(
+                            child: SizedBox(
+                              height: 30,
+                              child: ListView.builder(
+                                controller:
+                                    storeController.subCatScrollController,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: storeController.isSubCatLoad
+                                    ? 10
+                                    : storeController.subCategoryList.length,
+                                padding: const EdgeInsets.only(
+                                  left: Dimensions.paddingSizeSmall,
+                                ),
+                                physics: const BouncingScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return storeController.isSubCatLoad
+                                      ? Container(
+                                          height: 35,
+                                          width: 50,
                                           alignment: Alignment.center,
                                           margin: const EdgeInsets.only(
                                             right: Dimensions.paddingSizeSmall,
@@ -151,40 +129,66 @@ class CatSubCategoryWidget extends StatelessWidget {
                                             borderRadius: BorderRadius.circular(
                                               Dimensions.radiusDefault,
                                             ),
-                                            color:
-                                                index ==
-                                                    storeController
-                                                        .subCategoryIndex
-                                                ? Theme.of(context).primaryColor
-                                                      .withValues(alpha: 0.1)
-                                                : Colors.transparent,
+                                            color: Colors.black.withValues(
+                                              alpha: .05,
+                                            ),
                                           ),
-                                          child: Text(
-                                            storeController
-                                                .subCategoryList[index]
-                                                .name!,
-                                            style:
-                                                index ==
-                                                    storeController
-                                                        .subCategoryIndex
-                                                ? robotoMedium.copyWith(
-                                                    fontSize: Dimensions
-                                                        .fontSizeSmall,
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).primaryColor,
-                                                  )
-                                                : robotoRegular.copyWith(
-                                                    fontSize: Dimensions
-                                                        .fontSizeSmall,
+                                        )
+                                      : InkWell(
+                                          onTap: () => storeController
+                                              .setSubCategoryIndex(index),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal:
+                                                  Dimensions.paddingSizeSmall,
+                                              vertical: Dimensions
+                                                  .paddingSizeExtraSmall,
+                                            ),
+                                            alignment: Alignment.center,
+                                            margin: const EdgeInsets.only(
+                                              right:
+                                                  Dimensions.paddingSizeSmall,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    Dimensions.radiusDefault,
                                                   ),
+                                              color:
+                                                  index ==
+                                                      storeController
+                                                          .subCategoryIndex
+                                                  ? Theme.of(context)
+                                                        .primaryColor
+                                                        .withValues(alpha: 0.1)
+                                                  : Colors.transparent,
+                                            ),
+                                            child: Text(
+                                              storeController
+                                                  .subCategoryList[index]
+                                                  .name!,
+                                              style:
+                                                  index ==
+                                                      storeController
+                                                          .subCategoryIndex
+                                                  ? robotoMedium.copyWith(
+                                                      fontSize: Dimensions
+                                                          .fontSizeSmall,
+                                                      color: Theme.of(
+                                                        context,
+                                                      ).primaryColor,
+                                                    )
+                                                  : robotoRegular.copyWith(
+                                                      fontSize: Dimensions
+                                                          .fontSizeSmall,
+                                                    ),
+                                            ),
                                           ),
-                                        ),
-                                      );
-                              },
+                                        );
+                                },
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                   ),

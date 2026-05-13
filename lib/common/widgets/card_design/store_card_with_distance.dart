@@ -110,7 +110,10 @@ class StoreCardWithDistance extends StatelessWidget {
                                         .getDiscount(store),
                                     discountType: Get.find<StoreController>()
                                         .getDiscountType(store),
-                                    freeDelivery: FreeDeliveryHelper.isFreeDelivery(store),
+                                    freeDelivery:
+                                        FreeDeliveryHelper.isFreeDelivery(
+                                          store,
+                                        ),
                                   )
                                 : const SizedBox(),
                             Get.find<StoreController>().isOpenNow(store)
@@ -147,9 +150,11 @@ class StoreCardWithDistance extends StatelessWidget {
                                                   : isRightSide
                                                   ? currencySymbol
                                                   : ''} ${'off'.tr}'
-                                            : FreeDeliveryHelper.isFreeDelivery(store)
-                                                ? 'free_delivery'.tr
-                                                : '',
+                                            : FreeDeliveryHelper.isFreeDelivery(
+                                                store,
+                                              )
+                                            ? 'free_delivery'.tr
+                                            : '',
                                         style: robotoMedium.copyWith(
                                           color: Theme.of(context).cardColor,
                                           fontSize: Dimensions.fontSizeSmall,
@@ -275,14 +280,21 @@ class StoreCardWithDistance extends StatelessWidget {
                                         children: [
                                           Icon(
                                             Icons.check_circle,
-                                            color: Theme.of(context).primaryColor,
+                                            color: Theme.of(
+                                              context,
+                                            ).primaryColor,
                                             size: 12,
                                           ),
-                                          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                          const SizedBox(
+                                            width: Dimensions
+                                                .paddingSizeExtraSmall,
+                                          ),
                                           Text(
                                             'free_delivery'.tr,
                                             style: robotoMedium.copyWith(
-                                              color: Theme.of(context).primaryColor,
+                                              color: Theme.of(
+                                                context,
+                                              ).primaryColor,
                                               fontSize: 10,
                                             ),
                                           ),

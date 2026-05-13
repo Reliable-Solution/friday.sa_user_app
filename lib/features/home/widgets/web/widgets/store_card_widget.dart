@@ -77,8 +77,14 @@ class StoreCardWidget extends StatelessWidget {
                           }
                         }
                         Get.toNamed(
-                          RouteHelper.getStoreRoute(id: store!.id, page: 'item'),
-                          arguments: StoreScreen(store: store, fromModule: true),
+                          RouteHelper.getStoreRoute(
+                            id: store!.id,
+                            page: 'item',
+                          ),
+                          arguments: StoreScreen(
+                            store: store,
+                            fromModule: true,
+                          ),
                         );
                       }
                     }
@@ -304,7 +310,8 @@ class StoreCardWidget extends StatelessWidget {
                                         )
                                       : const SizedBox(),
                                   SizedBox(
-                                    width: FreeDeliveryHelper.isFreeDelivery(store)
+                                    width:
+                                        FreeDeliveryHelper.isFreeDelivery(store)
                                         ? Dimensions.paddingSizeSmall
                                         : 0,
                                   ),

@@ -150,12 +150,14 @@ class StoreController extends GetxController implements GetxService {
     try {
       final userAddress = AddressHelper.getUserAddressFromSharedPref();
       if (userAddress?.latitude != null && userAddress?.longitude != null) {
-        distance = Geolocator.distanceBetween(
-          storeLatLng.latitude,
-          storeLatLng.longitude,
-          double.parse(userAddress!.latitude!),
-          double.parse(userAddress!.longitude!),
-        ) / 1000;
+        distance =
+            Geolocator.distanceBetween(
+              storeLatLng.latitude,
+              storeLatLng.longitude,
+              double.parse(userAddress!.latitude!),
+              double.parse(userAddress!.longitude!),
+            ) /
+            1000;
       }
     } catch (e) {
       debugPrint('Distance calculation error: $e');
@@ -566,9 +568,11 @@ class StoreController extends GetxController implements GetxService {
     bool fromCart = false,
     String slug = '',
   }) async {
-    _categoryIndex = 0;
-    _subCategoryIndex = 0;
-    _subCategoryList.clear();
+    if (_store == null || _store!.id != store.id || slug.isNotEmpty) {
+      _categoryIndex = 0;
+      _subCategoryIndex = 0;
+      _subCategoryList.clear();
+    }
     if (store.name != null) {
       _store = store;
     } else {
@@ -589,7 +593,10 @@ class StoreController extends GetxController implements GetxService {
         Get.find<CheckoutController>().initializeTimeSlot(_store!);
         if (!fromCart && slug.isEmpty) {
           final userAddress = AddressHelper.getUserAddressFromSharedPref();
-          if (userAddress?.latitude != null && userAddress?.longitude != null && _store?.latitude != null && _store?.longitude != null) {
+          if (userAddress?.latitude != null &&
+              userAddress?.longitude != null &&
+              _store?.latitude != null &&
+              _store?.longitude != null) {
             Get.find<CheckoutController>().getDistanceInKM(
               LatLng(
                 double.parse(userAddress!.latitude!),
@@ -660,7 +667,6 @@ class StoreController extends GetxController implements GetxService {
     }
     update();
   }
-
 
   Future<void> getStoreItemList(
     int? storeID,
@@ -823,8 +829,8 @@ class StoreController extends GetxController implements GetxService {
             _subCategoryList.clear();
             if (value != null) {
               _subCategoryList.addAll(value);
-                }
-                update();
+            }
+            update();
             if (itemSearching) {
               _storeSearchItemModel = null;
               getStoreSearchItemList(
@@ -968,4 +974,3 @@ class StoreController extends GetxController implements GetxService {
     update();
   }
 }
-

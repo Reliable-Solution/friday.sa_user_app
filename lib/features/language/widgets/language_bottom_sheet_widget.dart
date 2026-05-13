@@ -7,6 +7,8 @@ import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/common/widgets/custom_button.dart';
 import 'package:get/get.dart';
 
+import '../../auth/controllers/auth_controller.dart';
+
 class LanguageBottomSheetWidget extends StatefulWidget {
   const LanguageBottomSheetWidget({super.key});
 
@@ -102,6 +104,9 @@ class _LanguageBottomSheetWidgetState extends State<LanguageBottomSheetWidget> {
                   child: CustomButton(
                     buttonText: 'update'.tr,
                     onPressed: () {
+                      print(
+                        'Bearer Token: ${Get.find<AuthController>().getUserToken()} == ',
+                      );
                       if (localizationController.languages.isNotEmpty &&
                           localizationController.selectedLanguageIndex != -1) {
                         localizationController.saveCacheLanguage(

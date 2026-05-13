@@ -62,7 +62,7 @@ Future<void> main() async {
   if (ResponsiveHelper.isMobilePhone()) {
     HttpOverrides.global = MyHttpOverrides();
   }
-  print("object 2");
+  print("obj  ect 2");
   setPathUrlStrategy();
   print("object 3");
 
@@ -162,10 +162,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _route() async {
-    final baseUrl = Get.find<SharedPreferences>().getString('baseUrl');
-    if (baseUrl?.isNotEmpty ?? false) {
-      Get.find<SplashController>().changeCountry(baseUrl: baseUrl);
-    }
+    // final baseUrl = Get.find<SharedPreferences>().getString('baseUrl');
+    // if (baseUrl?.isNotEmpty ?? false) {
+    //   Get.find<SplashController>().changeCountry(baseUrl: baseUrl);
+    // }
     if (GetPlatform.isWeb) {
       Get.find<SplashController>().initSharedData();
       if (AddressHelper.getUserAddressFromSharedPref() != null &&

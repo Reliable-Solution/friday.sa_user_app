@@ -465,6 +465,7 @@ class WebMenuBar extends StatelessWidget implements PreferredSizeWidget {
                     builder: (authController) {
                       return InkWell(
                         onTap: () {
+                          debugPrint('Bearer Token: ${Get.find<AuthController>().getUserToken()}');
                           if (authController.isLoggedIn()) {
                             Get.toNamed(RouteHelper.getProfileRoute());
                           } else {
