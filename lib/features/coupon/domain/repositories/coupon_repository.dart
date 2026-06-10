@@ -53,6 +53,7 @@ class CouponRepository implements CouponRepositoryInterface {
     CouponModel? couponModel;
     Response response = await apiClient.getData(
       '${AppConstants.couponApplyUri}$couponCode&store_id=$storeID',
+      handleError: false,
     );
     if (response.statusCode == 200) {
       couponModel = CouponModel.fromJson(response.body);
@@ -68,6 +69,7 @@ class CouponRepository implements CouponRepositoryInterface {
     CouponModel? taxiCouponModel;
     Response response = await apiClient.getData(
       '${AppConstants.taxiCouponApplyUri}$couponCode&provider_id=$providerId',
+      handleError: false,
     );
     if (response.statusCode == 200) {
       taxiCouponModel = CouponModel.fromJson(response.body);

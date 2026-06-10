@@ -71,20 +71,17 @@ class FilterView extends StatelessWidget {
             ),
             onSelected: (dynamic value) => storeController.setFilterType(value),
           )
-        : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 0),
-            child: Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                border: Border.all(color: Theme.of(context).disabledColor),
-              ),
-              child: Icon(
-                Icons.filter_list,
-                color: Theme.of(context).disabledColor,
-              ),
+        : Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+              border: Border.all(color: Theme.of(context).disabledColor),
+            ),
+            child: Icon(
+              Icons.filter_list,
+              color: Theme.of(context).disabledColor,
             ),
           );
   }

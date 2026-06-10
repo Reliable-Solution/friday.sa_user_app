@@ -207,6 +207,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                   ? orderController.runningOrderModel!.orders!
                   : [];
 
+              
               List<OrderModel> reversOrder = List.from(runningOrder.reversed);
 
               return SafeArea(
@@ -273,227 +274,161 @@ class DashboardScreenState extends State<DashboardScreen> {
                                       OrderScreen(index: isTaxi ? 1 : 0),
                                       const MenuScreen(),
                                     ];
+                                    bool hideBar = ResponsiveHelper.isDesktop(context) ||
+                                        (widget.fromSplash &&
+                                            Get.find<LocationController>().showLocationSuggestion &&
+                                            active) ||
+                                        (orderController.showBottomSheet &&
+                                            orderController.runningOrderModel != null &&
+                                            orderController.runningOrderModel!.orders!.isNotEmpty &&
+                                            _isLogin);
+                                    
+                                    if (hideBar) {
+                                      return const SizedBox();
+                                    }
+
+                                    Color barBgColor = Colors.white; // Pristine proper solid white!
+                                    Color barBorderColor = Colors.black.withValues(alpha: 0.04); // Extremely clean, thin soft grey border!
+                                    
+                                    if (Get.isDarkMode) {
+                                      barBgColor = const Color(0xFF141414);
+                                      barBorderColor = Colors.white.withValues(alpha: 0.08);
+                                    }
+
                                     return Container(
                                       width: size.width,
-                                      height: GetPlatform.isIOS ? 80 : 65,
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).cardColor,
-                                        borderRadius:
-                                            const BorderRadius.vertical(
-                                              top: Radius.circular(
-                                                Dimensions.radiusLarge,
+                                      height: GetPlatform.isIOS ? 100 : 85,
+                                      color: Colors.transparent,
+                                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                                      margin: EdgeInsets.only(bottom: GetPlatform.isIOS ? 18 : 10),
+                                      child: Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          // Background Notched Bar
+                                          Positioned(
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            height: 70,
+                                            child: CustomPaint(
+                                              painter: NotchedBottomBarPainter(
+                                                backgroundColor: barBgColor,
+                                                borderColor: barBorderColor,
                                               ),
                                             ),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black12,
-                                            blurRadius: 5,
-                                            spreadRadius: 1,
                                           ),
-                                        ],
-                                      ),
-                                      child: Stack(
-                                        children: [
-                                          Center(
-                                            heightFactor: 0.6,
-                                            child:
-                                                ResponsiveHelper.isDesktop(
-                                                  context,
-                                                )
-                                                ? null
-                                                : (widget.fromSplash &&
-                                                      Get.find<
-                                                            LocationController
-                                                          >()
-                                                          .showLocationSuggestion &&
-                                                      active)
-                                                ? null
-                                                : (orderController
-                                                          .showBottomSheet &&
-                                                      orderController
-                                                              .runningOrderModel !=
-                                                          null &&
-                                                      orderController
-                                                          .runningOrderModel!
-                                                          .orders!
-                                                          .isNotEmpty &&
-                                                      _isLogin)
-                                                ? const SizedBox()
-                                                : Container(
-                                                    width: 60,
-                                                    height: 60,
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).cardColor,
-                                                        width: 5,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            30,
-                                                          ),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                          color: Colors.black12,
-                                                          blurRadius: 5,
-                                                          spreadRadius: 1,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    child: FloatingActionButton(
-                                                      backgroundColor: Theme.of(
-                                                        context,
-                                                      ).primaryColor,
-                                                      onPressed: () {
-                                                        if (isParcel) {
-                                                          showModalBottomSheet(
-                                                            context: context,
-                                                            isScrollControlled:
-                                                                true,
-                                                            backgroundColor:
-                                                                Colors
-                                                                    .transparent,
-                                                            builder: (con) =>
-                                                                ParcelBottomSheetWidget(
-                                                                  parcelCategoryList:
-                                                                      Get.find<
-                                                                            ParcelController
-                                                                          >()
-                                                                          .parcelCategoryList,
-                                                                ),
-                                                          );
-                                                        } else if (isTaxiWithCache) {
-                                                          Get.to(
-                                                            () =>
-                                                                const TaxiCartScreen(),
-                                                          );
-                                                        } else {
-                                                          Get.toNamed(
-                                                            RouteHelper.getCartRoute(),
-                                                          );
-                                                        }
-                                                      },
-                                                      elevation: 0,
-                                                      child: isTaxiWithCache
-                                                          ? TaxiCartWidget(
-                                                              color: Theme.of(
-                                                                context,
-                                                              ).cardColor,
-                                                              size: 22,
-                                                            )
-                                                          : isParcel
-                                                          ? Icon(
-                                                              CupertinoIcons
-                                                                  .add,
-                                                              size: 34,
-                                                              color: Theme.of(
-                                                                context,
-                                                              ).cardColor,
-                                                            )
-                                                          : CartWidget(
-                                                              color: Theme.of(
-                                                                context,
-                                                              ).cardColor,
-                                                              size: 22,
-                                                            ),
-                                                    ),
-                                                  ),
-                                          ),
-                                          ResponsiveHelper.isDesktop(context)
-                                              ? const SizedBox()
-                                              : (widget.fromSplash &&
-                                                    Get.find<
-                                                          LocationController
-                                                        >()
-                                                        .showLocationSuggestion &&
-                                                    active)
-                                              ? const SizedBox()
-                                              : (orderController
-                                                        .showBottomSheet &&
-                                                    orderController
-                                                            .runningOrderModel !=
-                                                        null &&
-                                                    orderController
-                                                        .runningOrderModel!
-                                                        .orders!
-                                                        .isNotEmpty &&
-                                                    _isLogin)
-                                              ? const SizedBox()
-                                              : Center(
-                                                  child: SizedBox(
-                                                    width: size.width,
-                                                    height: 80,
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceEvenly,
-                                                      children: [
-                                                        BottomNavItemWidget(
-                                                          title: 'home'.tr,
-                                                          selectedIcon:
-                                                              Images.homeSelect,
-                                                          unSelectedIcon: Images
-                                                              .homeUnselect,
-                                                          isSelected:
-                                                              _pageIndex == 0,
-                                                          onTap: () =>
-                                                              _setPage(0),
-                                                        ),
-                                                        BottomNavItemWidget(
-                                                          title: isParcel
-                                                              ? 'address'.tr
-                                                              : isTaxi
-                                                              ? 'wishlist'.tr
-                                                              : 'favourite'.tr,
-                                                          selectedIcon: isParcel
-                                                              ? Images
-                                                                    .addressSelect
-                                                              : Images
-                                                                    .favouriteSelect,
-                                                          unSelectedIcon:
-                                                              isParcel
-                                                              ? Images
-                                                                    .addressUnselect
-                                                              : Images
-                                                                    .favouriteUnselect,
-                                                          isSelected:
-                                                              _pageIndex == 1,
-                                                          onTap: () =>
-                                                              _setPage(1),
-                                                        ),
-                                                        Container(
-                                                          width:
-                                                              size.width * 0.2,
-                                                        ),
-                                                        BottomNavItemWidget(
-                                                          title: isTaxi
-                                                              ? 'trips'.tr
-                                                              : 'orders'.tr,
-                                                          selectedIcon: Images
-                                                              .orderSelect,
-                                                          unSelectedIcon: Images
-                                                              .orderUnselect,
-                                                          isSelected:
-                                                              _pageIndex == 3,
-                                                          onTap: () =>
-                                                              _setPage(3),
-                                                        ),
-                                                        BottomNavItemWidget(
-                                                          title: 'menu'.tr,
-                                                          selectedIcon:
-                                                              Images.menu,
-                                                          unSelectedIcon:
-                                                              Images.menu,
-                                                          isSelected:
-                                                              _pageIndex == 4,
-                                                          onTap: () =>
-                                                              _setPage(4),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
+                                          
+                                          // 4 Tab Items Row
+                                          Positioned(
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            height: 70,
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                BottomNavItemWidget(
+                                                  title: 'home'.tr,
+                                                  selectedIcon: Images.homeSelect,
+                                                  unSelectedIcon: Images.homeUnselect,
+                                                  isSelected: _pageIndex == 0,
+                                                  onTap: () => _setPage(0),
                                                 ),
+                                                BottomNavItemWidget(
+                                                  title: isParcel
+                                                      ? 'address'.tr
+                                                      : isTaxi
+                                                      ? 'wishlist'.tr
+                                                      : 'favourite'.tr,
+                                                  selectedIcon: isParcel
+                                                      ? Images.addressSelect
+                                                      : Images.favouriteSelect,
+                                                  unSelectedIcon: isParcel
+                                                      ? Images.addressUnselect
+                                                      : Images.favouriteUnselect,
+                                                  isSelected: _pageIndex == 1,
+                                                  onTap: () => _setPage(1),
+                                                ),
+                                                // Spacer for the center Floating Button
+                                                const SizedBox(width: 72),
+                                                BottomNavItemWidget(
+                                                  title: isTaxi ? 'trips'.tr : 'orders'.tr,
+                                                  selectedIcon: Images.orderSelect,
+                                                  unSelectedIcon: Images.orderUnselect,
+                                                  isSelected: _pageIndex == 3,
+                                                  onTap: () => _setPage(3),
+                                                ),
+                                                BottomNavItemWidget(
+                                                  title: 'menu'.tr,
+                                                  selectedIcon: Images.menu,
+                                                  unSelectedIcon: Images.menu,
+                                                  isSelected: _pageIndex == 4,
+                                                  onTap: () => _setPage(4),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          
+                                          // Center Floating Action Button
+                                          Positioned(
+                                            bottom: 27, // Overlapping the notch beautifully
+                                            left: (size.width - 32) / 2 - 27, // 32 is horizontal padding, 27 is button half-width
+                                            child: Container(
+                                              width: 54,
+                                              height: 54,
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).primaryColor, // Dynamic primary theme color!
+                                                shape: BoxShape.circle,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Theme.of(context).primaryColor.withValues(alpha: 0.4),
+                                                    blurRadius: 12,
+                                                    spreadRadius: 1,
+                                                    offset: const Offset(0, 4),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  borderRadius: BorderRadius.circular(27),
+                                                  onTap: () {
+                                                    if (isParcel) {
+                                                      showModalBottomSheet(
+                                                        context: context,
+                                                        isScrollControlled: true,
+                                                        backgroundColor: Colors.transparent,
+                                                        builder: (con) => ParcelBottomSheetWidget(
+                                                          parcelCategoryList: Get.find<ParcelController>().parcelCategoryList,
+                                                        ),
+                                                      );
+                                                    } else if (isTaxiWithCache) {
+                                                      Get.to(() => const TaxiCartScreen());
+                                                    } else {
+                                                      Get.toNamed(RouteHelper.getCartRoute());
+                                                    }
+                                                  },
+                                                   child: Center(
+                                                     child: isTaxiWithCache
+                                                         ? TaxiCartWidget(
+                                                             color: Colors.white,
+                                                             size: 22,
+                                                           )
+                                                         : isParcel
+                                                         ? const Icon(
+                                                             CupertinoIcons.add,
+                                                             size: 30,
+                                                             color: Colors.white,
+                                                           )
+                                                         : CartWidget(
+                                                             color: Colors.white,
+                                                             size: 22,
+                                                           ),
+                                                   ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     );
@@ -583,4 +518,136 @@ class DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
+
+  Widget _buildNavItem({
+    required BuildContext context,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(25),
+        onTap: onTap,
+        splashColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+        highlightColor: Colors.transparent,
+        child: Container(
+          width: 55,
+          height: 55,
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedScale(
+                scale: isSelected ? 1.15 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOutBack,
+                child: Icon(
+                  icon,
+                  size: 25,
+                  color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade500,
+                ),
+              ),
+              const SizedBox(height: 3),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                height: 4,
+                width: isSelected ? 4 : 0,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class NotchedBottomBarPainter extends CustomPainter {
+  final Color backgroundColor;
+  final Color borderColor;
+
+  NotchedBottomBarPainter({
+    required this.backgroundColor,
+    required this.borderColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = backgroundColor
+      ..style = PaintingStyle.fill;
+
+    final borderPaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+
+    final path = Path();
+    
+    double r = 16.0; // Corner radius of the bar
+    double cx = size.width / 2;
+    double notchWidth = 72.0;
+    double notchHeight = 26.0;
+
+    // Start top-left corner
+    path.moveTo(0, r);
+    path.quadraticBezierTo(0, 0, r, 0);
+    
+    // Line to left side of the notch
+    path.lineTo(cx - notchWidth / 2, 0);
+    
+    // Left notch curve
+    path.cubicTo(
+      cx - notchWidth / 2 + 12, 0,
+      cx - notchWidth / 2 + 4, notchHeight,
+      cx, notchHeight,
+    );
+    
+    // Right notch curve
+    path.cubicTo(
+      cx + notchWidth / 2 - 4, notchHeight,
+      cx + notchWidth / 2 - 12, 0,
+      cx + notchWidth / 2, 0,
+    );
+    
+    // Line to top-right corner
+    path.lineTo(size.width - r, 0);
+    path.quadraticBezierTo(size.width, 0, size.width, r);
+    
+    // Line to bottom-right corner
+    path.lineTo(size.width, size.height - r);
+    path.quadraticBezierTo(size.width, size.height, size.width - r, size.height);
+    
+    // Line to bottom-left corner
+    path.lineTo(r, size.height);
+    path.quadraticBezierTo(0, size.height, 0, size.height - r);
+    
+    path.close();
+
+    // Draw highly premium top-oriented drop shadow using custom soft blurs
+    final shadowPaint = Paint()
+      ..color = Colors.black.withValues(alpha: 0.08)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8.0)
+      ..style = PaintingStyle.fill;
+
+    final shadowPaintFocused = Paint()
+      ..color = Colors.black.withValues(alpha: 0.05)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(path.shift(const Offset(0, -3)), shadowPaint);
+    canvas.drawPath(path.shift(const Offset(0, -1)), shadowPaintFocused);
+
+    canvas.drawPath(path, paint);
+    canvas.drawPath(path, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

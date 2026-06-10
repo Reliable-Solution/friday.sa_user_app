@@ -97,13 +97,15 @@ class ItemWidget extends StatelessWidget {
       );
     }
 
-
-    bool isFoodModule = Get.find<SplashController>().module != null &&
+    bool isFoodModule =
+        Get.find<SplashController>().module != null &&
         Get.find<SplashController>().module!.moduleType == 'food';
     if (isFoodModule) {
       isAvailable = true;
     }
-
+    bool isOutOfStock = !isStore &&
+        Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! &&
+        (item!.stock ?? 0) <= 0;
 
     return Stack(
       children: [
@@ -225,7 +227,9 @@ class ItemWidget extends StatelessWidget {
                                         discount: discount,
                                         discountType: discountType,
                                         freeDelivery: isStore
-                                            ? FreeDeliveryHelper.isFreeDelivery(store)
+                                            ? FreeDeliveryHelper.isFreeDelivery(
+                                                store,
+                                              )
                                             : false,
                                       )
                                     : const SizedBox(),
@@ -235,9 +239,12 @@ class ItemWidget extends StatelessWidget {
                                         placeInImage: true,
                                       )
                                     : const SizedBox(),
-                                isAvailable
+                                (isAvailable && !isOutOfStock)
                                     ? const SizedBox()
-                                    : NotAvailableWidget(isStore: isStore),
+                                    : NotAvailableWidget(
+                                        isStore: isStore,
+                                        isOutOfStock: isOutOfStock,
+                                      ),
                                 Positioned(
                                   top: 5,
                                   left: 5,
@@ -525,7 +532,7 @@ class ItemWidget extends StatelessWidget {
                                   : MainAxisAlignment.spaceBetween,
                               children: [
                                 const SizedBox(),
-                                CartCountView(item: item!, index: index),
+                                CartCountView(item: item!, index: index, isCompact: true),
                               ],
                             ),
                           ],
@@ -549,7 +556,9 @@ class ItemWidget extends StatelessWidget {
                   elevation: 0,
                   discount: discount,
                   discountType: discountType,
-                  freeDelivery: isStore ? FreeDeliveryHelper.isFreeDelivery(store) : false,
+                  freeDelivery: isStore
+                      ? FreeDeliveryHelper.isFreeDelivery(store)
+                      : false,
                 ),
               )
             : const SizedBox(),

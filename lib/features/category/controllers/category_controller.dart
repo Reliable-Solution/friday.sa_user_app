@@ -133,7 +133,7 @@ class CategoryController extends GetxController implements GetxService {
     List<CategoryModel>? list;
     if (_storeCategoryList.isEmpty || reload || fromRecall) {
       if (reload) {
-        // _storeCategoryList = [];
+        _storeCategoryList = [];
       }
       List<CategoryModel>? storeCategoryList;
       if (dataSource == DataSourceEnum.local) {
@@ -179,6 +179,7 @@ class CategoryController extends GetxController implements GetxService {
   Future<List<CategoryModel>?> getSubCategoryList(
     String? categoryID, {
     String? storeId,
+    bool loadCategoryItems = true,
   }) async {
     _subCategoryIndex = 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -197,7 +198,9 @@ class CategoryController extends GetxController implements GetxService {
     if (subCategoryList != null) {
       _subCategoryList = [];
       _subCategoryList!.addAll(subCategoryList);
-      getCategoryItemList(subCategoryList.isNotEmpty ? subCategoryList[0].id.toString() : categoryID, 1, 'all', false);
+      if (loadCategoryItems) {
+        getCategoryItemList(subCategoryList.isNotEmpty ? subCategoryList[0].id.toString() : categoryID, 1, 'all', false);
+      }
     }
     return _subCategoryList;
   }

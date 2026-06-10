@@ -10,6 +10,8 @@ import 'package:friday_sa/common/widgets/item_shimmer.dart';
 import 'package:friday_sa/common/widgets/item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:friday_sa/features/favourite/widgets/fav_item_card_widget.dart';
+import 'package:friday_sa/features/favourite/widgets/fav_store_card_widget.dart';
 
 class ItemsView extends StatefulWidget {
   const ItemsView({
@@ -25,6 +27,7 @@ class ItemsView extends StatefulWidget {
     this.inStorePage = false,
     this.isFeatured = false,
     this.isFoodOrGrocery = true,
+    this.isFavourite = false,
   });
   final List<Item?>? items;
   final List<Store?>? stores;
@@ -37,6 +40,7 @@ class ItemsView extends StatefulWidget {
   final bool inStorePage;
   final bool isFeatured;
   final bool? isFoodOrGrocery;
+  final bool isFavourite;
 
   @override
   State<ItemsView> createState() => _ItemsViewState();
@@ -66,29 +70,35 @@ class _ItemsViewState extends State<ItemsView> {
                   ? GridView.builder(
                       key: UniqueKey(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisSpacing: ResponsiveHelper.isDesktop(context)
+                        crossAxisSpacing: widget.isFavourite
+                            ? Dimensions.paddingSizeDefault
+                            : ResponsiveHelper.isDesktop(context)
                             ? Dimensions.paddingSizeExtremeLarge
                             : widget.stores != null
-                            ? Dimensions.paddingSizeLarge
+                            ? Dimensions.paddingSizeExtraSmall
                             : Dimensions.paddingSizeLarge,
-                        mainAxisSpacing: ResponsiveHelper.isDesktop(context)
+                        mainAxisSpacing: widget.isFavourite
+                            ? Dimensions.paddingSizeDefault
+                            : ResponsiveHelper.isDesktop(context)
                             ? Dimensions.paddingSizeExtremeLarge
                             : widget.stores != null && widget.isStore
-                            ? Dimensions.paddingSizeLarge
+                            ? 2
                             : Dimensions.paddingSizeSmall,
-                        // childAspectRatio: ResponsiveHelper.isDesktop(context) && widget.isStore ? (1/0.6)
-                        //     : ResponsiveHelper.isMobile(context) ? widget.stores != null && widget.isStore ? 2 : 3.8
-                        //     : 3.3,
-                        mainAxisExtent:
-                            ResponsiveHelper.isDesktop(context) &&
-                                widget.isStore
+                        mainAxisExtent: widget.isFavourite
+                            ? (widget.isStore ? 122 : 245)
+                            : ResponsiveHelper.isDesktop(context) &&
+                                  widget.isStore
                             ? 225
                             : ResponsiveHelper.isMobile(context)
                             ? widget.stores != null && widget.isStore
-                                  ? 210
+                                  ? 150
                                   : 125
                             : 125,
-                        crossAxisCount: ResponsiveHelper.isMobile(context)
+                        crossAxisCount: widget.isFavourite
+                            ? (ResponsiveHelper.isMobile(context)
+                                  ? (widget.isStore ? 1 : 2)
+                                  : 3)
+                            : ResponsiveHelper.isMobile(context)
                             ? 1
                             : ResponsiveHelper.isDesktop(context) &&
                                   widget.stores != null
@@ -102,15 +112,25 @@ class _ItemsViewState extends State<ItemsView> {
                       itemCount: length,
                       padding: widget.padding,
                       itemBuilder: (context, index) {
+                        if (widget.isFavourite) {
+                          return widget.isStore
+                              ? FavStoreCardWidget(
+                                  store: widget.stores![index]!,
+                                )
+                              : FavItemCardWidget(
+                                  item: widget.items![index]!,
+                                  index: index,
+                                  length: length,
+                                  isCampaign: widget.isCampaign,
+                                  isFeatured: widget.isFeatured,
+                                  inStore: widget.inStorePage,
+                                );
+                        }
                         return widget.stores != null && widget.isStore
-                            ? widget.isFoodOrGrocery! && widget.isStore
-                                  ? StoreCardWidget(
-                                      store: widget.stores![index],
-                                    )
-                                  : StoreCardWithDistance(
-                                      store: widget.stores![index]!,
-                                      fromAllStore: true,
-                                    )
+                            ? StoreCardWithDistance(
+                                store: widget.stores![index]!,
+                                fromAllStore: true,
+                              )
                             : ItemWidget(
                                 isStore: widget.isStore,
                                 item: widget.isStore
@@ -143,28 +163,34 @@ class _ItemsViewState extends State<ItemsView> {
             : GridView.builder(
                 key: UniqueKey(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisSpacing: ResponsiveHelper.isDesktop(context)
+                  crossAxisSpacing: widget.isFavourite
+                      ? Dimensions.paddingSizeDefault
+                      : ResponsiveHelper.isDesktop(context)
                       ? Dimensions.paddingSizeExtremeLarge
                       : widget.stores != null
-                      ? Dimensions.paddingSizeLarge
+                      ? Dimensions.paddingSizeExtraSmall
                       : Dimensions.paddingSizeLarge,
-                  mainAxisSpacing: ResponsiveHelper.isDesktop(context)
+                  mainAxisSpacing: widget.isFavourite
+                      ? Dimensions.paddingSizeDefault
+                      : ResponsiveHelper.isDesktop(context)
                       ? Dimensions.paddingSizeLarge
                       : widget.stores != null
-                      ? Dimensions.paddingSizeLarge
+                      ? 2
                       : Dimensions.paddingSizeSmall,
-                  // childAspectRatio: ResponsiveHelper.isDesktop(context) && widget.isStore ? (1/0.6)
-                  //     : ResponsiveHelper.isMobile(context) ? widget.isStore ? 2 : 3.8
-                  //     : 3,
-                  mainAxisExtent:
-                      ResponsiveHelper.isDesktop(context) && widget.isStore
+                  mainAxisExtent: widget.isFavourite
+                      ? (widget.isStore ? 122 : 245)
+                      : ResponsiveHelper.isDesktop(context) && widget.isStore
                       ? 225
                       : ResponsiveHelper.isMobile(context)
                       ? widget.isStore
-                            ? 210
+                            ? 315
                             : 125
                       : 125,
-                  crossAxisCount: ResponsiveHelper.isMobile(context)
+                  crossAxisCount: widget.isFavourite
+                      ? (ResponsiveHelper.isMobile(context)
+                            ? (widget.isStore ? 1 : 2)
+                            : 3)
+                      : ResponsiveHelper.isMobile(context)
                       ? 1
                       : ResponsiveHelper.isDesktop(context)
                       ? 3

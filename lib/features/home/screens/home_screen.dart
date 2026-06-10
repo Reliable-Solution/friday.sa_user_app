@@ -64,6 +64,9 @@ class HomeScreen extends StatefulWidget {
       );
     }
 
+
+    
+
     if (Get.find<SplashController>().module != null &&
         !Get.find<SplashController>()
             .configModel!
@@ -545,61 +548,45 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 child: GetBuilder<LocationController>(
                                                   builder: (locationController) {
                                                     return Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
-                                                        Text(
-                                                          AuthHelper.isLoggedIn()
-                                                              ? AddressHelper.getUserAddressFromSharedPref()!
-                                                                    .addressType!
-                                                                    .tr
-                                                              : 'your_location'
-                                                                    .tr,
-                                                          style: robotoMedium.copyWith(
-                                                            color:
-                                                                Theme.of(
-                                                                      context,
-                                                                    )
-                                                                    .textTheme
-                                                                    .bodyLarge!
-                                                                    .color,
-                                                            fontSize: Dimensions
-                                                                .fontSizeDefault,
-                                                          ),
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
                                                         Row(
                                                           children: [
-                                                            Flexible(
-                                                              child: Text(
-                                                                AddressHelper.getUserAddressFromSharedPref()!
-                                                                        .address ??
-                                                                    '',
-                                                                style: robotoRegular.copyWith(
-                                                                  color: Theme.of(
-                                                                    context,
-                                                                  ).disabledColor,
-                                                                  fontSize:
-                                                                      Dimensions
-                                                                          .fontSizeSmall,
-                                                                ),
-                                                                maxLines: 1,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                              ),
-                                                            ),
                                                             Icon(
-                                                              Icons.expand_more,
-                                                              color: Theme.of(
-                                                                context,
-                                                              ).disabledColor,
+                                                              Icons.location_on,
+                                                              color: Theme.of(context).primaryColor,
+                                                              size: 18,
+                                                            ),
+                                                            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                                            Text(
+                                                              AuthHelper.isLoggedIn()
+                                                                  ? AddressHelper.getUserAddressFromSharedPref()!
+                                                                        .addressType!
+                                                                        .tr
+                                                                  : 'your_location'.tr,
+                                                              style: robotoBold.copyWith(
+                                                                color: Theme.of(context).textTheme.bodyLarge?.color,
+                                                                fontSize: Dimensions.fontSizeDefault,
+                                                              ),
+                                                              maxLines: 1,
+                                                              overflow: TextOverflow.ellipsis,
+                                                            ),
+                                                            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                                            Icon(
+                                                              Icons.keyboard_arrow_down_rounded,
+                                                              color: Theme.of(context).primaryColor,
                                                               size: 18,
                                                             ),
                                                           ],
+                                                        ),
+                                                        Text(
+                                                          AddressHelper.getUserAddressFromSharedPref()!.address ?? '',
+                                                          style: robotoRegular.copyWith(
+                                                            color: Theme.of(context).disabledColor,
+                                                            fontSize: Dimensions.fontSizeExtraSmall,
+                                                          ),
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
                                                         ),
                                                       ],
                                                     );
@@ -734,111 +721,53 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: Container(
                                               height: 50,
                                               width: Dimensions.webMaxWidth,
-                                              color: searchBgShow
-                                                  ? Get.find<ThemeController>()
-                                                            .darkTheme
-                                                        ? Theme.of(
-                                                            context,
-                                                          ).colorScheme.surface
-                                                        : Theme.of(
-                                                            context,
-                                                          ).cardColor
-                                                  : null,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.surface,
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                     horizontal: Dimensions
                                                         .paddingSizeSmall,
                                                   ),
-                                              child: isTaxi
-                                                  ? Container(
-                                                      color: Theme.of(
-                                                        context,
-                                                      ).primaryColor,
-                                                    )
-                                                  : InkWell(
-                                                      onTap: () => Get.toNamed(
-                                                        RouteHelper.getSearchRoute(),
+                                              child: InkWell(
+                                                onTap: () => Get.toNamed(
+                                                  RouteHelper.getSearchRoute(),
+                                                ),
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+                                                  margin: const EdgeInsets.symmetric(vertical: 3),
+                                                  decoration: BoxDecoration(
+                                                    color: Theme.of(context).cardColor,
+                                                    borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.black.withValues(alpha: 0.05),
+                                                        blurRadius: 10, spreadRadius: 0, offset: const Offset(0, 4),
                                                       ),
-                                                      child: Container(
-                                                        padding: const EdgeInsets.symmetric(
-                                                          horizontal: Dimensions
-                                                              .paddingSizeSmall,
-                                                        ),
-                                                        margin:
-                                                            const EdgeInsets.symmetric(
-                                                              vertical: 3,
-                                                            ),
-                                                        decoration: BoxDecoration(
-                                                          color: Theme.of(
-                                                            context,
-                                                          ).cardColor,
-                                                          border: Border.all(
-                                                            color:
-                                                                Theme.of(
-                                                                      context,
-                                                                    )
-                                                                    .primaryColor
-                                                                    .withValues(
-                                                                      alpha:
-                                                                          0.2,
-                                                                    ),
-                                                            width: 1,
+                                                    ],
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                                      Icon(
+                                                        CupertinoIcons.search,
+                                                        size: 22,
+                                                        color: Theme.of(context).primaryColor,
+                                                      ),
+                                                      const SizedBox(width: Dimensions.paddingSizeSmall),
+                                                      Expanded(
+                                                        child: Text(
+                                                          'search_item_or_store'.tr,
+                                                          style: robotoRegular.copyWith(
+                                                            fontSize: Dimensions.fontSizeSmall,
+                                                            color: Theme.of(context).hintColor,
                                                           ),
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                25,
-                                                              ),
-                                                          boxShadow: const [
-                                                            BoxShadow(
-                                                              color: Colors
-                                                                  .black12,
-                                                              blurRadius: 5,
-                                                              spreadRadius: 1,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        child: Row(
-                                                          children: [
-                                                            Icon(
-                                                              CupertinoIcons
-                                                                  .search,
-                                                              size: 25,
-                                                              color: Theme.of(
-                                                                context,
-                                                              ).primaryColor,
-                                                            ),
-                                                            const SizedBox(
-                                                              width: Dimensions
-                                                                  .paddingSizeExtraSmall,
-                                                            ),
-                                                            Expanded(
-                                                              child: Text(
-                                                                Get.find<
-                                                                              SplashController
-                                                                            >()
-                                                                            .configModel
-                                                                            ?.moduleConfig
-                                                                            ?.module
-                                                                            ?.showRestaurantText ??
-                                                                        false
-                                                                    ? 'search_food_or_restaurant'
-                                                                          .tr
-                                                                    : 'search_item_or_store'
-                                                                          .tr,
-                                                                style: robotoRegular.copyWith(
-                                                                  fontSize:
-                                                                      Dimensions
-                                                                          .fontSizeSmall,
-                                                                  color: Theme.of(
-                                                                    context,
-                                                                  ).hintColor,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
                                                         ),
                                                       ),
-                                                    ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -880,7 +809,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         key: _headerKey,
                                         pinned: true,
                                         delegate: SliverDelegate(
-                                          height: 85,
+                                          height: 100,
                                           callback: (val) {
                                             searchBgShow = val;
                                           },
@@ -896,12 +825,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             builder: (storeController) {
                                               return Padding(
                                                 padding: EdgeInsets.only(
-                                                  bottom:
-                                                      ResponsiveHelper.isDesktop(
-                                                        context,
-                                                      )
-                                                      ? 0
-                                                      : 100,
+                                                  top: Dimensions.paddingSizeExtraSmall,
+                                                  bottom: ResponsiveHelper.isDesktop(context) ? 0 : 100,
                                                 ),
                                                 child: PaginatedListView(
                                                   scrollController:

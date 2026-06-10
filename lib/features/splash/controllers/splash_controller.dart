@@ -283,6 +283,14 @@ class SplashController extends GetxController implements GetxService {
   }
 
   Future<void> setModule(ModuleModel? module, {bool notify = true}) async {
+    if (module != null && _module != null && _module!.id != module.id) {
+      Get.find<ItemController>().clearItemLists();
+      Get.find<BannerController>().clearBanner();
+      Get.find<CategoryController>().clearCategoryList();
+      Get.find<CampaignController>().itemAndBasicCampaignNull();
+      Get.find<FlashSaleController>().setEmptyFlashSale(fromModule: true);
+      Get.find<StoreController>().clearStoreData();
+    }
     _module = module;
     splashServiceInterface.setModule(module);
     if (module != null) {

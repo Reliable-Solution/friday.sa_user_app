@@ -9,6 +9,8 @@ import 'package:friday_sa/features/store/domain/models/store_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../common/widgets/card_design/store_card_with_distance.dart';
+
 class PopularStoreView extends StatelessWidget {
   const PopularStoreView({
     super.key,
@@ -115,21 +117,37 @@ class PopularStoreView extends StatelessWidget {
                     ),
                   ),
 
-                  ItemsView(
-                    isStore: true,
-                    items: null,
-                    isFeatured: isFeatured,
-                    noDataText: isFeatured
-                        ? 'no_store_available'.tr
-                        : Get.find<SplashController>()
-                              .configModel!
-                              .moduleConfig!
-                              .module!
-                              .showRestaurantText!
-                        ? 'no_restaurant_available'.tr
-                        : 'no_store_available'.tr,
-                    stores: storeList,
-                  ),
+                  isFeatured
+                      ? storeList != null
+                          ? ListView.builder(
+                              itemCount: storeList.length > 10 ? 10 : storeList.length,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
+                              itemBuilder: (context, index) {
+                                return StoreCardWithDistance(
+                                  store: storeList[index]!,
+                                  fromAllStore: false,
+                                  isFeatured: true,
+                                );
+                              },
+                            )
+                          : const SizedBox()
+                      : ItemsView(
+                          isStore: true,
+                          items: null,
+                          isFeatured: isFeatured,
+                          noDataText: isFeatured
+                              ? 'no_store_available'.tr
+                              : Get.find<SplashController>()
+                                        .configModel!
+                                        .moduleConfig!
+                                        .module!
+                                        .showRestaurantText!
+                                  ? 'no_restaurant_available'.tr
+                                  : 'no_store_available'.tr,
+                          stores: storeList,
+                        ),
                 ],
               );
       },

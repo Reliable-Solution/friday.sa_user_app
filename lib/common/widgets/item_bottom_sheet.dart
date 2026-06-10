@@ -1073,6 +1073,27 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                     );
                                   },
                                 ),
+                                if (itemController.stockError != null)
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall, horizontal: Dimensions.paddingSizeSmall),
+                                    margin: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                      border: Border.all(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.2), width: 0.5),
+                                    ),
+                                    child: Row(children: [
+                                      Icon(Icons.info_outline, color: Theme.of(context).colorScheme.error, size: 18),
+                                      const SizedBox(width: Dimensions.paddingSizeSmall),
+                                      Expanded(
+                                        child: Text(
+                                          itemController.stockError!,
+                                          style: robotoMedium.copyWith(color: Theme.of(context).colorScheme.error, fontSize: Dimensions.fontSizeSmall),
+                                        ),
+                                      ),
+                                    ]),
+                                  ),
                                 const SizedBox(
                                   height: Dimensions.paddingSizeSmall,
                                 ),

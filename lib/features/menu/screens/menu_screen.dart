@@ -181,437 +181,163 @@ class _MenuScreenState extends State<MenuScreen> {
                     ),
                     child: Column(
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: Dimensions.paddingSizeDefault,
-                                right: Dimensions.paddingSizeDefault,
-                              ),
-                              child: Text(
-                                'general'.tr,
-                                style: robotoMedium.copyWith(
-                                  fontSize: Dimensions.fontSizeDefault,
-                                  color: Theme.of(
-                                    context,
-                                  ).primaryColor.withValues(alpha: 0.5),
-                                ),
-                              ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(
+                              Dimensions.radiusDefault,
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                borderRadius: BorderRadius.circular(
-                                  Dimensions.radiusDefault,
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 5,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Dimensions.paddingSizeLarge,
+                            vertical: Dimensions.paddingSizeDefault,
+                          ),
+                          margin: const EdgeInsets.all(
+                            Dimensions.paddingSizeDefault,
+                          ),
+                          child: Column(
+                            children: [
+                              // General section items
+                              PortionWidget(
+                                icon: Images.profileIcon,
+                                title: 'profile'.tr,
+                                route: RouteHelper.getProfileRoute(),
+                              ),
+                              PortionWidget(
+                                icon: Images.addressIcon,
+                                title: 'my_address'.tr,
+                                route: RouteHelper.getAddressRoute(),
+                              ),
+                              if (AuthHelper.isLoggedIn())
+                                PortionWidget(
+                                  icon: Images.controller,
+                                  title: "controllers".tr,
+                                  route: RouteHelper.getControllerListingRoute(),
                                 ),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimensions.paddingSizeLarge,
-                                vertical: Dimensions.paddingSizeDefault,
-                              ),
-                              margin: const EdgeInsets.all(
-                                Dimensions.paddingSizeDefault,
-                              ),
-                              child: Column(
-                                children: [
-                                  PortionWidget(
-                                    icon: Images.profileIcon,
-                                    title: 'profile'.tr,
-                                    route: RouteHelper.getProfileRoute(),
-                                  ),
-                                  PortionWidget(
-                                    icon: Images.addressIcon,
-                                    title: 'my_address'.tr,
-                                    route: RouteHelper.getAddressRoute(),
-                                  ),
-                                  if (AuthHelper.isLoggedIn())
-                                    PortionWidget(
-                                      icon: Images.controller,
-                                      title: "controllers".tr,
-                                      route:
-                                          RouteHelper.getControllerListingRoute(),
-                                    ),
-                                  PortionWidget(
-                                    icon: Images.languageIcon,
-                                    title: 'language'.tr,
-                                    hideDivider: true,
-                                    onTap: _manageLanguageFunctionality,
-                                    route: '',
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: Dimensions.paddingSizeDefault,
-                                right: Dimensions.paddingSizeDefault,
-                              ),
-                              child: Text(
-                                'promotional_activity'.tr,
-                                style: robotoMedium.copyWith(
-                                  fontSize: Dimensions.fontSizeDefault,
-                                  color: Theme.of(
-                                    context,
-                                  ).primaryColor.withValues(alpha: 0.5),
+                              if (AuthHelper.isLoggedIn())
+                                PortionWidget(
+                                  icon: Images.storeIcon,
+                                  title: 'visit_again'.tr,
+                                  route: RouteHelper.getVisitAgainRoute(),
                                 ),
+                              PortionWidget(
+                                icon: Images.languageIcon,
+                                title: 'language'.tr,
+                                onTap: _manageLanguageFunctionality,
+                                route: '',
                               ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                borderRadius: BorderRadius.circular(
-                                  Dimensions.radiusDefault,
-                                ),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
+
+                              // Promotional section items
+                              PortionWidget(
+                                icon: Images.couponIcon,
+                                title: 'coupon'.tr,
+                                route: RouteHelper.getCouponRoute(),
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimensions.paddingSizeLarge,
-                                vertical: Dimensions.paddingSizeDefault,
+                              (Get.find<SplashController>().configModel!.loyaltyPointStatus == 1)
+                                  ? PortionWidget(
+                                      icon: Images.pointIcon,
+                                      title: 'loyalty_points'.tr,
+                                      route: RouteHelper.getLoyaltyRoute(),
+                                      suffix: !isLoggedIn
+                                          ? null
+                                          : '${profileController.userInfoModel?.loyaltyPoint != null ? profileController.userInfoModel!.loyaltyPoint.toString() : '0'} ${'points'.tr}',
+                                    )
+                                  : const SizedBox(),
+                              (Get.find<SplashController>().configModel!.customerWalletStatus == 1)
+                                  ? PortionWidget(
+                                      icon: Images.walletIcon,
+                                      title: 'my_wallet'.tr,
+                                      route: RouteHelper.getWalletRoute(),
+                                      suffix: !isLoggedIn
+                                          ? null
+                                          : PriceConverter.convertPrice(
+                                              profileController.userInfoModel != null ? profileController.userInfoModel!.walletBalance : 0,
+                                            ),
+                                    )
+                                  : const SizedBox(),
+
+                              // Earnings section items
+                              (Get.find<SplashController>().configModel!.refEarningStatus == 1)
+                                  ? PortionWidget(
+                                      icon: Images.referIcon,
+                                      title: 'refer_and_earn'.tr,
+                                      route: RouteHelper.getReferAndEarnRoute(),
+                                    )
+                                  : const SizedBox(),
+                              (Get.find<SplashController>().configModel!.toggleDmRegistration! && !ResponsiveHelper.isDesktop(context))
+                                  ? PortionWidget(
+                                      icon: Images.dmIcon,
+                                      title: 'join_as_a_delivery_man'.tr,
+                                      route: RouteHelper.getDeliverymanRegistrationRoute(),
+                                    )
+                                  : const SizedBox(),
+                              (Get.find<SplashController>().configModel!.toggleStoreRegistration! && !ResponsiveHelper.isDesktop(context))
+                                  ? PortionWidget(
+                                      icon: Images.storeIcon,
+                                      title: 'open_vendor'.tr,
+                                      route: RouteHelper.getRestaurantRegistrationRoute(),
+                                    )
+                                  : const SizedBox(),
+
+                              // Help & Support section items
+                              PortionWidget(
+                                icon: Images.chatIcon,
+                                title: 'live_chat'.tr,
+                                route: RouteHelper.getConversationRoute(),
                               ),
-                              margin: const EdgeInsets.all(
-                                Dimensions.paddingSizeDefault,
+                              PortionWidget(
+                                icon: Images.helpIcon,
+                                title: 'help_and_support'.tr,
+                                route: RouteHelper.getSupportRoute(),
                               ),
-                              child: Column(
-                                children: [
-                                  PortionWidget(
-                                    icon: Images.couponIcon,
-                                    title: 'coupon'.tr,
-                                    route: RouteHelper.getCouponRoute(),
-                                    hideDivider:
-                                        Get.find<SplashController>()
-                                                    .configModel!
-                                                    .loyaltyPointStatus ==
-                                                1 ||
-                                            Get.find<SplashController>()
-                                                    .configModel!
-                                                    .customerWalletStatus ==
-                                                1
-                                        ? false
-                                        : true,
-                                  ),
-                                  (Get.find<SplashController>()
-                                              .configModel!
-                                              .loyaltyPointStatus ==
-                                          1)
-                                      ? PortionWidget(
-                                          icon: Images.pointIcon,
-                                          title: 'loyalty_points'.tr,
-                                          route: RouteHelper.getLoyaltyRoute(),
-                                          hideDivider:
-                                              Get.find<SplashController>()
-                                                      .configModel!
-                                                      .customerWalletStatus ==
-                                                  1
-                                              ? false
-                                              : true,
-                                          suffix: !isLoggedIn
-                                              ? null
-                                              : '${profileController.userInfoModel?.loyaltyPoint != null ? profileController.userInfoModel!.loyaltyPoint.toString() : '0'} ${'points'.tr}',
-                                        )
-                                      : const SizedBox(),
-                                  (Get.find<SplashController>()
-                                              .configModel!
-                                              .customerWalletStatus ==
-                                          1)
-                                      ? PortionWidget(
-                                          icon: Images.walletIcon,
-                                          title: 'my_wallet'.tr,
-                                          hideDivider: true,
-                                          route: RouteHelper.getWalletRoute(),
-                                          suffix: !isLoggedIn
-                                              ? null
-                                              : PriceConverter.convertPrice(
-                                                  profileController
-                                                              .userInfoModel !=
-                                                          null
-                                                      ? profileController
-                                                            .userInfoModel!
-                                                            .walletBalance
-                                                      : 0,
-                                                ),
-                                        )
-                                      : const SizedBox(),
-                                ],
+                              PortionWidget(
+                                icon: Images.aboutIcon,
+                                title: 'about_us'.tr,
+                                route: RouteHelper.getHtmlRoute('about-us'),
                               ),
-                            ),
-                          ],
-                        ),
-                        (Get.find<SplashController>()
-                                        .configModel!
-                                        .refEarningStatus ==
-                                    1) ||
-                                (Get.find<SplashController>()
-                                        .configModel!
-                                        .toggleDmRegistration! &&
-                                    !ResponsiveHelper.isDesktop(context)) ||
-                                (Get.find<SplashController>()
-                                        .configModel!
-                                        .toggleStoreRegistration! &&
-                                    !ResponsiveHelper.isDesktop(context))
-                            ? Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: Dimensions.paddingSizeDefault,
-                                      right: Dimensions.paddingSizeDefault,
-                                    ),
-                                    child: Text(
-                                      'earnings'.tr,
-                                      style: robotoMedium.copyWith(
-                                        fontSize: Dimensions.fontSizeDefault,
-                                        color: Theme.of(
-                                          context,
-                                        ).primaryColor.withValues(alpha: 0.5),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).cardColor,
-                                      borderRadius: BorderRadius.circular(
-                                        Dimensions.radiusDefault,
-                                      ),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.black12,
-                                          blurRadius: 5,
-                                          spreadRadius: 1,
-                                        ),
-                                      ],
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: Dimensions.paddingSizeLarge,
-                                      vertical: Dimensions.paddingSizeDefault,
-                                    ),
-                                    margin: const EdgeInsets.all(
-                                      Dimensions.paddingSizeDefault,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        (Get.find<SplashController>()
-                                                    .configModel!
-                                                    .refEarningStatus ==
-                                                1)
-                                            ? PortionWidget(
-                                                icon: Images.referIcon,
-                                                title: 'refer_and_earn'.tr,
-                                                route:
-                                                    RouteHelper.getReferAndEarnRoute(),
-                                                hideDivider:
-                                                    (Get.find<
-                                                                  SplashController
-                                                                >()
-                                                                .configModel!
-                                                                .toggleDmRegistration! &&
-                                                            !ResponsiveHelper.isDesktop(
-                                                              context,
-                                                            )) ||
-                                                        (Get.find<
-                                                                  SplashController
-                                                                >()
-                                                                .configModel!
-                                                                .toggleStoreRegistration! &&
-                                                            !ResponsiveHelper.isDesktop(
-                                                              context,
-                                                            ))
-                                                    ? false
-                                                    : true,
-                                              )
-                                            : const SizedBox(),
-                                        (Get.find<SplashController>()
-                                                    .configModel!
-                                                    .toggleDmRegistration! &&
-                                                !ResponsiveHelper.isDesktop(
-                                                  context,
-                                                ))
-                                            ? PortionWidget(
-                                                icon: Images.dmIcon,
-                                                title:
-                                                    'join_as_a_delivery_man'.tr,
-                                                route:
-                                                    RouteHelper.getDeliverymanRegistrationRoute(),
-                                                hideDivider:
-                                                    (Get.find<
-                                                              SplashController
-                                                            >()
-                                                            .configModel!
-                                                            .toggleStoreRegistration! &&
-                                                        !ResponsiveHelper.isDesktop(
-                                                          context,
-                                                        ))
-                                                    ? false
-                                                    : true,
-                                              )
-                                            : const SizedBox(),
-                                        (Get.find<SplashController>()
-                                                    .configModel!
-                                                    .toggleStoreRegistration! &&
-                                                !ResponsiveHelper.isDesktop(
-                                                  context,
-                                                ))
-                                            ? PortionWidget(
-                                                icon: Images.storeIcon,
-                                                title: 'open_vendor'.tr,
-                                                hideDivider: true,
-                                                route:
-                                                    RouteHelper.getRestaurantRegistrationRoute(),
-                                              )
-                                            : const SizedBox(),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : const SizedBox(),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: Dimensions.paddingSizeDefault,
-                                right: Dimensions.paddingSizeDefault,
+                              PortionWidget(
+                                icon: Images.termsIcon,
+                                title: 'terms_conditions'.tr,
+                                route: RouteHelper.getHtmlRoute('terms-and-condition'),
                               ),
-                              child: Text(
-                                'help_and_support'.tr,
-                                style: robotoMedium.copyWith(
-                                  fontSize: Dimensions.fontSizeDefault,
-                                  color: Theme.of(
-                                    context,
-                                  ).primaryColor.withValues(alpha: 0.5),
-                                ),
+                              PortionWidget(
+                                icon: Images.privacyIcon,
+                                title: 'privacy_policy'.tr,
+                                route: RouteHelper.getHtmlRoute('privacy-policy'),
                               ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                borderRadius: BorderRadius.circular(
-                                  Dimensions.radiusDefault,
-                                ),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimensions.paddingSizeLarge,
-                                vertical: Dimensions.paddingSizeDefault,
-                              ),
-                              margin: const EdgeInsets.all(
-                                Dimensions.paddingSizeDefault,
-                              ),
-                              child: Column(
-                                children: [
-                                  PortionWidget(
-                                    icon: Images.chatIcon,
-                                    title: 'live_chat'.tr,
-                                    route: RouteHelper.getConversationRoute(),
-                                  ),
-                                  PortionWidget(
-                                    icon: Images.helpIcon,
-                                    title: 'help_and_support'.tr,
-                                    route: RouteHelper.getSupportRoute(),
-                                  ),
-                                  PortionWidget(
-                                    icon: Images.aboutIcon,
-                                    title: 'about_us'.tr,
-                                    route: RouteHelper.getHtmlRoute('about-us'),
-                                  ),
-                                  PortionWidget(
-                                    icon: Images.termsIcon,
-                                    title: 'terms_conditions'.tr,
-                                    route: RouteHelper.getHtmlRoute(
-                                      'terms-and-condition',
-                                    ),
-                                  ),
-                                  PortionWidget(
-                                    icon: Images.privacyIcon,
-                                    title: 'privacy_policy'.tr,
-                                    route: RouteHelper.getHtmlRoute(
-                                      'privacy-policy',
-                                    ),
-                                  ),
-                                  (Get.find<SplashController>()
-                                              .configModel!
-                                              .refundPolicyStatus ==
-                                          1)
-                                      ? PortionWidget(
-                                          icon: Images.refundIcon,
-                                          title: 'refund_policy'.tr,
-                                          route: RouteHelper.getHtmlRoute(
-                                            'refund-policy',
-                                          ),
-                                          hideDivider:
-                                              (Get.find<SplashController>()
-                                                          .configModel!
-                                                          .cancellationPolicyStatus ==
-                                                      1) ||
-                                                  (Get.find<SplashController>()
-                                                          .configModel!
-                                                          .shippingPolicyStatus ==
-                                                      1)
-                                              ? false
-                                              : true,
-                                        )
-                                      : const SizedBox(),
-                                  (Get.find<SplashController>()
-                                              .configModel!
-                                              .cancellationPolicyStatus ==
-                                          1)
-                                      ? PortionWidget(
-                                          icon: Images.cancelationIcon,
-                                          title: 'cancellation_policy'.tr,
-                                          route: RouteHelper.getHtmlRoute(
-                                            'cancellation-policy',
-                                          ),
-                                          hideDivider:
-                                              (Get.find<SplashController>()
-                                                      .configModel!
-                                                      .shippingPolicyStatus ==
-                                                  1)
-                                              ? false
-                                              : true,
-                                        )
-                                      : const SizedBox(),
-                                  (Get.find<SplashController>()
-                                              .configModel!
-                                              .shippingPolicyStatus ==
-                                          1)
-                                      ? PortionWidget(
-                                          icon: Images.shippingIcon,
-                                          title: 'shipping_policy'.tr,
-                                          hideDivider: true,
-                                          route: RouteHelper.getHtmlRoute(
-                                            'shipping-policy',
-                                          ),
-                                        )
-                                      : const SizedBox(),
-                                ],
-                              ),
-                            ),
-                          ],
+                              (Get.find<SplashController>().configModel!.refundPolicyStatus == 1)
+                                  ? PortionWidget(
+                                      icon: Images.refundIcon,
+                                      title: 'refund_policy'.tr,
+                                      route: RouteHelper.getHtmlRoute('refund-policy'),
+                                      hideDivider: (Get.find<SplashController>().configModel!.cancellationPolicyStatus == 1) || (Get.find<SplashController>().configModel!.shippingPolicyStatus == 1) ? false : true,
+                                    )
+                                  : const SizedBox(),
+                              (Get.find<SplashController>().configModel!.cancellationPolicyStatus == 1)
+                                  ? PortionWidget(
+                                      icon: Images.cancelationIcon,
+                                      title: 'cancellation_policy'.tr,
+                                      route: RouteHelper.getHtmlRoute('cancellation-policy'),
+                                      hideDivider: (Get.find<SplashController>().configModel!.shippingPolicyStatus == 1) ? false : true,
+                                    )
+                                  : const SizedBox(),
+                              (Get.find<SplashController>().configModel!.shippingPolicyStatus == 1)
+                                  ? PortionWidget(
+                                      icon: Images.shippingIcon,
+                                      title: 'shipping_policy'.tr,
+                                      hideDivider: true,
+                                      route: RouteHelper.getHtmlRoute('shipping-policy'),
+                                    )
+                                  : const SizedBox(),
+                            ],
+                          ),
                         ),
                         InkWell(
                           onTap: () async {

@@ -40,7 +40,7 @@ class BannerView extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 height: GetPlatform.isDesktop
                     ? 500
-                    : MediaQuery.of(context).size.width * 0.45,
+                    : MediaQuery.of(context).size.width * 0.55,
                 padding: const EdgeInsets.only(
                   top: Dimensions.paddingSizeDefault,
                 ),
@@ -54,7 +54,7 @@ class BannerView extends StatelessWidget {
                                 autoPlay: true,
                                 enlargeCenterPage: true,
                                 disableCenter: true,
-                                viewportFraction: 0.8,
+                                viewportFraction: 0.92,
                                 autoPlayInterval: const Duration(seconds: 7),
                                 onPageChanged: (index, reason) {
                                   bannerController.setCurrentIndex(index, true);
@@ -150,13 +150,16 @@ class BannerView extends StatelessWidget {
                                     decoration: BoxDecoration(
                                       color: Theme.of(context).cardColor,
                                       borderRadius: BorderRadius.circular(
-                                        Dimensions.radiusDefault,
+                                        Dimensions.radiusLarge,
                                       ),
-                                      boxShadow: const [
+                                      boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black12,
-                                          blurRadius: 5,
+                                          color: Colors.black.withValues(
+                                            alpha: 0.08,
+                                          ),
+                                          blurRadius: 10,
                                           spreadRadius: 0,
+                                          offset: const Offset(0, 4),
                                         ),
                                       ],
                                     ),
@@ -166,7 +169,7 @@ class BannerView extends StatelessWidget {
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(
-                                        Dimensions.radiusDefault,
+                                        Dimensions.radiusLarge,
                                       ),
                                       child: GetBuilder<SplashController>(
                                         builder: (splashController) {
@@ -187,45 +190,27 @@ class BannerView extends StatelessWidget {
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: bannerList.map((bnr) {
-                              int index = bannerList.indexOf(bnr);
-                              int totalBanner = bannerList.length;
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 3,
+                            children: bannerList.asMap().entries.map((entry) {
+                              int index = entry.key;
+                              return AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 4,
                                 ),
-                                child: index == bannerController.currentIndex
-                                    ? Container(
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context).primaryColor,
-                                          borderRadius: BorderRadius.circular(
-                                            Dimensions.radiusDefault,
-                                          ),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 4,
-                                          vertical: 1,
-                                        ),
-                                        child: Text(
-                                          '${index + 1}/$totalBanner',
-                                          style: robotoRegular.copyWith(
-                                            color: Theme.of(context).cardColor,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      )
-                                    : Container(
-                                        height: 5,
-                                        width: 6,
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(
-                                            context,
-                                          ).primaryColor.withValues(alpha: 0.5),
-                                          borderRadius: BorderRadius.circular(
-                                            Dimensions.radiusDefault,
-                                          ),
-                                        ),
-                                      ),
+                                height: 4,
+                                width: index == bannerController.currentIndex
+                                    ? 24
+                                    : 8,
+                                decoration: BoxDecoration(
+                                  color: index == bannerController.currentIndex
+                                      ? Theme.of(context).primaryColor
+                                      : Theme.of(
+                                          context,
+                                        ).primaryColor.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(
+                                    Dimensions.radiusDefault,
+                                  ),
+                                ),
                               );
                             }).toList(),
                           ),

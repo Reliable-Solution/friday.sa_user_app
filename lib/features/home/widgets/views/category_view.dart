@@ -95,152 +95,43 @@ class CategoryView extends StatelessWidget {
                                               }
                                             },
                                             child: SizedBox(
-                                              width: 80,
+                                              width: 75,
                                               child: Column(
                                                 children: [
-                                                  SizedBox(
-                                                    height: 75,
-                                                    width: 75,
-                                                    child: Stack(
-                                                      children: [
-                                                        ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                Dimensions
-                                                                    .radiusSmall,
-                                                              ),
-                                                          child: CustomImage(
-                                                            image:
-                                                                '${categoryController.categoryList![index].imageFullUrl}',
-                                                            height: 75,
-                                                            width: 75,
-                                                            fit: BoxFit.cover,
-                                                          ),
+                                                  Container(
+                                                    height: 70, width: 70,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color: Theme.of(context).cardColor,
+                                                      border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.1), width: 1),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.black.withValues(alpha: 0.03),
+                                                          blurRadius: 10, spreadRadius: 0, offset: const Offset(0, 4),
                                                         ),
-                                                        (index == 9 &&
-                                                                categoryController
-                                                                        .categoryList!
-                                                                        .length >
-                                                                    10)
-                                                            ? Positioned(
-                                                                right: 0,
-                                                                left: 0,
-                                                                top: 0,
-                                                                bottom: 0,
-                                                                child: Container(
-                                                                  decoration: BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                          Dimensions
-                                                                              .radiusSmall,
-                                                                        ),
-                                                                    gradient: LinearGradient(
-                                                                      begin: Alignment
-                                                                          .topCenter,
-                                                                      end: Alignment
-                                                                          .bottomCenter,
-                                                                      colors: [
-                                                                        Theme.of(
-                                                                          context,
-                                                                        ).primaryColor.withValues(
-                                                                          alpha:
-                                                                              0.4,
-                                                                        ),
-                                                                        Theme.of(
-                                                                          context,
-                                                                        ).primaryColor.withValues(
-                                                                          alpha:
-                                                                              0.6,
-                                                                        ),
-                                                                        Theme.of(
-                                                                          context,
-                                                                        ).primaryColor.withValues(
-                                                                          alpha:
-                                                                              0.4,
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                  child: Center(
-                                                                    child: Text(
-                                                                      '+${categoryController.categoryList!.length - 10}',
-                                                                      style: robotoMedium.copyWith(
-                                                                        fontSize:
-                                                                            Dimensions.fontSizeExtraLarge,
-                                                                        color: Theme.of(
-                                                                          context,
-                                                                        ).cardColor,
-                                                                      ),
-                                                                      maxLines:
-                                                                          2,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              )
-                                                            : const SizedBox(),
                                                       ],
                                                     ),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: Dimensions
-                                                        .paddingSizeExtraSmall,
-                                                  ),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                      right: index == 0
-                                                          ? Dimensions
-                                                                .paddingSizeExtraSmall
-                                                          : 0,
-                                                    ),
-                                                    child: Text(
-                                                      (index == 9 &&
-                                                              categoryController
-                                                                      .categoryList!
-                                                                      .length >
-                                                                  10)
-                                                          ? 'see_all'.tr
-                                                          : categoryController
-                                                                .categoryList![index]
-                                                                .name!,
-                                                      style: robotoMedium.copyWith(
-                                                        fontSize: 11,
-                                                        color:
-                                                            (index == 9 &&
-                                                                categoryController
-                                                                        .categoryList!
-                                                                        .length >
-                                                                    10)
-                                                            ? Theme.of(
-                                                                context,
-                                                              ).primaryColor
-                                                            : Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyMedium!
-                                                                  .color,
+                                                    child: ClipOval(
+                                                      child: CustomImage(
+                                                        image: '${categoryController.categoryList![index].imageFullUrl}',
+                                                        height: 70, width: 70, fit: BoxFit.cover,
                                                       ),
-                                                      maxLines:
-                                                          Get.find<
-                                                                LocalizationController
-                                                              >()
-                                                              .isLtr
-                                                          ? 2
-                                                          : 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      textAlign:
-                                                          TextAlign.center,
                                                     ),
+                                                  ),
+                                                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                                  Text(
+                                                    (index == 9 && categoryController.categoryList!.length > 10)
+                                                        ? 'see_all'.tr
+                                                        : categoryController.categoryList![index].name!,
+                                                    style: robotoMedium.copyWith(
+                                                      fontSize: 10,
+                                                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                                                    ),
+                                                    maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                          ),
+                                            ),),
                                         );
                                       },
                                     )
@@ -550,114 +441,39 @@ class FoodCategoryView extends StatelessWidget {
                               Dimensions.radiusSmall,
                             ),
                             child: SizedBox(
-                              width: 60,
+                              width: 75,
                               child: Column(
                                 children: [
-                                  Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(100),
+                                  Container(
+                                    height: 70, width: 70,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Theme.of(context).cardColor,
+                                      border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.1), width: 1),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.03),
+                                          blurRadius: 10, spreadRadius: 0, offset: const Offset(0, 4),
                                         ),
-                                        child: CustomImage(
-                                          image:
-                                              '${categoryController.categoryList![index].imageFullUrl}',
-                                          height: 60,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      (index == 9 &&
-                                              categoryController
-                                                      .categoryList!
-                                                      .length >
-                                                  10)
-                                          ? Positioned(
-                                              right: 0,
-                                              left: 0,
-                                              top: 0,
-                                              bottom: 0,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                        Radius.circular(100),
-                                                      ),
-                                                  gradient: LinearGradient(
-                                                    begin: Alignment.topCenter,
-                                                    end: Alignment.bottomCenter,
-                                                    colors: [
-                                                      Theme.of(
-                                                        context,
-                                                      ).primaryColor.withValues(
-                                                        alpha: 0.4,
-                                                      ),
-                                                      Theme.of(
-                                                        context,
-                                                      ).primaryColor.withValues(
-                                                        alpha: 0.6,
-                                                      ),
-                                                      Theme.of(
-                                                        context,
-                                                      ).primaryColor.withValues(
-                                                        alpha: 0.4,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                child: Center(
-                                                  child: Text(
-                                                    '+${categoryController.categoryList!.length - 10}',
-                                                    style: robotoMedium.copyWith(
-                                                      fontSize: Dimensions
-                                                          .fontSizeExtraLarge,
-                                                      color: Theme.of(
-                                                        context,
-                                                      ).cardColor,
-                                                    ),
-                                                    maxLines: 2,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          : const SizedBox(),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: Dimensions.paddingSizeSmall,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      (index == 9 &&
-                                              categoryController
-                                                      .categoryList!
-                                                      .length >
-                                                  10)
-                                          ? 'see_all'.tr
-                                          : categoryController
-                                                    .categoryList![index]
-                                                    .name ??
-                                                '',
-                                      style: robotoMedium.copyWith(
-                                        fontSize: Dimensions.fontSizeSmall,
-                                        color:
-                                            (index == 9 &&
-                                                categoryController
-                                                        .categoryList!
-                                                        .length >
-                                                    10)
-                                            ? Theme.of(context).primaryColor
-                                            : Theme.of(
-                                                context,
-                                              ).textTheme.bodyMedium!.color,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.center,
+                                      ],
                                     ),
+                                    child: ClipOval(
+                                      child: CustomImage(
+                                        image: '${categoryController.categoryList![index].imageFullUrl}',
+                                        height: 70, width: 70, fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                  Text(
+                                    (index == 9 && categoryController.categoryList!.length > 10)
+                                        ? 'see_all'.tr
+                                        : categoryController.categoryList![index].name ?? '',
+                                    style: robotoMedium.copyWith(
+                                      fontSize: 10,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                                    ),
+                                    maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
                                   ),
                                 ],
                               ),

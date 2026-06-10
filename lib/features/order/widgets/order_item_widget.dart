@@ -64,10 +64,15 @@ class OrderItemWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+        border: Border.all(
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
             blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),

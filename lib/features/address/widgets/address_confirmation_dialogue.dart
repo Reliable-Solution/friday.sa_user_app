@@ -62,11 +62,11 @@ class AddressConfirmDialogue extends StatelessWidget {
                         child: Text(
                           title!,
                           textAlign: TextAlign.center,
-                          style: robotoMedium.copyWith(
+                          style: robotoBold.copyWith(
                             fontSize: Dimensions.fontSizeExtraLarge,
                             color: isDesktop
                                 ? Theme.of(context).textTheme.titleSmall!.color
-                                : Colors.red,
+                                : Theme.of(context).colorScheme.error,
                           ),
                         ),
                       )
@@ -110,16 +110,15 @@ class AddressConfirmDialogue extends StatelessWidget {
                                       context,
                                     ).colorScheme.error,
                                     minimumSize: const Size(
-                                      Dimensions.webMaxWidth,
-                                      50,
+                                      double.infinity,
+                                      45,
                                     ),
                                     padding: EdgeInsets.zero,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(
-                                        Dimensions.radiusSmall,
+                                        Dimensions.radiusDefault,
                                       ),
                                     ),
-                                    //fixedSize: Size(115, 45),
                                   ),
                                   child: Text(
                                     'delete'.tr,
@@ -142,13 +141,13 @@ class AddressConfirmDialogue extends StatelessWidget {
                                       .textTheme
                                       .bodyMedium!
                                       .color!
-                                      .withValues(alpha: 0.5),
+                                      .withValues(alpha: 0.6),
                                   onPressed: Get.back,
-                                  radius: Dimensions.radiusSmall,
-                                  height: 50,
+                                  radius: Dimensions.radiusDefault,
+                                  height: 45,
                                   color: Theme.of(
                                     context,
-                                  ).disabledColor.withValues(alpha: 0.4),
+                                  ).disabledColor.withValues(alpha: 0.15),
                                 ),
                               ),
                               SizedBox(

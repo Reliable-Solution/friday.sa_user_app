@@ -9,19 +9,18 @@ class ProfileCardWidget extends StatelessWidget {
     required this.data,
     required this.title,
     required this.image,
+    this.onTap,
   });
   final String image;
   final String title;
   final String data;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ResponsiveHelper.isDesktop(context) ? 130 : 112,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-        color: Theme.of(context).cardColor,
-        border: Border.all(color: Theme.of(context).primaryColor, width: 0.1),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
@@ -30,31 +29,49 @@ class ProfileCardWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(image, height: 30, width: 30),
-          const SizedBox(height: Dimensions.paddingSizeSmall),
-          Text(
-            data,
-            textDirection: TextDirection.ltr,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: robotoMedium.copyWith(
-              fontSize: ResponsiveHelper.isDesktop(context)
-                  ? Dimensions.fontSizeDefault
-                  : Dimensions.fontSizeExtraLarge,
+      child: Material(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            height: ResponsiveHelper.isDesktop(context) ? 130 : 112,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+              border: Border.all(
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(image, height: 30, width: 30),
+                const SizedBox(height: Dimensions.paddingSizeSmall),
+                Text(
+                  data,
+                  textDirection: TextDirection.ltr,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: robotoMedium.copyWith(
+                    fontSize: ResponsiveHelper.isDesktop(context)
+                        ? Dimensions.fontSizeDefault
+                        : Dimensions.fontSizeExtraLarge,
+                  ),
+                ),
+                const SizedBox(height: Dimensions.paddingSizeSmall),
+                Text(
+                  title,
+                  style: robotoRegular.copyWith(
+                    fontSize: Dimensions.fontSizeExtraSmall,
+                    color: Theme.of(context).disabledColor,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: Dimensions.paddingSizeSmall),
-          Text(
-            title,
-            style: robotoRegular.copyWith(
-              fontSize: Dimensions.fontSizeExtraSmall,
-              color: Theme.of(context).disabledColor,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

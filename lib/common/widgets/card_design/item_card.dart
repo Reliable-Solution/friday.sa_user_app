@@ -206,20 +206,21 @@ class ItemCard extends StatelessWidget {
                                               color: Theme.of(
                                                 context,
                                               ).disabledColor,
+                                              fontSize: width < 150 ? 10 : Dimensions.fontSizeSmall,
                                             ),
+                                            maxLines: 1, overflow: TextOverflow.ellipsis,
                                           )
                                         : Text(
                                             item.name ?? '',
-                                            style: robotoBold,
+                                            style: robotoBold.copyWith(fontSize: width < 150 ? 12 : Dimensions.fontSizeDefault),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
-
                                     (isFood || isShop)
                                         ? Flexible(
                                             child: Text(
                                               item.name ?? '',
-                                              style: robotoBold,
+                                              style: robotoBold.copyWith(fontSize: width < 150 ? 12 : Dimensions.fontSizeDefault),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                             ),
@@ -267,8 +268,6 @@ class ItemCard extends StatelessWidget {
                                             ],
                                           )
                                         : const SizedBox(),
-
-                                    // showUnitOrRattings(context);
                                     (isFood || isShop)
                                         ? item.ratingCount! > 0
                                               ? Row(
@@ -332,7 +331,6 @@ class ItemCard extends StatelessWidget {
                                             ),
                                           )
                                         : const SizedBox(),
-
                                     discount != null && discount > 0
                                         ? Text(
                                             PriceConverter.convertPrice(
@@ -350,8 +348,6 @@ class ItemCard extends StatelessWidget {
                                             ),
                                           )
                                         : const SizedBox(),
-
-                                    // SizedBox(height: item.discount != null && item.discount! > 0 ? Dimensions.paddingSizeExtraSmall : 0),
                                     Text(
                                       PriceConverter.convertPrice(
                                         Get.find<ItemController>()
@@ -359,9 +355,8 @@ class ItemCard extends StatelessWidget {
                                         discount: discount,
                                         discountType: discountType,
                                       ),
-                                      style: robotoMedium,
+                                      style: robotoMedium.copyWith(fontSize: width < 150 ? 12 : Dimensions.fontSizeDefault),
                                     ),
-
                                     const SizedBox(
                                       height: Dimensions.paddingSizeExtraSmall,
                                     ),
@@ -417,26 +412,4 @@ class ItemCard extends StatelessWidget {
       ),
     );
   }
-
-  // Widget? showUnitOrRattings(BuildContext context) {
-  //   if(isFood || isShop) {
-  //     if(item.ratingCount! > 0) {
-  //       return Row(mainAxisAlignment: isPopularItem ? MainAxisAlignment.center : MainAxisAlignment.start, children: [
-  //         Icon(Icons.star, size: 14, color: Theme.of(context).primaryColor),
-  //         const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-  //
-  //         Text(item.avgRating!.toStringAsFixed(1), style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-  //         const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-  //
-  //         Text("(${item.ratingCount})", style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
-  //
-  //       ]);
-  //     }
-  //   } else if(Get.find<SplashController>().configModel!.moduleConfig!.module!.unit! && item.unitType != null) {
-  //     return Text(
-  //       '(${ item.unitType ?? ''})',
-  //       style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).hintColor),
-  //     );
-  //   }
-  // }
 }

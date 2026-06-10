@@ -42,14 +42,6 @@ class CouponSection extends StatelessWidget {
               return Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(
-                        context,
-                      ).primaryColor.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                    ),
-                  ],
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: Dimensions.paddingSizeLarge,
@@ -67,7 +59,7 @@ class CouponSection extends StatelessWidget {
                                 Dialog(
                                   child: CouponBottomSheet(
                                     storeId:
-                                        Get.find<StoreController>().store!.id,
+                                        checkoutController.store?.id,
                                     checkoutController: checkoutController,
                                   ),
                                 ),
@@ -79,7 +71,7 @@ class CouponSection extends StatelessWidget {
                                 backgroundColor: Colors.transparent,
                                 builder: (con) => CouponBottomSheet(
                                   storeId:
-                                      Get.find<StoreController>().store!.id,
+                                      checkoutController.store?.id,
                                   checkoutController: checkoutController,
                                 ),
                               );
@@ -195,7 +187,7 @@ class CouponSection extends StatelessWidget {
                                               addOns +
                                               variationPrice,
                                           deliveryCharge,
-                                          Get.find<StoreController>().store!.id,
+                                          checkoutController.store?.id,
                                         )
                                         .then((discount) {
                                           //checkoutController.couponController.text = 'coupon_applied'.tr;

@@ -53,7 +53,6 @@ class AddAddressScreen extends StatefulWidget {
 }
 
 class _AddAddressScreenState extends State<AddAddressScreen> {
-  final TextEditingController _levelController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _contactPersonNameController =
       TextEditingController();
@@ -64,7 +63,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   final TextEditingController _floorController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final FocusNode _addressNode = FocusNode();
-  final FocusNode _levelNode = FocusNode();
   final FocusNode _nameNode = FocusNode();
   final FocusNode _numberNode = FocusNode();
   final FocusNode _streetNode = FocusNode();
@@ -73,7 +71,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   final FocusNode _emailFocus = FocusNode();
   CameraPosition? _cameraPosition;
   late LatLng _initialPosition;
-  bool _otherSelect = false;
+
   String? _countryDialCode =
       Get.find<AuthController>().getUserCountryCode().isNotEmpty
       ? Get.find<AuthController>().getUserCountryCode()
@@ -149,10 +147,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         Get.find<LocationController>().setAddressTypeIndex(0, isUpdate: false);
       } else if (widget.address!.addressType == 'office') {
         Get.find<LocationController>().setAddressTypeIndex(1, isUpdate: false);
-      } else {
-        Get.find<LocationController>().setAddressTypeIndex(2, isUpdate: false);
-        _levelController.text = widget.address!.addressType!;
-        _otherSelect = true;
+      } else if (widget.address!.addressType == 'others') {
+
       }
     }
   }
@@ -553,7 +549,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                                       ),
                                                   child: InkWell(
                                                     onTap: () {
-                                                      _otherSelect = index == 2;
+
                                                       locationController
                                                           .setAddressTypeIndex(
                                                             index,
@@ -652,28 +648,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                               height:
                                                   Dimensions.paddingSizeSmall,
                                             ),
-                                            _otherSelect
-                                                ? SizedBox(
-                                                    height: 90,
-                                                    width: 680,
-                                                    child: CustomTextField(
-                                                      titleText:
-                                                          '${'level_name'.tr}(${'optional'.tr})',
-                                                      hintText:
-                                                          'write_level_name'.tr,
-                                                      showTitle: true,
-                                                      inputType:
-                                                          TextInputType.text,
-                                                      controller:
-                                                          _levelController,
-                                                      focusNode: _levelNode,
-                                                      nextFocus: _addressNode,
-                                                      capitalization:
-                                                          TextCapitalization
-                                                              .words,
-                                                    ),
-                                                  )
-                                                : const SizedBox(),
+
                                             const SizedBox(
                                               height:
                                                   Dimensions.paddingSizeLarge,
@@ -887,24 +862,25 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Container(
-                                        height: 140,
+                                        height: 160,
                                         width: MediaQuery.of(
                                           context,
                                         ).size.width,
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(
-                                            Dimensions.radiusSmall,
+                                            Dimensions.radiusDefault,
                                           ),
-                                          border: Border.all(
-                                            width: 2,
-                                            color: Theme.of(
-                                              context,
-                                            ).primaryColor,
-                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withValues(alpha: 0.08),
+                                              blurRadius: 12,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
                                         ),
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(
-                                            Dimensions.radiusSmall,
+                                            Dimensions.radiusDefault,
                                           ),
                                           child: _isLoading ? const Center(child: CircularProgressIndicator()) : Stack(
                                             clipBehavior: Clip.none,
@@ -1070,110 +1046,98 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                               ),
                                               Positioned(
                                                 bottom: 10,
-                                                right: 0,
-                                                child: InkWell(
-                                                  onTap: () => _checkPermission(() {
-                                                    locationController
-                                                        .getCurrentLocation(
-                                                          true,
-                                                          mapController:
-                                                              locationController
-                                                                  .mapController,
-                                                        );
-                                                  }),
-                                                  child: Container(
-                                                    width: 30,
-                                                    height: 30,
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                          right: Dimensions
-                                                              .paddingSizeLarge,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            Dimensions
-                                                                .radiusSmall,
-                                                          ),
-                                                      color: Colors.white,
-                                                    ),
-                                                    child: Icon(
-                                                      Icons.my_location,
-                                                      color: Theme.of(
-                                                        context,
-                                                      ).primaryColor,
-                                                      size: 20,
+                                                right: 10,
+                                                child: Material(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                                  elevation: 3,
+                                                  clipBehavior: Clip.antiAlias,
+                                                  child: InkWell(
+                                                    onTap: () => _checkPermission(() {
+                                                      locationController
+                                                          .getCurrentLocation(
+                                                            true,
+                                                            mapController:
+                                                                locationController
+                                                                    .mapController,
+                                                          );
+                                                    }),
+                                                    child: Container(
+                                                      width: 36,
+                                                      height: 36,
+                                                      alignment: Alignment.center,
+                                                      child: Icon(
+                                                        Icons.my_location,
+                                                        color: Theme.of(
+                                                          context,
+                                                        ).primaryColor,
+                                                        size: 20,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                               Positioned(
                                                 top: 10,
-                                                right: 0,
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    if (ResponsiveHelper.isDesktop(
-                                                      Get.context,
-                                                    )) {
-                                                      showGeneralDialog(
-                                                        context: context,
-                                                        pageBuilder: (_, __, ___) {
-                                                          return SizedBox(
-                                                            height: 300,
-                                                            width: 300,
-                                                            child: PickMapScreen(
-                                                              fromSignUp: false,
-                                                              canRoute: false,
-                                                              fromAddAddress:
-                                                                  true,
-                                                              route: null,
-                                                              googleMapController:
-                                                                  locationController
-                                                                      .mapController,
-                                                            ),
-                                                          );
-                                                        },
-                                                      );
-                                                    } else {
-                                                      Get.toNamed(
-                                                        RouteHelper.getPickMapRoute(
-                                                          'add-address',
-                                                          false,
-                                                        ),
-                                                        arguments: PickMapScreen(
-                                                          fromAddAddress: true,
-                                                          fromSignUp: false,
-                                                          googleMapController:
-                                                              locationController
-                                                                  .mapController,
-                                                          route: null,
-                                                          canRoute: false,
-                                                        ),
-                                                      );
-                                                    }
-                                                  },
-                                                  child: Container(
-                                                    width: 30,
-                                                    height: 30,
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                          right: Dimensions
-                                                              .paddingSizeLarge,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            Dimensions
-                                                                .radiusSmall,
+                                                right: 10,
+                                                child: Material(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                                  elevation: 3,
+                                                  clipBehavior: Clip.antiAlias,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      if (ResponsiveHelper.isDesktop(
+                                                        Get.context,
+                                                      )) {
+                                                        showGeneralDialog(
+                                                          context: context,
+                                                          pageBuilder: (_, __, ___) {
+                                                            return SizedBox(
+                                                              height: 300,
+                                                              width: 300,
+                                                              child: PickMapScreen(
+                                                                fromSignUp: false,
+                                                                canRoute: false,
+                                                                fromAddAddress:
+                                                                    true,
+                                                                route: null,
+                                                                googleMapController:
+                                                                    locationController
+                                                                        .mapController,
+                                                              ),
+                                                            );
+                                                          },
+                                                        );
+                                                      } else {
+                                                        Get.toNamed(
+                                                          RouteHelper.getPickMapRoute(
+                                                            'add-address',
+                                                            false,
                                                           ),
-                                                      color: Colors.white,
-                                                    ),
-                                                    child: Icon(
-                                                      Icons.fullscreen,
-                                                      color: Theme.of(
-                                                        context,
-                                                      ).primaryColor,
-                                                      size: 20,
+                                                          arguments: PickMapScreen(
+                                                            fromAddAddress: true,
+                                                            fromSignUp: false,
+                                                            googleMapController:
+                                                                locationController
+                                                                    .mapController,
+                                                            route: null,
+                                                            canRoute: false,
+                                                          ),
+                                                        );
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      width: 36,
+                                                      height: 36,
+                                                      alignment: Alignment.center,
+                                                      child: Icon(
+                                                        Icons.fullscreen,
+                                                        color: Theme.of(
+                                                          context,
+                                                        ).primaryColor,
+                                                        size: 20,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
@@ -1185,29 +1149,89 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                       const SizedBox(
                                         height: Dimensions.paddingSizeSmall,
                                       ),
-                                      Center(
-                                        child: Text(
-                                          'add_the_location_correctly'.tr,
-                                          style: robotoRegular.copyWith(
-                                            color: Theme.of(
-                                              context,
-                                            ).disabledColor,
-                                            fontSize:
-                                                Dimensions.fontSizeExtraSmall,
+                                      InkWell(
+                                        onTap: () {
+                                          Get.toNamed(
+                                            RouteHelper.getPickMapRoute(
+                                              'add-address',
+                                              false,
+                                            ),
+                                            arguments: PickMapScreen(
+                                              fromAddAddress: true,
+                                              fromSignUp: false,
+                                              googleMapController:
+                                                  locationController
+                                                      .mapController,
+                                              route: null,
+                                              canRoute: false,
+                                            ),
+                                          );
+                                        },
+                                        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: Dimensions.paddingSizeDefault,
+                                            vertical: Dimensions.paddingSizeSmall + 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).primaryColor.withValues(alpha: 0.06),
+                                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                            border: Border.all(
+                                              color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.location_on_outlined,
+                                                size: 18,
+                                                color: Theme.of(context).primaryColor,
+                                              ),
+                                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                              Expanded(
+                                                child: Text(
+                                                  'set_location'.tr,
+                                                  style: robotoMedium.copyWith(
+                                                    fontSize: Dimensions.fontSizeDefault,
+                                                    color: Theme.of(context).primaryColor,
+                                                  ),
+                                                ),
+                                              ),
+                                              Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 14,
+                                                color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
                                       const SizedBox(
                                         height: Dimensions.paddingSizeLarge,
                                       ),
-                                      Text(
-                                        'label_as'.tr,
-                                        style: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                          color: Theme.of(
-                                            context,
-                                          ).textTheme.bodyMedium!.color,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Icon(
+                                              Icons.label_outline,
+                                              size: 16,
+                                              color: Theme.of(context).primaryColor,
+                                            ),
+                                          ),
+                                          const SizedBox(width: Dimensions.paddingSizeExtraSmall + 2),
+                                          Text(
+                                            'label_as'.tr,
+                                            style: robotoBold.copyWith(
+                                              fontSize: Dimensions.fontSizeDefault,
+                                              color: Theme.of(context).textTheme.bodyLarge!.color,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       const SizedBox(
                                         height: Dimensions.paddingSizeSmall,
@@ -1225,83 +1249,107 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                               right:
                                                   Dimensions.paddingSizeSmall,
                                             ),
-                                            child: InkWell(
-                                              onTap: () {
-                                                _otherSelect = index == 2;
-                                                locationController
-                                                    .setAddressTypeIndex(index);
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: Dimensions
-                                                          .paddingSizeLarge,
-                                                      vertical: Dimensions
-                                                          .paddingSizeSmall,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        Dimensions
-                                                            .radiusDefault,
-                                                      ),
-                                                  color:
-                                                      locationController
-                                                              .addressTypeIndex ==
-                                                          index
-                                                      ? Theme.of(context)
-                                                            .primaryColor
-                                                            .withValues(
-                                                              alpha: 0.1,
-                                                            )
-                                                      : Theme.of(
-                                                          context,
-                                                        ).cardColor,
-                                                  boxShadow:
-                                                      locationController
-                                                              .addressTypeIndex ==
-                                                          index
-                                                      ? null
-                                                      : const [
-                                                          BoxShadow(
-                                                            color:
-                                                                Colors.black12,
-                                                            spreadRadius: 1,
-                                                            blurRadius: 5,
-                                                          ),
-                                                        ],
-                                                  border: Border.all(
-                                                    color:
-                                                        locationController
-                                                                .addressTypeIndex ==
-                                                            index
-                                                        ? Theme.of(
-                                                            context,
-                                                          ).primaryColor
-                                                        : Theme.of(
-                                                            context,
-                                                          ).disabledColor,
-                                                  ),
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                onTap: () {
+
+                                                  locationController
+                                                      .setAddressTypeIndex(index);
+                                                },
+                                                borderRadius: BorderRadius.circular(
+                                                  Dimensions.radiusDefault,
                                                 ),
-                                                child: SizedBox(
-                                                  height: 24,
-                                                  width: 24,
-                                                  child: Image.asset(
-                                                    index == 0
-                                                        ? Images.homeIcon
-                                                        : index == 1
-                                                        ? Images.workIcon
-                                                        : Images.otherIcon,
+                                                child: AnimatedContainer(
+                                                  duration: const Duration(milliseconds: 200),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: Dimensions
+                                                            .paddingSizeLarge,
+                                                        vertical: Dimensions
+                                                            .paddingSizeSmall,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          Dimensions
+                                                              .radiusDefault,
+                                                        ),
                                                     color:
                                                         locationController
                                                                 .addressTypeIndex ==
                                                             index
-                                                        ? Theme.of(
-                                                            context,
-                                                          ).primaryColor
+                                                        ? Theme.of(context)
+                                                              .primaryColor
+                                                              .withValues(
+                                                                alpha: 0.1,
+                                                              )
                                                         : Theme.of(
                                                             context,
-                                                          ).disabledColor,
+                                                          ).cardColor,
+                                                    border: Border.all(
+                                                      color:
+                                                          locationController
+                                                                  .addressTypeIndex ==
+                                                              index
+                                                          ? Theme.of(
+                                                              context,
+                                                            ).primaryColor
+                                                          : Theme.of(
+                                                              context,
+                                                            ).disabledColor.withValues(alpha: 0.3),
+                                                      width: locationController
+                                                                  .addressTypeIndex ==
+                                                              index
+                                                          ? 1.5
+                                                          : 1,
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      SizedBox(
+                                                        height: 20,
+                                                        width: 20,
+                                                        child: Image.asset(
+                                                          index == 0
+                                                              ? Images.homeIcon
+                                                              : index == 1
+                                                              ? Images.workIcon
+                                                              : Images.otherIcon,
+                                                          color:
+                                                              locationController
+                                                                      .addressTypeIndex ==
+                                                                  index
+                                                              ? Theme.of(
+                                                                  context,
+                                                                ).primaryColor
+                                                              : Theme.of(
+                                                                  context,
+                                                                ).disabledColor,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                                      Text(
+                                                        index == 0
+                                                            ? 'homes'.tr
+                                                            : index == 1
+                                                            ? 'office'.tr
+                                                            : 'others'.tr,
+                                                        style: robotoMedium.copyWith(
+                                                          fontSize: Dimensions.fontSizeSmall,
+                                                          color:
+                                                              locationController
+                                                                      .addressTypeIndex ==
+                                                                  index
+                                                              ? Theme.of(
+                                                                  context,
+                                                                ).primaryColor
+                                                              : Theme.of(
+                                                                  context,
+                                                                ).disabledColor,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
@@ -1309,27 +1357,35 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
-                                        height: _otherSelect
-                                            ? Dimensions.paddingSizeLarge
-                                            : 0,
-                                      ),
-                                      _otherSelect
-                                          ? CustomTextField(
-                                              labelText:
-                                                  '${'level_name'.tr}(${'optional'.tr})',
-                                              titleText: 'write_level_name'.tr,
-                                              inputType: TextInputType.text,
-                                              controller: _levelController,
-                                              focusNode: _levelNode,
-                                              nextFocus: _addressNode,
-                                              capitalization:
-                                                  TextCapitalization.words,
-                                            )
-                                          : const SizedBox(),
                                       const SizedBox(
-                                        height:
-                                            Dimensions.paddingSizeExtremeLarge,
+                                        height: Dimensions.paddingSizeLarge + 4,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Icon(
+                                              Icons.location_on_outlined,
+                                              size: 16,
+                                              color: Theme.of(context).primaryColor,
+                                            ),
+                                          ),
+                                          const SizedBox(width: Dimensions.paddingSizeExtraSmall + 2),
+                                          Text(
+                                            'delivery_address'.tr,
+                                            style: robotoBold.copyWith(
+                                              fontSize: Dimensions.fontSizeDefault,
+                                              color: Theme.of(context).textTheme.bodyLarge!.color,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: Dimensions.paddingSizeSmall,
                                       ),
                                       CustomTextField(
                                         labelText:
@@ -1352,112 +1408,191 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                         onChanged: (text) => locationController
                                             .setPlaceMark(text),
                                       ),
-                                      const SizedBox(
-                                        height:
-                                            Dimensions.paddingSizeExtremeLarge,
-                                      ),
-                                      CustomTextField(
-                                        labelText: 'contact_person_name'.tr,
-                                        titleText: 'write_name'.tr,
-                                        inputType: TextInputType.name,
-                                        controller:
-                                            _contactPersonNameController,
-                                        focusNode: _nameNode,
-                                        nextFocus: _numberNode,
-                                        capitalization:
-                                            TextCapitalization.words,
-                                      ),
-                                      const SizedBox(
-                                        height:
-                                            Dimensions.paddingSizeExtremeLarge,
-                                      ),
-                                      CustomTextField(
-                                        labelText: 'contact_person_number'.tr,
-                                        titleText: 'write_number'.tr,
-                                        controller:
-                                            _contactPersonNumberController,
-                                        focusNode: _numberNode,
-                                        nextFocus: widget.forGuest
-                                            ? _emailFocus
-                                            : _streetNode,
-                                        inputType: TextInputType.phone,
-                                        isPhone: true,
-                                        onCountryChanged:
-                                            (CountryCode countryCode) {
-                                              _countryDialCode =
-                                                  countryCode.dialCode;
-                                            },
-                                        countryDialCode:
-                                            _countryDialCode ??
-                                            Get.find<LocalizationController>()
-                                                .locale
-                                                .countryCode,
-                                      ),
-                                      const SizedBox(
-                                        height:
-                                            Dimensions.paddingSizeExtremeLarge,
-                                      ),
-                                      widget.forGuest
-                                          ? CustomTextField(
-                                              labelText: 'email'.tr,
-                                              titleText: 'enter_email'.tr,
-                                              controller: _emailController,
-                                              focusNode: _emailFocus,
-                                              nextFocus: _streetNode,
-                                              inputType:
-                                                  TextInputType.emailAddress,
-                                              prefixIcon: Icons.mail,
-                                            )
-                                          : const SizedBox(),
-                                      SizedBox(
-                                        height: widget.forGuest
-                                            ? Dimensions.paddingSizeExtremeLarge
-                                            : 0,
-                                      ),
-                                      CustomTextField(
-                                        labelText:
-                                            '${'street_number'.tr} (${'optional'.tr})',
-                                        titleText: 'write_street_number'.tr,
-                                        inputType: TextInputType.streetAddress,
-                                        focusNode: _streetNode,
-                                        nextFocus: _houseNode,
-                                        controller: _streetNumberController,
-                                      ),
-                                      const SizedBox(
-                                        height:
-                                            Dimensions.paddingSizeExtremeLarge,
-                                      ),
+
+                                      // Contact Details Section
+                                      const SizedBox(height: Dimensions.paddingSizeLarge + 4),
                                       Row(
                                         children: [
-                                          Expanded(
-                                            child: CustomTextField(
-                                              labelText:
-                                                  '${'house'.tr} (${'optional'.tr})',
-                                              titleText:
-                                                  'write_house_number'.tr,
-                                              inputType: TextInputType.text,
-                                              focusNode: _houseNode,
-                                              nextFocus: _floorNode,
-                                              controller: _houseController,
+                                          Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Icon(
+                                              Icons.person_outline,
+                                              size: 16,
+                                              color: Theme.of(context).primaryColor,
                                             ),
                                           ),
-                                          const SizedBox(
-                                            width: Dimensions
-                                                .paddingSizeExtremeLarge,
-                                          ),
-                                          Expanded(
-                                            child: CustomTextField(
-                                              labelText:
-                                                  "${'floor'.tr} (${'optional'.tr})",
-                                              titleText:
-                                                  'write_floor_number'.tr,
-                                              inputType: TextInputType.text,
-                                              focusNode: _floorNode,
-                                              inputAction: TextInputAction.done,
-                                              controller: _floorController,
+                                          const SizedBox(width: Dimensions.paddingSizeExtraSmall + 2),
+                                          Text(
+                                            'contact_person_name'.tr,
+                                            style: robotoBold.copyWith(
+                                              fontSize: Dimensions.fontSizeDefault,
+                                              color: Theme.of(context).textTheme.bodyLarge!.color,
                                             ),
                                           ),
                                         ],
+                                      ),
+                                      const SizedBox(height: Dimensions.paddingSizeSmall),
+                                      Container(
+                                        padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).cardColor,
+                                          borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                          border: Border.all(
+                                            color: Theme.of(context).disabledColor.withValues(alpha: 0.15),
+                                          ),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            CustomTextField(
+                                              labelText: 'contact_person_name'.tr,
+                                              titleText: 'write_name'.tr,
+                                              inputType: TextInputType.name,
+                                              controller:
+                                                  _contactPersonNameController,
+                                              focusNode: _nameNode,
+                                              nextFocus: _numberNode,
+                                              capitalization:
+                                                  TextCapitalization.words,
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeLarge,
+                                            ),
+                                            CustomTextField(
+                                              labelText: 'contact_person_number'.tr,
+                                              titleText: 'write_number'.tr,
+                                              controller:
+                                                  _contactPersonNumberController,
+                                              focusNode: _numberNode,
+                                              nextFocus: widget.forGuest
+                                                  ? _emailFocus
+                                                  : _streetNode,
+                                              inputType: TextInputType.phone,
+                                              isPhone: true,
+                                              onCountryChanged:
+                                                  (CountryCode countryCode) {
+                                                    _countryDialCode =
+                                                        countryCode.dialCode;
+                                                  },
+                                              countryDialCode:
+                                                  _countryDialCode ??
+                                                  Get.find<LocalizationController>()
+                                                      .locale
+                                                      .countryCode,
+                                            ),
+                                            if (widget.forGuest) ...[
+                                              const SizedBox(
+                                                height: Dimensions.paddingSizeLarge,
+                                              ),
+                                              CustomTextField(
+                                                labelText: 'email'.tr,
+                                                titleText: 'enter_email'.tr,
+                                                controller: _emailController,
+                                                focusNode: _emailFocus,
+                                                nextFocus: _streetNode,
+                                                inputType:
+                                                    TextInputType.emailAddress,
+                                                prefixIcon: Icons.mail,
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+
+                                      // Additional Details Section
+                                      const SizedBox(height: Dimensions.paddingSizeLarge + 4),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Icon(
+                                              Icons.home_outlined,
+                                              size: 16,
+                                              color: Theme.of(context).primaryColor,
+                                            ),
+                                          ),
+                                          const SizedBox(width: Dimensions.paddingSizeExtraSmall + 2),
+                                          Text(
+                                            '${'street_number'.tr} & ${'house'.tr}',
+                                            style: robotoBold.copyWith(
+                                              fontSize: Dimensions.fontSizeDefault,
+                                              color: Theme.of(context).textTheme.bodyLarge!.color,
+                                            ),
+                                          ),
+                                          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                          Text(
+                                            '(${'optional'.tr})',
+                                            style: robotoRegular.copyWith(
+                                              fontSize: Dimensions.fontSizeSmall,
+                                              color: Theme.of(context).disabledColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: Dimensions.paddingSizeSmall),
+                                      Container(
+                                        padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).cardColor,
+                                          borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                          border: Border.all(
+                                            color: Theme.of(context).disabledColor.withValues(alpha: 0.15),
+                                          ),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            CustomTextField(
+                                              labelText:
+                                                  '${'street_number'.tr} (${'optional'.tr})',
+                                              titleText: 'write_street_number'.tr,
+                                              inputType: TextInputType.streetAddress,
+                                              focusNode: _streetNode,
+                                              nextFocus: _houseNode,
+                                              controller: _streetNumberController,
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeLarge,
+                                            ),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: CustomTextField(
+                                                    labelText:
+                                                        '${'house'.tr} (${'optional'.tr})',
+                                                    titleText:
+                                                        'write_house_number'.tr,
+                                                    inputType: TextInputType.text,
+                                                    focusNode: _houseNode,
+                                                    nextFocus: _floorNode,
+                                                    controller: _houseController,
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  width: Dimensions.paddingSizeDefault,
+                                                ),
+                                                Expanded(
+                                                  child: CustomTextField(
+                                                    labelText:
+                                                        "${'floor'.tr} (${'optional'.tr})",
+                                                    titleText:
+                                                        'write_floor_number'.tr,
+                                                    inputType: TextInputType.text,
+                                                    focusNode: _floorNode,
+                                                    inputAction: TextInputAction.done,
+                                                    controller: _floorController,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       const SizedBox(
                                         height: Dimensions.paddingSizeLarge,
@@ -1496,17 +1631,32 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   Widget button(LocationController locationController) {
     return Container(
       width: Dimensions.webMaxWidth,
-      padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-      child: CustomButton(
-        radius: Dimensions.radiusSmall,
-        isBold: false,
-        isLoading: locationController.isLoading,
-        buttonText: widget.forGuest
-            ? 'done'.tr
-            : widget.address == null
-            ? 'save_location'.tr
-            : 'update_address'.tr,
-        onPressed: () async => _onSaveOrUpdateButtonPressed(locationController),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Dimensions.paddingSizeDefault,
+        vertical: Dimensions.paddingSizeSmall,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: CustomButton(
+          radius: Dimensions.radiusDefault,
+          isBold: true,
+          isLoading: locationController.isLoading,
+          buttonText: widget.forGuest
+              ? 'done'.tr
+              : widget.address == null
+              ? 'save_location'.tr
+              : 'update_address'.tr,
+          onPressed: () async => _onSaveOrUpdateButtonPressed(locationController),
+        ),
       ),
     );
   }
@@ -1549,12 +1699,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   ) {
     String? addressType =
         locationController.addressTypeList[locationController.addressTypeIndex];
-    if (locationController.addressTypeIndex == 2) {
-      addressType = _levelController.text.isNotEmpty
-          ? _levelController.text.trim()
-          : locationController.addressTypeList[locationController
-                .addressTypeIndex];
-    }
     if (_addressController.text.isEmpty) {
       showCustomSnackBar('please_enter_the_delivery_address'.tr);
     } else if (_contactPersonNameController.text.isEmpty) {

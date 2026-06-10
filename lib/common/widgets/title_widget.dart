@@ -1,3 +1,4 @@
+
 import 'package:get/get.dart';
 import 'package:friday_sa/features/language/controllers/language_controller.dart';
 import 'package:friday_sa/helper/responsive_helper.dart';
@@ -24,8 +25,9 @@ class TitleWidget extends StatelessWidget {
               title,
               style: robotoBold.copyWith(
                 fontSize: ResponsiveHelper.isDesktop(context)
-                    ? Dimensions.fontSizeLarge
-                    : Dimensions.fontSizeLarge,
+                    ? Dimensions.fontSizeExtraLarge
+                    : Dimensions.fontSizeExtraLarge,
+                fontWeight: FontWeight.w800,
               ),
             ),
             const SizedBox(width: Dimensions.paddingSizeSmall),

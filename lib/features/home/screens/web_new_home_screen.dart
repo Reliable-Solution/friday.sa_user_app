@@ -12,7 +12,6 @@ import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
 import 'package:friday_sa/features/home/widgets/web/middle_section_multiple_banner_view_widget.dart';
 import 'package:friday_sa/features/home/widgets/web/module_widget.dart';
 import 'package:friday_sa/features/home/widgets/web/web_basic_medicine_nearby_view_widget.dart';
-import 'package:friday_sa/features/home/widgets/web/web_best_review_item_view_widget.dart';
 import 'package:friday_sa/features/home/widgets/web/web_best_store_nearby_view_widget.dart';
 import 'package:friday_sa/features/home/widgets/web/web_category_view_widget.dart';
 import 'package:friday_sa/features/home/widgets/web/web_common_condition_view_widget.dart';
@@ -30,7 +29,6 @@ import 'package:friday_sa/features/home/widgets/web/web_populer_store_view_widge
 import 'package:friday_sa/features/home/widgets/web/web_promotional_banner_view_widget.dart';
 import 'package:friday_sa/features/home/widgets/web/web_recomanded_store_view_widget.dart';
 import 'package:friday_sa/features/home/widgets/web/web_special_offer_view_widget.dart';
-import 'package:friday_sa/features/home/widgets/web/web_visit_again_view_widget.dart';
 import 'package:friday_sa/helper/auth_helper.dart';
 import 'package:friday_sa/helper/responsive_helper.dart';
 import 'package:friday_sa/util/app_constants.dart';
@@ -176,9 +174,9 @@ class _WebNewHomeScreenState extends State<WebNewHomeScreen> {
                         },
                       ),
 
-                      _isLogin
-                          ? WebVisitAgainView(fromFood: isFood)
-                          : const SizedBox(),
+                      // _isLogin
+                      //     ? WebVisitAgainView(fromFood: isFood)
+                      //     : const SizedBox(),
 
                       isPharmacy
                           ? const WebBasicMedicineNearbyViewWidget()

@@ -9,20 +9,23 @@ ThemeData light({final Color color = const Color(0xFF039D55)}) => ThemeData(
   brightness: Brightness.light,
   hintColor: const Color(0xFF9F9F9F),
   cardColor: Colors.white,
-  shadowColor: Colors.black.withValues(alpha: 0.03),
+  shadowColor: Colors.black.withValues(alpha: 0.05),
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(foregroundColor: color),
   ),
   colorScheme: ColorScheme.light(primary: color, secondary: color)
-      .copyWith(surface: const Color(0xFFFCFCFC))
+      .copyWith(surface: const Color(0xFFF8FAFC))
       .copyWith(error: const Color(0xFFE84D4F)),
   popupMenuTheme: const PopupMenuThemeData(
     color: Colors.white,
     surfaceTintColor: Colors.white,
   ),
-  dialogTheme: const DialogThemeData(surfaceTintColor: Colors.white),
+  dialogTheme: const DialogThemeData(
+    surfaceTintColor: Colors.white,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24))),
+  ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(500)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
   ),
   bottomAppBarTheme: const BottomAppBarThemeData(
     surfaceTintColor: Colors.white,

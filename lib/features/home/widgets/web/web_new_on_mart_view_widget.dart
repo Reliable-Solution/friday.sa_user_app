@@ -133,8 +133,8 @@ class _WebNewOnMartViewWidgetState extends State<WebNewOnMartViewWidget> {
                                       builder: (hovered) {
                                         return InkWell(
                                           hoverColor: Colors.transparent,
-                                          onTap: () {
-                                            if (storeList[index].open == 0 ||
+                                            onTap: () {
+                                              if (storeList[index].open == 0 ||
                                                 storeList[index].active ==
                                                     false) {
                                               showCustomSnackBar(

@@ -120,6 +120,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ? const WebMenuBar()
                 : AppBar(
                     leading: IconButton(
+                      padding: EdgeInsets.zero,
                       onPressed: () {
                         if (widget.fromNotification) {
                           Get.offAllNamed(RouteHelper.getInitialRoute());
@@ -127,7 +128,10 @@ class _ChatScreenState extends State<ChatScreen> {
                           Get.back();
                         }
                       },
-                      icon: const Icon(Icons.arrow_back_ios),
+                      icon: const Padding(
+                        padding: EdgeInsets.only(left: 4),
+                        child: Icon(Icons.arrow_back_ios, size: 18),
+                      ),
                     ),
                     title: Text(
                       chatController.messageModel != null

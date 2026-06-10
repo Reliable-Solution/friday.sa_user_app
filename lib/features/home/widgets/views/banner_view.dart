@@ -38,7 +38,7 @@ class BannerView extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 height: GetPlatform.isDesktop
                     ? 500
-                    : MediaQuery.of(context).size.width * 0.45,
+                    : MediaQuery.of(context).size.width * 0.55,
                 padding: const EdgeInsets.only(
                   top: Dimensions.paddingSizeDefault,
                 ),
@@ -50,9 +50,9 @@ class BannerView extends StatelessWidget {
                             child: CarouselSlider.builder(
                               options: CarouselOptions(
                                 autoPlay: true,
-                                enlargeCenterPage: true,
+                                enlargeCenterPage: false,
                                 disableCenter: true,
-                                viewportFraction: 0.95,
+                                viewportFraction: 0.94,
                                 autoPlayInterval: const Duration(seconds: 7),
                                 onPageChanged: (index, reason) {
                                   bannerController.setCurrentIndex(index, true);
@@ -127,23 +127,20 @@ class BannerView extends StatelessWidget {
                                     }
                                   },
                                   child: Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 5),
                                     decoration: BoxDecoration(
                                       color: Theme.of(context).cardColor,
-                                      borderRadius: BorderRadius.circular(
-                                        Dimensions.radiusLarge,
-                                      ),
-                                      boxShadow: const [
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black12,
-                                          blurRadius: 5,
-                                          spreadRadius: 1,
+                                          color: Colors.black.withValues(alpha: 0.1),
+                                          blurRadius: 15,
+                                          offset: const Offset(0, 8),
                                         ),
                                       ],
                                     ),
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(
-                                        Dimensions.radiusLarge,
-                                      ),
+                                      borderRadius: BorderRadius.circular(20),
                                       child: GetBuilder<SplashController>(
                                         builder: (splashController) {
                                           return CustomImage(

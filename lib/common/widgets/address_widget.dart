@@ -28,8 +28,13 @@ class AddressWidget extends StatelessWidget {
   final bool isSelected;
   final bool fromDashBoard;
 
+  
   @override
   Widget build(BuildContext context) {
+    if (address == null) {
+      return const SizedBox();
+    }
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: fromCheckout ? 0 : Dimensions.paddingSizeSmall,
@@ -41,28 +46,26 @@ class AddressWidget extends StatelessWidget {
                 border: Border.all(
                   color: isSelected
                       ? Theme.of(context).primaryColor
-                      : Colors.transparent,
-                  width: isSelected ? 1 : 0,
+                      : Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                  width: isSelected ? 1.5 : 1,
                 ),
               )
             : fromCheckout
             ? const BoxDecoration()
             : BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                 border: Border.all(
                   color: isSelected
                       ? Theme.of(context).primaryColor
-                      : Theme.of(context).cardColor,
-                  width: isSelected ? 0.5 : 0,
+                      : Theme.of(context).disabledColor.withValues(alpha: 0.15),
+                  width: isSelected ? 1.5 : 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(
-                      context,
-                    ).primaryColor.withValues(alpha: 0.1),
-                    blurRadius: 5,
-                    spreadRadius: 1,
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -72,81 +75,208 @@ class AddressWidget extends StatelessWidget {
               ? Dimensions.radiusDefault
               : fromCheckout
               ? 0
-              : Dimensions.radiusSmall,
+              : Dimensions.radiusDefault,
           child: Padding(
-            padding: EdgeInsets.all(
-              ResponsiveHelper.isDesktop(context)
-                  ? Dimensions.paddingSizeDefault
-                  : Dimensions.paddingSizeSmall,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            padding: fromCheckout
+                ? const EdgeInsets.symmetric(
+                    horizontal: Dimensions.paddingSizeExtraSmall,
+                    vertical: 2,
+                  )
+                : const EdgeInsets.all(
+                    Dimensions.paddingSizeDefault,
+                  ),
+            child: fromCheckout
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        address!.addressType == 'home'
+                            ? Images.homeIcon
+                            : address!.addressType == 'office'
+                            ? Images.workIcon
+                            : Images.otherIcon,
+                        color: Theme.of(context).primaryColor,
+                        height: 16,
+                        width: 16,
+                      ),
+                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              address!.addressType!.tr,
+                              style: robotoBold.copyWith(
+                                fontSize: Dimensions.fontSizeSmall,
+                                color: Theme.of(context).textTheme.bodyLarge!.color,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              address!.address!,
+                              style: robotoRegular.copyWith(
+                                fontSize: Dimensions.fontSizeExtraSmall,
+                                color: Theme.of(context).disabledColor,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
-                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.asset(
-                            address!.addressType == 'home'
-                                ? Images.homeIcon
-                                : address!.addressType == 'office'
-                                ? Images.workIcon
-                                : Images.otherIcon,
-                            color: Theme.of(context).primaryColor,
-                            height: ResponsiveHelper.isDesktop(context)
-                                ? 25
-                                : 20,
-                            width: ResponsiveHelper.isDesktop(context)
-                                ? 25
-                                : 20,
+                          // Address type icon badge
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                            ),
+                            child: Image.asset(
+                              address!.addressType == 'home'
+                                  ? Images.homeIcon
+                                  : address!.addressType == 'office'
+                                  ? Images.workIcon
+                                  : Images.otherIcon,
+                              color: Theme.of(context).primaryColor,
+                              height: ResponsiveHelper.isDesktop(context) ? 22 : 20,
+                              width: ResponsiveHelper.isDesktop(context) ? 22 : 20,
+                            ),
                           ),
-                          const SizedBox(width: Dimensions.paddingSizeSmall),
-                          Text(
-                            address!.addressType!.tr,
-                            style: robotoMedium.copyWith(
-                              fontSize: Dimensions.fontSizeDefault,
+                          const SizedBox(width: Dimensions.paddingSizeSmall + 2),
+                          // Address info
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      address!.addressType!.tr,
+                                      style: robotoBold.copyWith(
+                                        fontSize: Dimensions.fontSizeDefault,
+                                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                                      ),
+                                    ),
+                                    if (isSelected) ...[
+                                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'default'.tr,
+                                          style: robotoMedium.copyWith(
+                                            fontSize: Dimensions.fontSizeExtraSmall,
+                                            color: Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  address!.address!,
+                                  style: robotoRegular.copyWith(
+                                    fontSize: Dimensions.fontSizeSmall,
+                                    color: Theme.of(context).disabledColor,
+                                    height: 1.4,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                      Text(
-                        address!.address!,
-                        style: robotoRegular.copyWith(
-                          fontSize: Dimensions.fontSizeSmall,
-                          color: Theme.of(context).disabledColor,
+                      // Action buttons row
+                      if (fromAddress) ...[
+                        Padding(
+                          padding: const EdgeInsets.only(top: Dimensions.paddingSizeSmall + 2),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Material(
+                                  color: Theme.of(context).primaryColor.withValues(alpha: 0.06),
+                                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall + 2),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: InkWell(
+                                    onTap: onEditPressed as void Function()?,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.edit_outlined,
+                                            color: Theme.of(context).primaryColor,
+                                            size: 16,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'edit'.tr,
+                                            style: robotoMedium.copyWith(
+                                              fontSize: Dimensions.fontSizeSmall,
+                                              color: Theme.of(context).primaryColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: Dimensions.paddingSizeSmall),
+                              Expanded(
+                                child: Material(
+                                  color: Theme.of(context).colorScheme.error.withValues(alpha: 0.06),
+                                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall + 2),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: InkWell(
+                                    onTap: onRemovePressed as void Function()?,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.delete_outline,
+                                            color: Theme.of(context).colorScheme.error,
+                                            size: 16,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'delete'.tr,
+                                            style: robotoMedium.copyWith(
+                                              fontSize: Dimensions.fontSizeSmall,
+                                              color: Theme.of(context).colorScheme.error,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      ],
                     ],
                   ),
-                ),
-                fromAddress
-                    ? IconButton(
-                        icon: const Icon(
-                          Icons.edit,
-                          color: Colors.blueGrey,
-                          size: 25,
-                        ),
-                        onPressed: onEditPressed as void Function()?,
-                      )
-                    : const SizedBox(),
-                fromAddress
-                    ? IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.red,
-                          size: 25,
-                        ),
-                        onPressed: onRemovePressed as void Function()?,
-                      )
-                    : const SizedBox(),
-              ],
-            ),
           ),
         ),
       ),

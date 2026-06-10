@@ -230,7 +230,7 @@ class _CartScreenState extends State<CartScreen> {
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  ListView.builder(
+                                                                  ListView.separated(
                                                                     physics:
                                                                         const NeverScrollableScrollPhysics(),
                                                                     shrinkWrap:
@@ -240,7 +240,7 @@ class _CartScreenState extends State<CartScreen> {
                                                                         .length,
                                                                     padding: const EdgeInsets.all(
                                                                       Dimensions
-                                                                          .paddingSizeDefault,
+                                                                          .paddingSizeSmall,
                                                                     ),
                                                                     itemBuilder:
                                                                         (
@@ -258,6 +258,11 @@ class _CartScreenState extends State<CartScreen> {
                                                                                 cartController.availableList[index],
                                                                           );
                                                                         },
+                                                                    separatorBuilder: (context, index) => Divider(
+                                                                      color: Theme.of(context).disabledColor.withValues(alpha: 0.3),
+                                                                      thickness: 0.5,
+                                                                      height: 1,
+                                                                    ),
                                                                   ),
                                                                   const Divider(
                                                                     thickness:

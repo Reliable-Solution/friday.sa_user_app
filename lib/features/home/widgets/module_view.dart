@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/features/home/widgets/banner_view.dart';
 
+
 class ModuleView extends StatelessWidget {
   const ModuleView({super.key, required this.splashController});
   final SplashController splashController;
@@ -35,78 +36,100 @@ class ModuleView extends StatelessWidget {
         ),
         splashController.moduleList != null
             ? splashController.moduleList!.isNotEmpty
-                  ? GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            mainAxisSpacing: Dimensions.paddingSizeSmall,
-                            crossAxisSpacing: Dimensions.paddingSizeSmall,
-                            childAspectRatio: 1 / 1,
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Dimensions.paddingSizeSmall,
+                            vertical: Dimensions.paddingSizeDefault,
                           ),
-                      padding: const EdgeInsets.all(
-                        Dimensions.paddingSizeSmall,
-                      ),
-                      itemCount: splashController.moduleList!.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              Dimensions.radiusDefault,
-                            ),
-                            color: Theme.of(context).cardColor,
-                            border: Border.all(
-                              color: Theme.of(context).primaryColor,
-                              width: 0.15,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(
-                                  context,
-                                ).primaryColor.withValues(alpha: 0.1),
-                                spreadRadius: 1,
-                                blurRadius: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AuthHelper.isLoggedIn()
+                                    ? 'what_are_you_looking_for_today'.tr
+                                    : 'hey_there'.tr,
+                                style: robotoBold.copyWith(
+                                  fontSize: Dimensions.fontSizeExtraLarge,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                AuthHelper.isLoggedIn()
+                                    ? 'start_ordering_from_your_favorite_store'.tr
+                                    : 'pick_a_module_to_begin'.tr,
+                                style: robotoMedium.copyWith(
+                                  fontSize: Dimensions.fontSizeDefault,
+                                  color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.7),
+                                ),
                               ),
                             ],
                           ),
-                          child: CustomInkWell(
-                            onTap: () =>
-                                splashController.switchModule(index, true),
-                            radius: Dimensions.radiusDefault,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                    Dimensions.radiusSmall,
+                        ),
+                        GridView.builder(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            mainAxisSpacing: Dimensions.paddingSizeDefault,
+                            crossAxisSpacing: Dimensions.paddingSizeDefault,
+                            childAspectRatio: 1 / 1.35,
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
+                          itemCount: splashController.moduleList!.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return CustomInkWell(
+                              onTap: () => splashController.switchModule(index, true),
+                              radius: Dimensions.radiusLarge,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+                                      color: Theme.of(context).cardColor,
+                                      border: Border.all(
+                                        color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                                        width: 1,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.03),
+                                          blurRadius: 15,
+                                          spreadRadius: 0,
+                                          offset: const Offset(0, 8),
+                                        ),
+                                      ],
+                                    ),
+                                    child: CustomImage(
+                                      image: '${splashController.moduleList![index].iconFullUrl}',
+                                      height: 35,
+                                      width: 35,
+                                    ),
                                   ),
-                                  child: CustomImage(
-                                    image:
-                                        '${splashController.moduleList![index].iconFullUrl}',
-                                    height: 35,
-                                    width: 35,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: Dimensions.paddingSizeSmall,
-                                ),
-                                Center(
-                                  child: Text(
-                                    splashController
-                                        .moduleList![index]
-                                        .moduleName!,
-                                    textAlign: TextAlign.center,
+                                  const SizedBox(height: Dimensions.paddingSizeSmall),
+                                  Text(
+                                    splashController.moduleList![index].moduleName!,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    style: robotoMedium.copyWith(fontSize: 14),
+                                    textAlign: TextAlign.center,
+                                    style: robotoBold.copyWith(
+                                      fontSize: 10,
+                                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                                      height: 1.2,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     )
                   : Center(
                       child: Padding(
@@ -117,101 +140,101 @@ class ModuleView extends StatelessWidget {
                       ),
                     )
             : ModuleShimmer(isEnabled: splashController.moduleList == null),
-        GetBuilder<AddressController>(
-          builder: (locationController) {
-            List<AddressModel?> addressList = [];
-            if (AuthHelper.isLoggedIn() &&
-                locationController.addressList != null) {
-              addressList = [];
-              bool contain = false;
-              if (AddressHelper.getUserAddressFromSharedPref()!.id != null) {
-                for (
-                  int index = 0;
-                  index < locationController.addressList!.length;
-                  index++
-                ) {
-                  if (locationController.addressList![index].id ==
-                      AddressHelper.getUserAddressFromSharedPref()!.id) {
-                    contain = true;
-                    break;
-                  }
-                }
-              }
-              if (!contain) {
-                addressList.add(AddressHelper.getUserAddressFromSharedPref());
-              }
-              addressList.addAll(locationController.addressList!);
-            }
-            return (!AuthHelper.isLoggedIn() ||
-                    locationController.addressList != null)
-                ? addressList.isNotEmpty
-                      ? Column(
-                          children: [
-                            const SizedBox(height: Dimensions.paddingSizeLarge),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimensions.paddingSizeSmall,
-                              ),
-                              child: TitleWidget(title: 'deliver_to'.tr),
-                            ),
-                            const SizedBox(
-                              height: Dimensions.paddingSizeExtraSmall,
-                            ),
-                            SizedBox(
-                              height: 95,
-                              child: ListView.builder(
-                                physics: const BouncingScrollPhysics(),
-                                itemCount: addressList.length,
-                                scrollDirection: Axis.horizontal,
-                                padding: const EdgeInsets.only(
-                                  left: Dimensions.paddingSizeSmall,
-                                  right: Dimensions.paddingSizeSmall,
-                                  top: Dimensions.paddingSizeExtraSmall,
-                                ),
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    width: 300,
-                                    padding: const EdgeInsets.only(
-                                      right: Dimensions.paddingSizeSmall,
-                                    ),
-                                    child: AddressWidget(
-                                      address: addressList[index],
-                                      fromAddress: false,
-                                      onTap: () {
-                                        if (AddressHelper.getUserAddressFromSharedPref()!
-                                                .id !=
-                                            addressList[index]!.id) {
-                                          Get.dialog(
-                                            const CustomLoaderWidget(),
-                                            barrierDismissible: false,
-                                          );
-                                          Get.find<LocationController>()
-                                              .saveAddressAndNavigate(
-                                                addressList[index],
-                                                false,
-                                                null,
-                                                false,
-                                                ResponsiveHelper.isDesktop(
-                                                  context,
-                                                ),
-                                              );
-                                        }
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        )
-                      : const SizedBox()
-                : AddressShimmer(
-                    isEnabled:
-                        AuthHelper.isLoggedIn() &&
-                        locationController.addressList == null,
-                  );
-          },
-        ),
+        // GetBuilder<AddressController>(
+        //   builder: (locationController) {
+        //     List<AddressModel?> addressList = [];
+        //     if (AuthHelper.isLoggedIn() &&
+        //         locationController.addressList != null) {
+        //       addressList = [];
+        //       bool contain = false;
+        //       if (AddressHelper.getUserAddressFromSharedPref()!.id != null) {
+        //         for (
+        //           int index = 0;
+        //           index < locationController.addressList!.length;
+        //           index++
+        //         ) {
+        //           if (locationController.addressList![index].id ==
+        //               AddressHelper.getUserAddressFromSharedPref()!.id) {
+        //             contain = true;
+        //             break;
+        //           }
+        //         }
+        //       }
+        //       if (!contain) {
+        //         addressList.add(AddressHelper.getUserAddressFromSharedPref());
+        //       }
+        //       addressList.addAll(locationController.addressList!);
+        //     }
+        //     return (!AuthHelper.isLoggedIn() ||
+        //             locationController.addressList != null)
+        //         ? addressList.isNotEmpty
+        //               ? Column(
+        //                   children: [
+        //                     const SizedBox(height: Dimensions.paddingSizeLarge),
+        //                     Padding(
+        //                       padding: const EdgeInsets.symmetric(
+        //                         horizontal: Dimensions.paddingSizeSmall,
+        //                       ),
+        //                       child: TitleWidget(title: 'deliver_to'.tr),
+        //                     ),
+        //                     const SizedBox(
+        //                       height: Dimensions.paddingSizeExtraSmall,
+        //                     ),
+        //                     SizedBox(
+        //                       height: 95,
+        //                       child: ListView.builder(
+        //                         physics: const BouncingScrollPhysics(),
+        //                         itemCount: addressList.length,
+        //                         scrollDirection: Axis.horizontal,
+        //                         padding: const EdgeInsets.only(
+        //                           left: Dimensions.paddingSizeSmall,
+        //                           right: Dimensions.paddingSizeSmall,
+        //                           top: Dimensions.paddingSizeExtraSmall,
+        //                         ),
+        //                         itemBuilder: (context, index) {
+        //                           return Container(
+        //                             width: 300,
+        //                             padding: const EdgeInsets.only(
+        //                               right: Dimensions.paddingSizeSmall,
+        //                             ),
+        //                             child: AddressWidget(
+        //                               address: addressList[index],
+        //                               fromAddress: false,
+        //                               onTap: () {
+        //                                 if (AddressHelper.getUserAddressFromSharedPref()!
+        //                                         .id !=
+        //                                     addressList[index]!.id) {
+        //                                   Get.dialog(
+        //                                     const CustomLoaderWidget(),
+        //                                     barrierDismissible: false,
+        //                                   );
+        //                                   Get.find<LocationController>()
+        //                                       .saveAddressAndNavigate(
+        //                                         addressList[index],
+        //                                         false,
+        //                                         null,
+        //                                         false,
+        //                                         ResponsiveHelper.isDesktop(
+        //                                           context,
+        //                                         ),
+        //                                       );
+        //                                 }
+        //                               },
+        //                             ),
+        //                           );
+        //                         },
+        //                       ),
+        //                     ),
+        //                   ],
+        //                 )
+        //               : const SizedBox()
+        //         : AddressShimmer(
+        //             isEnabled:
+        //                 AuthHelper.isLoggedIn() &&
+        //                 locationController.addressList == null,
+        //           );
+        //   },
+        // ),
         const PopularStoreView(isPopular: false, isFeatured: true),
         const SizedBox(height: 120),
       ],
@@ -227,22 +250,25 @@ class ModuleShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: Dimensions.paddingSizeSmall,
-        crossAxisSpacing: Dimensions.paddingSizeSmall,
-        childAspectRatio: 1 / 1,
+        crossAxisCount: 4,
+        mainAxisSpacing: Dimensions.paddingSizeDefault,
+        crossAxisSpacing: Dimensions.paddingSizeDefault,
+        childAspectRatio: 1 / 1.4,
       ),
-      padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
       itemCount: 3,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         return Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+            borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
             color: Theme.of(context).cardColor,
-            boxShadow: const [
-              BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 15, spreadRadius: 0, offset: const Offset(0, 8),
+              ),
             ],
           ),
           child: Shimmer(
@@ -250,21 +276,27 @@ class ModuleShimmer extends StatelessWidget {
             enabled: isEnabled,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                    color: Colors.grey[300],
+                  height: 46,
+                  width: 46,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black12,
                   ),
                 ),
-                const SizedBox(height: Dimensions.paddingSizeSmall),
-                Center(
-                  child: Container(
-                    height: 15,
-                    width: 50,
-                    color: Colors.grey[300],
+                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                Expanded(
+                  child: Center(
+                    child: Container(
+                      height: 15,
+                      width: 70,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                        color: Colors.black12,
+                      ),
+                    ),
                   ),
                 ),
               ],

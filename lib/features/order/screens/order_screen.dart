@@ -102,58 +102,55 @@ class OrderScreenState extends State<OrderScreen>
                             const SizedBox(
                               height: Dimensions.paddingSizeDefault,
                             ),
-                            SizedBox(
-                              height: 30,
-                              child: ListView.builder(
-                                itemCount: type.length,
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
+                            Container(
+                              height: 46,
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).disabledColor.withValues(alpha: 0.06),
+                                borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+                              ),
+                              child: Row(
+                                children: List.generate(type.length, (index) {
                                   bool selected = index == selectTypeIndex;
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      color: selected
-                                          ? Theme.of(context).primaryColor
-                                          : Theme.of(context).cardColor,
-                                      borderRadius: BorderRadius.circular(
-                                        Dimensions.radiusLarge,
-                                      ),
-                                      border: Border.all(
-                                        color: Theme.of(context).disabledColor,
-                                        width: 0.3,
-                                      ),
-                                    ),
-                                    alignment: Alignment.center,
-                                    margin: const EdgeInsets.only(
-                                      right: Dimensions.paddingSizeSmall,
-                                    ),
-                                    child: CustomInkWell(
+                                  return Expanded(
+                                    child: GestureDetector(
                                       onTap: () {
                                         setState(() {
                                           selectTypeIndex = index;
                                         });
                                         initCall();
                                       },
-                                      radius: Dimensions.radiusLarge,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal:
-                                            Dimensions.paddingSizeDefault,
-                                      ),
-                                      child: Text(
-                                        type[index].tr,
-                                        style: robotoMedium.copyWith(
-                                          fontSize: Dimensions.fontSizeLarge,
+                                      child: AnimatedContainer(
+                                        duration: const Duration(milliseconds: 200),
+                                        decoration: BoxDecoration(
                                           color: selected
-                                              ? Colors.white
-                                              : Theme.of(context)
-                                                    .textTheme
-                                                    .bodyLarge!
-                                                    .color!
-                                                    .withValues(alpha: 0.7),
+                                              ? Theme.of(context).cardColor
+                                              : Colors.transparent,
+                                          borderRadius: BorderRadius.circular(Dimensions.radiusLarge - 2),
+                                          boxShadow: selected
+                                              ? [
+                                                  BoxShadow(
+                                                    color: Colors.black.withValues(alpha: 0.05),
+                                                    blurRadius: 5,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ]
+                                              : null,
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          type[index].tr,
+                                          style: robotoBold.copyWith(
+                                            fontSize: Dimensions.fontSizeDefault,
+                                            color: selected
+                                                ? Theme.of(context).primaryColor
+                                                : Theme.of(context).disabledColor,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   );
-                                },
+                                }),
                               ),
                             ),
                           ],
@@ -213,35 +210,21 @@ class OrderScreenState extends State<OrderScreen>
                                                     : Theme.of(
                                                         context,
                                                       ).cardColor,
-                                                child: TabBar(
+child: TabBar(
                                                   controller: _tabController,
-                                                  indicatorColor: Theme.of(
-                                                    context,
-                                                  ).primaryColor,
+                                                  indicatorSize: TabBarIndicatorSize.label,
+                                                  dividerColor: Colors.transparent,
+                                                  indicatorColor: Theme.of(context).primaryColor,
                                                   indicatorWeight: 3,
-                                                  labelColor: Theme.of(
-                                                    context,
-                                                  ).primaryColor,
-                                                  unselectedLabelColor:
-                                                      Theme.of(
-                                                        context,
-                                                      ).disabledColor,
-                                                  unselectedLabelStyle:
-                                                      robotoRegular.copyWith(
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).disabledColor,
-                                                        fontSize: Dimensions
-                                                            .fontSizeSmall,
-                                                      ),
-                                                  labelStyle: robotoBold
-                                                      .copyWith(
-                                                        fontSize: Dimensions
-                                                            .fontSizeSmall,
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).primaryColor,
-                                                      ),
+                                                  labelColor: Theme.of(context).primaryColor,
+                                                  unselectedLabelColor: Theme.of(context).disabledColor,
+                                                  unselectedLabelStyle: robotoMedium.copyWith(
+                                                    fontSize: Dimensions.fontSizeDefault,
+                                                  ),
+                                                  labelStyle: robotoBold.copyWith(
+                                                    fontSize: Dimensions.fontSizeDefault,
+                                                    color: Theme.of(context).primaryColor,
+                                                  ),
                                                   tabs: [
                                                     Tab(text: 'running'.tr),
                                                     Tab(text: 'history'.tr),
@@ -254,50 +237,43 @@ class OrderScreenState extends State<OrderScreen>
                                       ],
                                     ),
                                   )
-                                : Column(
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: TabBar(
-                                          controller: _tabController,
-                                          isScrollable: haveTaxiModule
-                                              ? true
-                                              : false,
-                                          padding: EdgeInsets.zero,
-                                          tabAlignment: haveTaxiModule
-                                              ? TabAlignment.start
-                                              : null,
-                                          indicatorColor: Theme.of(
-                                            context,
-                                          ).primaryColor,
-                                          indicatorWeight: 3,
-                                          labelColor: Theme.of(
-                                            context,
-                                          ).primaryColor,
-                                          unselectedLabelColor: Theme.of(
-                                            context,
-                                          ).disabledColor,
-                                          unselectedLabelStyle: robotoRegular
-                                              .copyWith(
-                                                color: Theme.of(
-                                                  context,
-                                                ).disabledColor,
-                                                fontSize:
-                                                    Dimensions.fontSizeSmall,
-                                              ),
-                                          labelStyle: robotoBold.copyWith(
-                                            fontSize: Dimensions.fontSizeSmall,
-                                            color: Theme.of(
-                                              context,
-                                            ).primaryColor,
-                                          ),
-                                          tabs: [
-                                            Tab(text: 'running'.tr),
-                                            Tab(text: 'history'.tr),
-                                          ],
+                                : Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).cardColor,
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Theme.of(context).disabledColor.withValues(alpha: 0.15),
+                                          width: 1,
                                         ),
                                       ),
-                                    ],
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: TabBar(
+                                        controller: _tabController,
+                                        isScrollable: haveTaxiModule ? true : false,
+                                        padding: EdgeInsets.zero,
+                                        tabAlignment: haveTaxiModule ? TabAlignment.start : null,
+                                        indicatorSize: TabBarIndicatorSize.label,
+                                        dividerColor: Colors.transparent,
+                                        indicatorColor: Theme.of(context).primaryColor,
+                                        indicatorWeight: 3,
+                                        labelColor: Theme.of(context).primaryColor,
+                                        unselectedLabelColor: Theme.of(context).disabledColor,
+                                        unselectedLabelStyle: robotoMedium.copyWith(
+                                          fontSize: Dimensions.fontSizeDefault,
+                                        ),
+                                        labelStyle: robotoBold.copyWith(
+                                          fontSize: Dimensions.fontSizeDefault,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        tabs: [
+                                          Tab(text: 'running'.tr),
+                                          Tab(text: 'history'.tr),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                             selectTypeIndex == 0
                                 ? Expanded(

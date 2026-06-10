@@ -28,8 +28,11 @@ import 'package:friday_sa/features/store/screens/store_screen.dart';
 
 import '../../../../common/widgets/not_available_widget.dart';
 
+
+
 class BestStoreNearbyView extends StatelessWidget {
   const BestStoreNearbyView({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +61,7 @@ class BestStoreNearbyView extends StatelessWidget {
         return storeList != null
             ? storeList.isNotEmpty
                   ? Padding(
-                      padding: const EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                         vertical: Dimensions.paddingSizeDefault,
                       ),
                       child: Container(
@@ -106,15 +109,15 @@ class BestStoreNearbyView extends StatelessWidget {
                                             width: context.width * 0.75,
                                             color: Theme.of(context)
                                                 .primaryColor
-                                                .withValues(alpha: 0.2),
+                                                .withValues(alpha: 0.4),
                                           ),
                                           Container(
-                                            transform:
-                                                Matrix4.translationValues(
-                                                  -5,
-                                                  0,
-                                                  0,
-                                                ),
+                                            // transform:
+                                            //     Matrix4.translationValues(
+                                            //       -2,
+                                            //       0,
+                                            //       0,
+                                            //     ),
                                             child: Icon(
                                               Icons.arrow_forward,
                                               size: 18,
@@ -247,494 +250,161 @@ class BestStoreNearbyView extends StatelessWidget {
                                     ),
                                   )
                                 : SizedBox(
-                                    height: 170,
+                                    height: 195,
                                     width: Get.width,
                                     child: Row(
                                       children: [
-                                        const SizedBox(
-                                          width: Dimensions.paddingSizeDefault,
-                                        ),
+                                        const SizedBox(width: Dimensions.paddingSizeDefault),
                                         RotatedBox(
                                           quarterTurns: 3,
                                           child: Text(
-                                            (storeList != null &&
-                                                    storeList.isNotEmpty &&
-                                                    storeList.every(
-                                                      (e) => e.open == 0,
-                                                    ))
-                                                ? 'closed'.tr
-                                                : 'best_store_nearby'.tr,
+                                            (storeList != null && storeList.isNotEmpty && storeList.every((e) => e.open == 0)) ? 'closed'.tr : 'best_store_nearby'.tr,
                                             style: robotoBold.copyWith(
-                                              fontSize:
-                                                  Dimensions.fontSizeLarge,
-                                              color:
-                                                  (storeList != null &&
-                                                      storeList.isNotEmpty &&
-                                                      storeList.every(
-                                                        (e) => e.open == 0,
-                                                      ))
-                                                  ? Theme.of(
-                                                      context,
-                                                    ).colorScheme.error
-                                                  : null,
+                                              fontSize: Dimensions.fontSizeLarge,
+                                              color: (storeList != null && storeList.isNotEmpty && storeList.every((e) => e.open == 0)) ? Theme.of(context).colorScheme.error : Theme.of(context).primaryColor,
                                             ),
                                           ),
                                         ),
-                                        Expanded(
-                                          child: ListView.builder(
-                                            scrollDirection: Axis.horizontal,
-                                            physics:
-                                                const BouncingScrollPhysics(),
-                                            padding: const EdgeInsets.only(
-                                              left:
-                                                  Dimensions.paddingSizeDefault,
-                                            ),
-                                            itemCount: storeList.length,
-                                            itemBuilder: (context, index) {
-                                              num distance =
-                                                  Get.find<StoreController>()
-                                                      .getRestaurantDistance(
-                                                        LatLng(
-                                                          double.parse(
-                                                            storeList[index]
-                                                                .latitude!,
-                                                          ),
-                                                          double.parse(
-                                                            storeList[index]
-                                                                .longitude!,
-                                                          ),
-                                                        ),
-                                                      );
-
-                                              return Padding(
-                                                padding: const EdgeInsets.only(
-                                                  bottom: Dimensions
-                                                      .paddingSizeDefault,
-                                                  right: Dimensions
-                                                      .paddingSizeDefault,
-                                                  top: Dimensions
-                                                      .paddingSizeDefault,
-                                                ),
-                                                child: Stack(
+                                         Expanded(
+                                           child: ListView.builder(
+                                             scrollDirection: Axis.horizontal,
+                                             physics: const BouncingScrollPhysics(),
+                                             clipBehavior: Clip.none,
+                                             padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault),
+                                             itemCount: storeList.length,
+                                             itemBuilder: (context, index) {
+                                              num distance = Get.find<StoreController>().getRestaurantDistance(
+                                                LatLng(double.parse(storeList[index].latitude!), double.parse(storeList[index].longitude!)),
+                                              );
+                                               return Padding(
+                                                 padding: const EdgeInsets.only(right: Dimensions.paddingSizeDefault, top: 25, bottom: 5),
+                                                 child: Stack(
                                                   clipBehavior: Clip.none,
                                                   children: [
-                                                    Container(
-                                                      width: 270,
-                                                      margin:
-                                                          const EdgeInsets.only(
-                                                            top: 30,
-                                                          ),
-                                                      decoration: BoxDecoration(
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).cardColor,
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              Dimensions
-                                                                  .radiusLarge,
-                                                            ),
-                                                      ),
-                                                      child: CustomInkWell(
-                                                        onTap: () {
-                                                          if (storeList[index]
-                                                                      .open ==
-                                                                  0 ||
-                                                              storeList[index]
-                                                                      .active ==
-                                                                  false) {
-                                                            showCustomSnackBar(
-                                                              'this_store_is_closed_now'
-                                                                  .tr,
-                                                            );
-                                                          } else {
-                                                            if (Get.find<
-                                                                      SplashController
-                                                                    >()
-                                                                    .moduleList !=
-                                                                null) {
-                                                              for (ModuleModel
-                                                                  module
-                                                                  in Get.find<
-                                                                        SplashController
-                                                                      >()
-                                                                      .moduleList!) {
-                                                                if (module.id ==
-                                                                    storeList[index]
-                                                                        .moduleId) {
-                                                                  Get.find<
-                                                                        SplashController
-                                                                      >()
-                                                                      .setModule(
-                                                                        module,
-                                                                      );
-                                                                  break;
-                                                                }
-                                                              }
-                                                            }
-                                                            Get.toNamed(
-                                                              RouteHelper.getStoreRoute(
-                                                                id: storeList[index]
-                                                                    .id,
-                                                                page: 'store',
-                                                              ),
-                                                              arguments: StoreScreen(
-                                                                store:
-                                                                    storeList[index],
-                                                                fromModule: true,
-                                                              ),
-                                                            );
-                                                          }
-                                                        },
-                                                        radius: Dimensions
-                                                            .radiusLarge,
-                                                        padding:
-                                                            const EdgeInsets.all(
-                                                              Dimensions
-                                                                  .paddingSizeDefault,
-                                                            ),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Expanded(
-                                                              flex: 3,
-                                                              child: Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    flex: 3,
-                                                                    child:
-                                                                        SizedBox(),
-                                                                  ),
-                                                                  Expanded(
-                                                                    flex: 4,
-                                                                    child: Row(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        const SizedBox(
-                                                                          width:
-                                                                              Dimensions.paddingSizeExtraSmall,
-                                                                        ),
-                                                                        Column(
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.start,
-                                                                          children: [
-                                                                            Row(
-                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                              children: [
-                                                                                Text(
-                                                                                  'start_from'.tr,
-                                                                                  style: robotoRegular.copyWith(
-                                                                                    color: Theme.of(
-                                                                                      context,
-                                                                                    ).disabledColor,
-                                                                                    fontSize: 10,
-                                                                                  ),
-                                                                                ),
-                                                                                const SizedBox(
-                                                                                  width: 2,
-                                                                                ),
-                                                                                Text(
-                                                                                  PriceConverter.convertPrice(
-                                                                                    storeList[index].minimumOrder,
-                                                                                  ),
-                                                                                  style: robotoBold.copyWith(
-                                                                                    fontSize: 10,
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                            const SizedBox(
-                                                                              height: 2,
-                                                                            ),
-                                                                            storeList[index].ratingCount! > 0
-                                                                                ? Row(
-                                                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                                                    children: [
-                                                                                      Icon(
-                                                                                        Icons.star,
-                                                                                        size: 14,
-                                                                                        color: Theme.of(context).primaryColor,
-                                                                                      ),
-                                                                                      const SizedBox(width: 2),
-                                                                                      Text(
-                                                                                        storeList[index].avgRating!.toStringAsFixed(1),
-                                                                                        style: robotoRegular.copyWith(fontSize: 10),
-                                                                                      ),
-                                                                                      const SizedBox(width: 2),
-                                                                                      Text(
-                                                                                        "(${storeList[index].ratingCount.toString()})",
-                                                                                        style: robotoRegular.copyWith(
-                                                                                          fontSize: 10,
-                                                                                          color: Theme.of(context).disabledColor,
-                                                                                        ),
-                                                                                      ),
-                                                                                    ],
-                                                                                  )
-                                                                                : const SizedBox(),
-                                                                            if (FreeDeliveryHelper.isFreeDelivery(storeList[index]))
-                                                                              Padding(
-                                                                                padding: const EdgeInsets.only(top: 1),
-                                                                                child: Row(
-                                                                                  children: [
-                                                                                    Icon(
-                                                                                      Icons.check_circle,
-                                                                                      size: 12,
-                                                                                      color: Theme.of(context).primaryColor,
-                                                                                    ),
-                                                                                    const SizedBox(width: 2),
-                                                                                    Text(
-                                                                                      'free_delivery'.tr,
-                                                                                      style: robotoMedium.copyWith(
-                                                                                        fontSize: 9,
-                                                                                        color: Theme.of(context).primaryColor,
-                                                                                      ),
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                              ),
-                                                                          ],
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Expanded(
-                                                              flex: 1,
-                                                              child: Text(
-                                                                storeList[index]
-                                                                        .name ??
-                                                                    '',
-                                                                style:
-                                                                    robotoMedium,
-                                                              ),
-                                                            ),
-
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Positioned(
-                                                      top: -5,
-                                                      left:
-                                                          Get.find<
-                                                                LocalizationController
-                                                              >()
-                                                              .isLtr
-                                                          ? 15
-                                                          : null,
-                                                      right:
-                                                          Get.find<
-                                                                LocalizationController
-                                                              >()
-                                                              .isLtr
-                                                          ? null
-                                                          : 15,
-                                                      child: Container(
-                                                        height: 90,
-                                                        width: 95,
-                                                        decoration: BoxDecoration(
-                                                          color: Theme.of(
-                                                            context,
-                                                          ).cardColor,
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                Dimensions
-                                                                    .radiusDefault,
-                                                              ),
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                              color: Colors
-                                                                  .black
-                                                                  .withValues(
-                                                                    alpha: 0.03,
-                                                                  ),
-                                                              spreadRadius: 1,
-                                                              blurRadius: 7,
-                                                              offset:
-                                                                  const Offset(
-                                                                    0,
-                                                                    3,
-                                                                  ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                Dimensions
-                                                                    .paddingSizeExtraSmall,
-                                                              ),
-                                                          child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  Dimensions
-                                                                      .radiusDefault,
-                                                                ),
-                                                            child: Stack(
-                                                              children: [
-                                                                CustomImage(
-                                                                  image:
-                                                                      '${storeList[index].logoFullUrl}',
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  height: double
-                                                                      .infinity,
-                                                                  width: double
-                                                                      .infinity,
-                                                                ),
-                                                                (storeList[index].open ==
-                                                                            0 ||
-                                                                        !storeList[index]
-                                                                            .active!)
-                                                                    ? NotAvailableWidget(
-                                                                        isStore:
-                                                                            true,
-                                                                      )
-                                                                    : SizedBox(),
-                                                                DiscountTag(
-                                                                  discount: storeController
-                                                                      .getDiscount(
-                                                                        storeList[index],
-                                                                      ),
-                                                                  discountType:
-                                                                      storeController
-                                                                          .getDiscountType(
-                                                                            storeList[index],
-                                                                          ),
-                                                                  freeDelivery: false,
-                                                                ),
-                                                                Positioned(
-                                                                  bottom: 0,
-                                                                  left: 0,
-                                                                  child: Container(
-                                                                    width: 90,
-                                                                    padding:
-                                                                        const EdgeInsets.symmetric(
-                                                                          vertical:
-                                                                              3,
-                                                                        ),
-                                                                    decoration: BoxDecoration(
-                                                                      color: Theme.of(
-                                                                        context,
-                                                                      ).cardColor,
-                                                                      borderRadius: BorderRadius.circular(
-                                                                        Dimensions
-                                                                            .radiusSmall,
-                                                                      ),
-                                                                    ),
-                                                                    child: Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .center,
-                                                                      children: [
-                                                                        Text(
-                                                                          '${distance > 10 ? '10+' : distance.toStringAsFixed(1)} ${'km'.tr}',
-                                                                          style: robotoBold.copyWith(
-                                                                            color: Theme.of(
-                                                                              context,
-                                                                            ).primaryColor,
-                                                                            fontSize:
-                                                                                Dimensions.fontSizeOverSmall,
-                                                                          ),
-                                                                        ),
-                                                                        const SizedBox(
-                                                                          width:
-                                                                              Dimensions.paddingSizeExtraSmall,
-                                                                        ),
-                                                                        Text(
-                                                                          'from_you'
-                                                                              .tr,
-                                                                          style: robotoRegular.copyWith(
-                                                                            color: Theme.of(
-                                                                              context,
-                                                                            ).primaryColor,
-                                                                            fontSize:
-                                                                                Dimensions.fontSizeOverSmall,
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-
-                                                    /* AddFavouriteView(
-                              top: 40,
-                              left: Get.find<LocalizationController>().isLtr ? null : 15,
-                              right: Get.find<LocalizationController>().isLtr ? 15 : null,
-                              item: Item(id: storeList[index].id),
-                            ),*/
-                                                    Positioned(
-                                                      top: 40,
-                                                      left:
-                                                          Get.find<
-                                                                LocalizationController
-                                                              >()
-                                                              .isLtr
-                                                          ? null
-                                                          : 15,
-                                                      right:
-                                                          Get.find<
-                                                                LocalizationController
-                                                              >()
-                                                              .isLtr
-                                                          ? 15
-                                                          : null,
-                                                      child: GetBuilder<FavouriteController>(
-                                                        builder: (favouriteController) {
-                                                          bool isWished =
-                                                              favouriteController
-                                                                  .wishStoreIdList
-                                                                  .contains(
-                                                                    storeList[index]
-                                                                        .id,
-                                                                  );
-                                                          return InkWell(
-                                                            onTap: () {
-                                                              if (AuthHelper.isLoggedIn()) {
-                                                                isWished
-                                                                    ? favouriteController.removeFromFavouriteList(
-                                                                        storeList[index]
-                                                                            .id,
-                                                                        true,
-                                                                      )
-                                                                    : favouriteController.addToFavouriteList(
-                                                                        null,
-                                                                        storeList[index]
-                                                                            .id,
-                                                                        true,
-                                                                      );
-                                                              } else {
-                                                                showCustomSnackBar(
-                                                                  'you_are_not_logged_in'
-                                                                      .tr,
-                                                                );
-                                                              }
-                                                            },
-                                                            child: Icon(
-                                                              isWished
-                                                                  ? Icons
-                                                                        .favorite
-                                                                  : Icons
-                                                                        .favorite_border,
-                                                              size: 20,
-                                                              color: Theme.of(
-                                                                context,
-                                                              ).primaryColor,
-                                                            ),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        if (storeList[index].open == 0 || storeList[index].active == false) {
+                                                          showCustomSnackBar('this_store_is_closed_now'.tr);
+                                                        } else {
+                                                          Get.toNamed(
+                                                            RouteHelper.getStoreRoute(id: storeList[index].id, page: 'store'),
+                                                            arguments: StoreScreen(store: storeList[index], fromModule: true),
                                                           );
-                                                        },
+                                                        }
+                                                      },
+                                                      child: Container(
+                                                        width: 180,
+                                                        padding: const EdgeInsets.fromLTRB(10, 35, 10, 10),
+                                                      decoration: BoxDecoration(
+                                                        color: Theme.of(context).cardColor,
+                                                        borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black.withValues(alpha: 0.05),
+                                                            blurRadius: 10,
+                                                            offset: const Offset(0, 5),
+                                                          ),
+                                                        ],
                                                       ),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Text(
+                                                            storeList[index].name ?? '',
+                                                            maxLines: 1,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: robotoBold.copyWith(fontSize: Dimensions.fontSizeDefault),
+                                                            textAlign: TextAlign.center,
+                                                          ),
+                                                          const SizedBox(height: 5),
+                                                          Row(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Icon(Icons.star, size: 14, color: Theme.of(context).primaryColor),
+                                                              const SizedBox(width: 2),
+                                                              Text(
+                                                                storeList[index].avgRating!.toStringAsFixed(1),
+                                                                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                            const SizedBox(height: 4),
+                                                            Text(
+                                                              '${distance > 10 ? '10+' : distance.toStringAsFixed(1)} ${'km'.tr} ${'from_you'.tr}',
+                                                              style: robotoRegular.copyWith(color: Theme.of(context).primaryColor, fontSize: 10),
+                                                            ),
+                                                            if (FreeDeliveryHelper.isFreeDelivery(storeList[index]))
+                                                              Padding(
+                                                                padding: const EdgeInsets.only(top: 2),
+                                                                child: Row(
+                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                  children: [
+                                                                    Icon(Icons.check_circle, size: 12, color: Theme.of(context).primaryColor),
+                                                                    const SizedBox(width: 2),
+                                                                    Text('free_delivery'.tr, style: robotoMedium.copyWith(fontSize: 9, color: Theme.of(context).primaryColor)),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            const SizedBox(height: 8),
+                                                            Container(
+                                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                                              decoration: BoxDecoration(color: Theme.of(context).primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(50)),
+                                                              child: Text('visit_now'.tr, style: robotoMedium.copyWith(fontSize: 10, color: Theme.of(context).primaryColor)),
+                                                            ),
+                                                        ],
+                                                      ),
+                                                      ),
+                                                    ),
+                                                    Positioned(
+                                                      top: -25,
+                                                      left: 0,
+                                                      right: 0,
+                                                      child: Center(
+                                                        child: Stack(
+                                                          children: [
+                                                            Container(
+                                                              height: 70,
+                                                              width: 70,
+                                                              decoration: BoxDecoration(
+                                                                color: Theme.of(context).cardColor,
+                                                                shape: BoxShape.circle,
+                                                                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 4))],
+                                                              ),
+                                                              child: ClipOval(child: CustomImage(image: '${storeList[index].logoFullUrl}', fit: BoxFit.cover)),
+                                                            ),
+                                                            (storeList[index].open == 0 || !storeList[index].active!)
+                                                                ? Positioned.fill(
+                                                                    child: Container(
+                                                                      decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), shape: BoxShape.circle),
+                                                                      child: Center(child: Text('closed'.tr, style: robotoMedium.copyWith(color: Colors.white, fontSize: 10))),
+                                                                    ),
+                                                                  )
+                                                                : const SizedBox(),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Positioned(
+                                                      top: 5,
+                                                      right: 5,
+                                                      child: GetBuilder<FavouriteController>(builder: (favouriteController) {
+                                                        bool isWished = favouriteController.wishStoreIdList.contains(storeList[index].id);
+                                                        return InkWell(
+                                                          onTap: () {
+                                                            if (AuthHelper.isLoggedIn()) {
+                                                              isWished ? favouriteController.removeFromFavouriteList(storeList[index].id, true) : favouriteController.addToFavouriteList(null, storeList[index].id, true);
+                                                            } else {
+                                                              showCustomSnackBar('you_are_not_logged_in'.tr);
+                                                            }
+                                                          },
+                                                          child: Icon(isWished ? Icons.favorite : Icons.favorite_border, color: isWished ? Theme.of(context).primaryColor : Theme.of(context).disabledColor, size: 20),
+                                                        );
+                                                      }),
+                                                    ),
+                                                    DiscountTag(
+                                                      discount: storeController.getDiscount(storeList[index]),
+                                                      discountType: storeController.getDiscountType(storeList[index]),
+                                                      fontSize: 10,
                                                     ),
                                                   ],
                                                 ),
@@ -1263,17 +933,12 @@ class BestStoreNearbyShimmer extends StatelessWidget {
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(
-                    left: Dimensions.paddingSizeDefault,
-                  ),
-                  itemCount: 10,
+                  clipBehavior: Clip.none,
+                  padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault),
+                  itemCount: 5,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: Dimensions.paddingSizeDefault,
-                        right: Dimensions.paddingSizeDefault,
-                        top: Dimensions.paddingSizeDefault,
-                      ),
+                      padding: const EdgeInsets.only(right: Dimensions.paddingSizeDefault, top: 25, bottom: 10),
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
@@ -1281,163 +946,27 @@ class BestStoreNearbyShimmer extends StatelessWidget {
                             duration: const Duration(seconds: 2),
                             enabled: true,
                             child: Container(
-                              height: 155,
-                              width: 250,
-                              margin: const EdgeInsets.only(top: 30),
-                              padding: const EdgeInsets.all(
-                                Dimensions.paddingSizeDefault,
-                              ),
+                              width: 180,
                               decoration: BoxDecoration(
                                 color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(
-                                  Dimensions.paddingSizeExtraSmall,
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: Row(
-                                      children: [
-                                        const Expanded(
-                                          flex: 3,
-                                          child: SizedBox(),
-                                        ),
-                                        Expanded(
-                                          flex: 4,
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Container(
-                                                        height: 10,
-                                                        width: 50,
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).cardColor,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    height: Dimensions
-                                                        .paddingSizeExtraSmall,
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.star,
-                                                        size: 15,
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).primaryColor,
-                                                      ),
-                                                      const SizedBox(
-                                                        width: Dimensions
-                                                            .paddingSizeExtraSmall,
-                                                      ),
-                                                      Container(
-                                                        height: 10,
-                                                        width: 50,
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).cardColor,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                              const Spacer(),
-                                              Icon(
-                                                Icons.favorite_border,
-                                                color: Theme.of(
-                                                  context,
-                                                ).disabledColor,
-                                                size: 20,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Container(
-                                      height: 10,
-                                      width: 100,
-                                      color: Theme.of(context).cardColor,
-                                    ),
-                                  ),
-                                ],
+                                borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
                               ),
                             ),
                           ),
                           Positioned(
-                            top: -5,
-                            left: 15,
-                            child: Container(
-                              height: 90,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                borderRadius: BorderRadius.circular(
-                                  Dimensions.paddingSizeExtraSmall,
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(
-                                  Dimensions.paddingSizeExtraSmall,
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                    Dimensions.paddingSizeExtraSmall,
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        height: double.infinity,
-                                        width: double.infinity,
-                                        color: Colors.grey[300],
-                                      ),
-                                      Positioned(
-                                        bottom: 0,
-                                        left: 0,
-                                        child: Container(
-                                          width: 80,
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 3,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context).cardColor,
-                                            borderRadius: BorderRadius.circular(
-                                              Dimensions.radiusSmall,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              const SizedBox(
-                                                width: Dimensions
-                                                    .paddingSizeExtraSmall,
-                                              ),
-                                              Container(
-                                                height: 10,
-                                                width: 50,
-                                                color: Theme.of(
-                                                  context,
-                                                ).cardColor,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                            top: -25,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: Shimmer(
+                                duration: const Duration(seconds: 2),
+                                enabled: true,
+                                child: Container(
+                                  height: 70,
+                                  width: 70,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white24,
+                                    shape: BoxShape.circle,
                                   ),
                                 ),
                               ),

@@ -285,7 +285,7 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
                                     .module!
                                     .showRestaurantText!
                                 ? 'popular_restaurants'.tr
-                                : 'popular_stores'.tr
+                                : 'pop ̰ular_stores'.tr
                           : widget.isTopOfferStore
                           ? 'top_offers_near_me'.tr
                           : '${'new_on'.tr} ${AppConstants.appName}',

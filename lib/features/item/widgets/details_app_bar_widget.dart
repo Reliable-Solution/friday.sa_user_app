@@ -55,9 +55,14 @@ class DetailsAppBarWidgetState extends State<DetailsAppBarWidget>
 
     return AppBar(
       leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back_ios,
-          color: Theme.of(context).textTheme.bodyLarge!.color,
+        padding: EdgeInsets.zero,
+        icon: Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
+            size: 18,
+          ),
         ),
         onPressed: () => Navigator.pop(context),
       ),

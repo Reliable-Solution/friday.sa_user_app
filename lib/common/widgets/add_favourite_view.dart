@@ -11,66 +11,74 @@ class AddFavouriteView extends StatelessWidget {
     required this.item,
     this.top = 15,
     this.right = 15,
+    this.bottom,
     this.left,
     this.storeId,
   });
   final Item? item;
-  final double? top, right;
+  final double? top, right, bottom;
   final double? left;
   final int? storeId;
 
   @override
   Widget build(BuildContext context) {
+    Widget content = GetBuilder<FavouriteController>(
+      builder: (favouriteController) {
+        bool isWished;
+        if (storeId != null) {
+          isWished = favouriteController.wishStoreIdList.contains(storeId);
+        } else {
+          isWished = favouriteController.wishItemIdList.contains(item!.id);
+        }
+        return InkWell(
+          onTap: () {
+            if (AuthHelper.isLoggedIn()) {
+              if (storeId != null) {
+                isWished
+                    ? favouriteController.removeFromFavouriteList(
+                        storeId,
+                        true,
+                      )
+                    : favouriteController.addToFavouriteList(
+                        null,
+                        storeId,
+                        true,
+                      );
+              } else {
+                isWished
+                    ? favouriteController.removeFromFavouriteList(
+                        item!.id,
+                        false,
+                      )
+                    : favouriteController.addToFavouriteList(
+                        item,
+                        null,
+                        false,
+                      );
+              }
+            } else {
+              showCustomSnackBar('you_are_not_logged_in'.tr);
+            }
+          },
+          child: Icon(
+            isWished ? Icons.favorite : Icons.favorite_border,
+            color: Theme.of(context).primaryColor,
+            size: 20,
+          ),
+        );
+      },
+    );
+
+    if (top == null && bottom == null && right == null && left == null) {
+      return content;
+    }
+
     return Positioned(
       top: top,
       right: right,
+      bottom: bottom,
       left: left,
-      child: GetBuilder<FavouriteController>(
-        builder: (favouriteController) {
-          bool isWished;
-          if (storeId != null) {
-            isWished = favouriteController.wishStoreIdList.contains(storeId);
-          } else {
-            isWished = favouriteController.wishItemIdList.contains(item!.id);
-          }
-          return InkWell(
-            onTap: () {
-              if (AuthHelper.isLoggedIn()) {
-                if (storeId != null) {
-                  isWished
-                      ? favouriteController.removeFromFavouriteList(
-                          storeId,
-                          true,
-                        )
-                      : favouriteController.addToFavouriteList(
-                          null,
-                          storeId,
-                          true,
-                        );
-                } else {
-                  isWished
-                      ? favouriteController.removeFromFavouriteList(
-                          item!.id,
-                          false,
-                        )
-                      : favouriteController.addToFavouriteList(
-                          item,
-                          null,
-                          false,
-                        );
-                }
-              } else {
-                showCustomSnackBar('you_are_not_logged_in'.tr);
-              }
-            },
-            child: Icon(
-              isWished ? Icons.favorite : Icons.favorite_border,
-              color: Theme.of(context).primaryColor,
-              size: 20,
-            ),
-          );
-        },
-      ),
+      child: content,
     );
   }
 }

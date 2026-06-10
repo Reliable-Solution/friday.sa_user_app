@@ -13,6 +13,7 @@ import 'package:friday_sa/common/widgets/discount_tag.dart';
 import 'package:friday_sa/features/store/controllers/store_controller.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
 import 'package:friday_sa/common/widgets/custom_snackbar.dart';
+import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
 
 class PopularStoreCard extends StatelessWidget {
   const PopularStoreCard({super.key, required this.store});
@@ -61,7 +62,9 @@ class PopularStoreCard extends StatelessWidget {
                   ),
                   DiscountTag(
                     discount: Get.find<StoreController>().getDiscount(store),
-                    discountType: Get.find<StoreController>().getDiscountType(store),
+                    discountType: Get.find<StoreController>().getDiscountType(
+                      store,
+                    ),
                     freeDelivery: FreeDeliveryHelper.isFreeDelivery(store),
                   ),
                   Positioned(

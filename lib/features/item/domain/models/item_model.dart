@@ -176,7 +176,7 @@ class Item {
     discountType = json['discount_type'];
     availableTimeStarts = json['available_time_starts'];
     availableTimeEnds = json['available_time_ends'];
-    storeId = json['store_id'];
+    storeId = json['store_id'] != null ? int.tryParse(json['store_id'].toString()) : null;
     storeName = json['store_name'];
     zoneId = json['zone_id'];
     storeDiscount = json['store_discount'] != null

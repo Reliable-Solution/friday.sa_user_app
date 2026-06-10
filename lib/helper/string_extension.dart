@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:get/get.dart';
 
 extension StringExtension on String {
   String toCapitalized() {
@@ -18,6 +19,17 @@ extension StringExtension on String {
     }
     // Split string into words and capitalize each word
     return split('_').map((word) => word.toCapitalized()).join(' ');
+  }
+
+  String get deliveryTimeTr {
+    if (isEmpty) return this;
+    String result = this;
+    if (result.toLowerCase().contains('mins')) {
+      result = result.replaceAll(RegExp(r'mins', caseSensitive: false), 'mins'.tr);
+    } else if (result.toLowerCase().contains('min')) {
+      result = result.replaceAll(RegExp(r'min', caseSensitive: false), 'min'.tr);
+    }
+    return result;
   }
 }
 

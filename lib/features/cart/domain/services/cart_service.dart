@@ -261,10 +261,8 @@ class CartService implements CartServiceInterface {
     int quantity = cartList[cartIndex].quantity!;
     if (isIncrement) {
       if (moduleStock && cartList[cartIndex].quantity! >= stock!) {
-        showCustomSnackBar('out_of_stock'.tr);
       } else if (quantityLimit != null) {
         if (quantity >= quantityLimit && quantityLimit != 0) {
-          showCustomSnackBar('${'maximum_quantity_limit'.tr} $quantityLimit');
         } else {
           quantity = quantity + 1;
         }

@@ -55,14 +55,6 @@ class DeliverySection extends StatelessWidget {
             ? Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(
-                        context,
-                      ).primaryColor.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                    ),
-                  ],
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: Dimensions.paddingSizeLarge,

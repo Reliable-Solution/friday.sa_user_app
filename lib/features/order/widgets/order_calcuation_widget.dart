@@ -60,6 +60,49 @@ class OrderCalculationWidget extends StatelessWidget {
   final Function timerCancel;
   final Function startApiCall;
 
+  // Helper to display price with +/- sign
+  Widget _buildPriceRow(String label, num amount, {bool isCharge = true, bool isAnimated = true}) {
+    final sign = isCharge ? '(+)' : '(-)';
+    final priceText = isAnimated
+        ? PriceConverter.convertAnimationPrice(
+            amount,
+            textStyle: robotoRegular.copyWith(
+              fontSize: Dimensions.fontSizeSmall,
+            ),
+          )
+        : Text(
+            PriceConverter.convertPrice(amount),
+            style: robotoRegular.copyWith(
+              fontSize: Dimensions.fontSizeSmall,
+            ),
+          );
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: robotoRegular.copyWith(
+            fontSize: Dimensions.fontSizeSmall,
+          ),
+        ),
+        Row(
+          children: [
+            Text(
+              sign,
+              style: robotoRegular.copyWith(
+                fontSize: Dimensions.fontSizeSmall,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(width: 4),
+            priceText,
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -69,25 +112,29 @@ class OrderCalculationWidget extends StatelessWidget {
             : Dimensions.paddingSizeSmall,
       ),
       child: Container(
-        padding: EdgeInsets.symmetric(
-          vertical: ResponsiveHelper.isDesktop(context)
-              ? 0
-              : Dimensions.paddingSizeDefault,
+        margin: const EdgeInsets.symmetric(
+          horizontal: Dimensions.paddingSizeSmall,
+          vertical: 4,
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Dimensions.paddingSizeDefault,
+          vertical: Dimensions.paddingSizeSmall,
         ),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(
-            ResponsiveHelper.isDesktop(context) ? Dimensions.radiusDefault : 0,
+          borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
+              blurRadius: 8,
+              spreadRadius: 1,
+              offset: const Offset(0, 2),
+            ),
+          ],
+          border: Border.all(
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+            width: 1,
           ),
-          boxShadow: ResponsiveHelper.isDesktop(context)
-              ? const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 5,
-                    spreadRadius: 1,
-                  ),
-                ]
-              : [],
         ),
         child: Column(
           children: [
@@ -165,6 +212,7 @@ class OrderCalculationWidget extends StatelessWidget {
                   : 0,
             ),
 
+            
             Align(
               alignment: Alignment.topLeft,
               child: Padding(
@@ -192,66 +240,21 @@ class OrderCalculationWidget extends StatelessWidget {
                   parcel
                       ? Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'delivery_fee'.tr,
-                                  style: robotoRegular.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                  ),
-                                ),
-                                PriceConverter.convertAnimationPrice(
-                                  order.deliveryCharge!,
-                                  textStyle: robotoRegular.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                  ),
-                                ),
-                              ],
-                            ),
+                            _buildPriceRow('delivery_fee'.tr, order.deliveryCharge!, isCharge: true),
                             const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'delivery_man_tips'.tr,
-                                  style: robotoRegular.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                  ),
-                                ),
-                                PriceConverter.convertAnimationPrice(
-                                  order.dmTips!,
-                                  textStyle: robotoRegular.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                  ),
-                                ),
-                              ],
-                            ),
+                            _buildPriceRow('delivery_man_tips'.tr, order.dmTips!, isCharge: true),
                             (order.additionalCharge != null &&
                                     order.additionalCharge! > 0)
                                 ? const SizedBox(height: 10)
                                 : const SizedBox(),
                             (order.additionalCharge != null &&
                                     order.additionalCharge! > 0)
-                                ? Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        Get.find<SplashController>()
-                                            .configModel!
-                                            .additionalChargeName!,
-                                        style: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
-                                      PriceConverter.convertAnimationPrice(
-                                        order.additionalCharge!,
-                                        textStyle: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
-                                    ],
+                                ? _buildPriceRow(
+                                    Get.find<SplashController>()
+                                        .configModel!
+                                        .additionalChargeName!,
+                                    order.additionalCharge!,
+                                    isCharge: true,
                                   )
                                 : const SizedBox(),
                           ],
@@ -280,24 +283,7 @@ class OrderCalculationWidget extends StatelessWidget {
                             Get.find<SplashController>()
                                     .getModuleConfig(order.moduleType)
                                     .addOn!
-                                ? Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'addons'.tr,
-                                        style: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
-                                      PriceConverter.convertAnimationPrice(
-                                        addOns,
-                                        textStyle: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
-                                    ],
-                                  )
+                                ? _buildPriceRow('addons'.tr, addOns, isCharge: true)
                                 : const SizedBox(),
                             Get.find<SplashController>()
                                     .getModuleConfig(order.moduleType)
@@ -339,92 +325,38 @@ class OrderCalculationWidget extends StatelessWidget {
                                   ? 10
                                   : 0,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'discount'.tr,
-                                  style: robotoRegular.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                  ),
-                                ),
-                                PriceConverter.convertAnimationPrice(
-                                  discount,
-                                  textStyle: robotoRegular.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                  ),
-                                ),
-                              ],
-                            ),
+                            _buildPriceRow('discount'.tr, discount, isCharge: false),
                             const SizedBox(height: 10),
                             couponDiscount > 0
-                                ? Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                ? Column(
                                     children: [
-                                      Text(
-                                        'coupon_discount'.tr,
-                                        style: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
-                                      PriceConverter.convertAnimationPrice(
-                                        couponDiscount,
-                                        textStyle: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
+                                      _buildPriceRow('coupon_discount'.tr, couponDiscount, isCharge: false),
+                                      const SizedBox(height: 10),
                                     ],
                                   )
                                 : const SizedBox(),
-                            SizedBox(height: couponDiscount > 0 ? 10 : 0),
                             (referrerBonusAmount > 0)
-                                ? Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                ? Column(
                                     children: [
-                                      Text(
-                                        'referral_discount'.tr,
-                                        style: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
-                                      PriceConverter.convertAnimationPrice(
-                                        referrerBonusAmount,
-                                        textStyle: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
+                                      _buildPriceRow('referral_discount'.tr, referrerBonusAmount, isCharge: false),
+                                      const SizedBox(height: 10),
                                     ],
                                   )
                                 : const SizedBox(),
-                            SizedBox(height: referrerBonusAmount > 0 ? 10 : 0),
                             (order.additionalCharge != null &&
                                     order.additionalCharge! > 0)
-                                ? Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                ? Column(
                                     children: [
-                                      Text(
+                                      _buildPriceRow(
                                         Get.find<SplashController>()
                                             .configModel!
                                             .additionalChargeName!,
-                                        style: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
-                                      PriceConverter.convertAnimationPrice(
                                         order.additionalCharge!,
-                                        textStyle: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
+                                        isCharge: true,
                                       ),
+                                      const SizedBox(height: 10),
                                     ],
                                   )
-                                : const SizedBox(),
-                            (order.additionalCharge != null &&
-                                    order.additionalCharge! > 0)
-                                ? const SizedBox(height: 10)
                                 : const SizedBox(),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -435,82 +367,50 @@ class OrderCalculationWidget extends StatelessWidget {
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
                                 ),
-                                PriceConverter.convertAnimationPrice(
-                                  tax,
-                                  textStyle: robotoRegular.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '(+)',
+                                      style: robotoRegular.copyWith(
+                                        fontSize: Dimensions.fontSizeSmall,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    PriceConverter.convertAnimationPrice(
+                                      tax,
+                                      textStyle: robotoRegular.copyWith(
+                                        fontSize: Dimensions.fontSizeSmall,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                             const SizedBox(height: 10),
                             (dmTips > 0)
-                                ? Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                ? Column(
                                     children: [
-                                      Text(
-                                        'delivery_man_tips'.tr,
-                                        style: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
-                                      PriceConverter.convertAnimationPrice(
-                                        dmTips,
-                                        textStyle: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
+                                      _buildPriceRow('delivery_man_tips'.tr, dmTips, isCharge: true),
+                                      const SizedBox(height: 10),
                                     ],
                                   )
                                 : const SizedBox(),
-                            SizedBox(height: dmTips > 0 ? 10 : 0),
                             (extraPackagingAmount > 0)
-                                ? Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                ? Column(
                                     children: [
-                                      Text(
-                                        'extra_packaging'.tr,
-                                        style: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
-                                      PriceConverter.convertAnimationPrice(
-                                        extraPackagingAmount,
-                                        textStyle: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ),
+                                      _buildPriceRow('extra_packaging'.tr, extraPackagingAmount, isCharge: true),
+                                      const SizedBox(height: 10),
                                     ],
                                   )
                                 : const SizedBox(),
-                            SizedBox(height: extraPackagingAmount > 0 ? 10 : 0),
-                            order.orderType != 'take_away' ? Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'delivery_fee'.tr,
-                                  style: robotoRegular.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                  ),
-                                ),
-                                deliveryCharge > 0
-                                    ? PriceConverter.convertAnimationPrice(
-                                        deliveryCharge,
-                                        textStyle: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      )
-                                    : Text(
-                                        'free'.tr,
-                                        style: robotoRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                              ],
-                            ) : const SizedBox(),
+                            order.orderType != 'take_away'
+                                ? _buildPriceRow(
+                                    'delivery_fee'.tr,
+                                    deliveryCharge,
+                                    isCharge: deliveryCharge > 0,
+                                  )
+                                : const SizedBox(),
                           ],
                         ),
                 ],
@@ -586,13 +486,25 @@ class OrderCalculationWidget extends StatelessWidget {
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
                                 ),
-                                Text(
-                                  PriceConverter.convertPrice(
-                                    order.payments?[0].amount ?? 0,
-                                  ),
-                                  style: robotoMedium.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '(-)',
+                                      style: robotoMedium.copyWith(
+                                        fontSize: Dimensions.fontSizeSmall,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      PriceConverter.convertPrice(
+                                        order.payments?[0].amount ?? 0,
+                                      ),
+                                      style: robotoMedium.copyWith(
+                                        fontSize: Dimensions.fontSizeSmall,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -606,13 +518,25 @@ class OrderCalculationWidget extends StatelessWidget {
                                     fontSize: Dimensions.fontSizeSmall,
                                   ),
                                 ),
-                                Text(
-                                  PriceConverter.convertPrice(
-                                    order.payments?[1].amount ?? 0,
-                                  ),
-                                  style: robotoMedium.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '(+)',
+                                      style: robotoMedium.copyWith(
+                                        fontSize: Dimensions.fontSizeSmall,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      PriceConverter.convertPrice(
+                                        order.payments?[1].amount ?? 0,
+                                      ),
+                                      style: robotoMedium.copyWith(
+                                        fontSize: Dimensions.fontSizeSmall,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -621,16 +545,30 @@ class OrderCalculationWidget extends StatelessWidget {
                       ),
                     ),
                   )
-                : Padding(
+                : Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: Dimensions.paddingSizeLarge,
+                    ),
                     padding: const EdgeInsets.symmetric(
                       horizontal: Dimensions.paddingSizeLarge,
+                      vertical: Dimensions.paddingSizeSmall,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                      border: Border(
+                        left: BorderSide(
+                          color: Theme.of(context).primaryColor,
+                          width: 4,
+                        ),
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'total_amount'.tr,
-                          style: robotoMedium.copyWith(
+                          style: robotoBold.copyWith(
                             fontSize: ResponsiveHelper.isDesktop(context)
                                 ? Dimensions.fontSizeSmall
                                 : Dimensions.fontSizeDefault,
@@ -639,7 +577,7 @@ class OrderCalculationWidget extends StatelessWidget {
                         ),
                         Text(
                           PriceConverter.convertPrice(total),
-                          style: robotoMedium.copyWith(
+                          style: robotoBold.copyWith(
                             fontSize: ResponsiveHelper.isDesktop(context)
                                 ? Dimensions.fontSizeSmall
                                 : Dimensions.fontSizeDefault,

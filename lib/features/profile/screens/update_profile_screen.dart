@@ -1,4 +1,4 @@
-import 'dart:io';
+                         import 'dart:io';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
@@ -134,79 +134,85 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
             backButton: true,
             circularImage: Center(
               child: Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  ClipOval(
-                    child:
-                    profileController.pickedFile != null
-                        ? GetPlatform.isWeb
-                        ? Image.network(
-                      profileController
-                          .pickedFile!
-                          .path,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    )
-                        : Image.file(
-                      File(
-                        profileController
-                            .pickedFile!
-                            .path,
-                      ),
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    )
-                        : FadeInImage.assetNetwork(
-                      placeholder: Images.placeholder,
-                      image:
-                      '${profileController.userInfoModel!.imageFullUrl}',
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
-                      imageErrorBuilder: (c, o, s) =>
-                          Image.asset(
-                            Images.placeholder,
-                            height: 100,
-                            width: 100,
-                            fit: BoxFit.cover,
+                  InkWell(
+                    onTap: () => _pickImage(profileController),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          width: 3,
+                          color: Colors.white,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 2),
                           ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: profileController.pickedFile != null
+                            ? GetPlatform.isWeb
+                                ? Image.network(
+                                    profileController.pickedFile!.path,
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.file(
+                                    File(profileController.pickedFile!.path),
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                  )
+                            : FadeInImage.assetNetwork(
+                                placeholder: Images.placeholder,
+                                image: '${profileController.userInfoModel!.imageFullUrl}',
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
+                                imageErrorBuilder: (c, o, s) => Image.asset(
+                                  Images.placeholder,
+                                  height: 100,
+                                  width: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                      ),
                     ),
                   ),
                   Positioned(
                     bottom: 0,
                     right: 0,
-                    top: 0,
-                    left: 0,
                     child: InkWell(
-                      onTap: () =>
-                          _pickImage(profileController),
+                      onTap: () => _pickImage(profileController),
                       child: Container(
+                        height: 32,
+                        width: 32,
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(
-                            alpha: 0.3,
-                          ),
+                          color: Theme.of(context).primaryColor,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            width: 1,
-                            color: Theme.of(
-                              context,
-                            ).primaryColor,
-                          ),
-                        ),
-                        child: Container(
-                          margin: const EdgeInsets.all(25),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 2,
-                              color: Colors.white,
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.camera_alt,
+                            width: 2,
                             color: Colors.white,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.15),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                          size: 16,
                         ),
                       ),
                     ),
@@ -229,181 +235,157 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           crossAxisAlignment:
                           CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height: 20,
-                              width: context.width,
+                            const SizedBox(
+                              height: 25,
                             ),
-                            CustomTextField(
-                              titleText: 'enter_name'.tr,
-                              controller: _nameController,
-                              capitalization:
-                              TextCapitalization.words,
-                              inputType: TextInputType.name,
-                              focusNode: _nameFocus,
-                              nextFocus: _emailFocus,
-                              prefixIcon: CupertinoIcons
-                                  .person_alt_circle_fill,
-                              labelText: 'name'.tr,
-                              // required: true,
-                              validator: (value) =>
-                                  ValidateCheck.validateEmptyText(
-                                    value,
-                                    "please_enter_first_name"
-                                        .tr,
+                            Container(
+                              padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                                    blurRadius: 15,
+                                    spreadRadius: 2,
+                                    offset: const Offset(0, 5),
                                   ),
-                            ),
-                            const SizedBox(
-                              height: Dimensions
-                                  .paddingSizeExtraOverLarge,
-                            ),
-                            CustomTextField(
-                              titleText: 'enter_email'.tr,
-                              controller: _emailController,
-                              focusNode: _emailFocus,
-                              inputType:
-                              TextInputType.emailAddress,
-                              prefixIcon:
-                              CupertinoIcons.mail_solid,
-                              labelText: 'email'.tr,
-                              // required: true,
-                              validator:
-                              ValidateCheck.validateEmail,
-                              suffixImage:
-                              profileController
-                                  .userInfoModel!
-                                  .isEmailVerified! &&
-                                  profileController
-                                      .userInfoModel!
-                                      .email ==
-                                      _emailController
-                                          .text
-                                  ? Images.verifiedIcon
-                                  : Get.find<
-                                  SplashController
-                              >()
-                                  .configModel!
-                                  .centralizeLoginSetup!
-                                  .emailVerificationStatus!
-                                  ? Images.unverifiedIcon
-                                  : null,
-                              suffixOnPressed: () async {
-                                if (!profileController
-                                    .userInfoModel!
-                                    .isEmailVerified! ||
-                                    profileController
-                                        .userInfoModel!
-                                        .email !=
-                                        _emailController
-                                            .text) {
-                                  Get.dialog(
-                                    const CustomLoaderWidget(),
-                                  );
-                                  await _updateProfile(
-                                    profileController:
-                                    profileController,
-                                    fromButton: false,
-                                    fromPhone: false,
-                                  );
-                                }
-                              },
-                            ),
-                            const SizedBox(
-                              height: Dimensions
-                                  .paddingSizeExtraOverLarge,
-                            ),
-                            Stack(
-                              children: [
-                                CustomTextField(
-                                  titleText:
-                                  'write_phone_number'.tr,
-                                  controller:
-                                  _phoneController,
-                                  focusNode: _phoneFocus,
-                                  inputType:
-                                  TextInputType.phone,
-                                  prefixIcon: CupertinoIcons
-                                      .lock_fill,
-                                  isEnabled:
-                                  !profileController
-                                      .userInfoModel!
-                                      .isPhoneVerified! ||
-                                      profileController
-                                          .userInfoModel!
-                                          .phone ==
-                                          null,
-                                  fromUpdateProfile: true,
-                                  labelText: 'phone'.tr,
-                                  required: true,
-                                  isPhone: true,
-                                  onCountryChanged:
-                                      (
-                                      CountryCode
-                                      countryCode,
-                                      ) => _countryDialCode =
-                                      countryCode
-                                          .dialCode,
-                                  countryDialCode:
-                                  _countryDialCode ??
-                                      Get.find<
-                                          LocalizationController
-                                      >()
-                                          .locale
-                                          .countryCode,
-                                  suffixImage:
-                                  profileController
-                                      .userInfoModel!
-                                      .isPhoneVerified!
-                                      ? Images.verifiedIcon
-                                      : null,
+                                ],
+                                border: Border.all(
+                                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                  width: 1.2,
                                 ),
-                                Positioned(
-                                  right: 15,
-                                  top: 15,
-                                  child:
-                                  !profileController
-                                      .userInfoModel!
-                                      .isPhoneVerified! &&
-                                      Get.find<
-                                          SplashController
-                                      >()
-                                          .configModel!
-                                          .centralizeLoginSetup!
-                                          .phoneVerificationStatus!
-                                      ? InkWell(
-                                    onTap: () async {
-                                      if (!profileController
-                                          .userInfoModel!
-                                          .isPhoneVerified! &&
-                                          Get.find<
-                                              SplashController
-                                          >()
-                                              .configModel!
-                                              .centralizeLoginSetup!
-                                              .phoneVerificationStatus!) {
-                                        Get.dialog(
-                                          const CustomLoaderWidget(),
-                                        );
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(6),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          CupertinoIcons.person_crop_circle,
+                                          color: Theme.of(context).primaryColor,
+                                          size: 18,
+                                        ),
+                                      ),
+                                      const SizedBox(width: Dimensions.paddingSizeSmall),
+                                      Text(
+                                        'personal_info'.tr,
+                                        style: robotoBold.copyWith(
+                                          fontSize: Dimensions.fontSizeDefault,
+                                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: Dimensions.paddingSizeSmall),
+                                  const Divider(),
+                                  const SizedBox(height: Dimensions.paddingSizeSmall),
+                                  CustomTextField(
+                                    titleText: 'enter_name'.tr,
+                                    controller: _nameController,
+                                    capitalization: TextCapitalization.words,
+                                    inputType: TextInputType.name,
+                                    focusNode: _nameFocus,
+                                    nextFocus: _emailFocus,
+                                    prefixIcon: CupertinoIcons.person_fill,
+                                    labelText: 'name'.tr,
+                                    validator: (value) => ValidateCheck.validateEmptyText(
+                                      value,
+                                      "please_enter_first_name".tr,
+                                    ),
+                                  ),
+                                  const SizedBox(height: Dimensions.paddingSizeLarge),
+                                  CustomTextField(
+                                    titleText: 'enter_email'.tr,
+                                    controller: _emailController,
+                                    focusNode: _emailFocus,
+                                    inputType: TextInputType.emailAddress,
+                                    prefixIcon: CupertinoIcons.mail_solid,
+                                    labelText: 'email'.tr,
+                                    validator: ValidateCheck.validateEmail,
+                                    suffixImage: profileController.userInfoModel!.isEmailVerified! &&
+                                            profileController.userInfoModel!.email == _emailController.text
+                                        ? Images.verifiedIcon
+                                        : Get.find<SplashController>().configModel!.centralizeLoginSetup!.emailVerificationStatus!
+                                            ? Images.unverifiedIcon
+                                            : null,
+                                    suffixOnPressed: () async {
+                                      if (!profileController.userInfoModel!.isEmailVerified! ||
+                                          profileController.userInfoModel!.email != _emailController.text) {
+                                        Get.dialog(const CustomLoaderWidget());
                                         await _updateProfile(
-                                          profileController:
-                                          profileController,
-                                          fromButton:
-                                          false,
-                                          fromPhone:
-                                          true,
+                                          profileController: profileController,
+                                          fromButton: false,
+                                          fromPhone: false,
                                         );
                                       }
                                     },
-                                    child: Image.asset(
-                                      Images
-                                          .unverifiedIcon,
-                                      height: 20,
-                                      width: 20,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                      : const SizedBox(),
-                                ),
-                              ],
+                                  ),
+                                  const SizedBox(height: Dimensions.paddingSizeLarge),
+                                  Stack(
+                                    children: [
+                                      CustomTextField(
+                                        titleText: 'write_phone_number'.tr,
+                                        controller: _phoneController,
+                                        focusNode: _phoneFocus,
+                                        inputType: TextInputType.phone,
+                                        prefixIcon: CupertinoIcons.phone_fill,
+                                        isEnabled: !profileController.userInfoModel!.isPhoneVerified! ||
+                                            profileController.userInfoModel!.phone == null,
+                                        fromUpdateProfile: true,
+                                        labelText: 'phone'.tr,
+                                        required: true,
+                                        isPhone: true,
+                                        onCountryChanged: (CountryCode countryCode) =>
+                                            _countryDialCode = countryCode.dialCode,
+                                        countryDialCode: _countryDialCode ??
+                                            Get.find<LocalizationController>().locale.countryCode,
+                                        suffixImage: profileController.userInfoModel!.isPhoneVerified!
+                                            ? Images.verifiedIcon
+                                            : null,
+                                      ),
+                                      Positioned(
+                                        right: 15,
+                                        top: 15,
+                                        child: !profileController.userInfoModel!.isPhoneVerified! &&
+                                                Get.find<SplashController>()
+                                                    .configModel!
+                                                    .centralizeLoginSetup!
+                                                    .phoneVerificationStatus!
+                                            ? InkWell(
+                                                onTap: () async {
+                                                  if (!profileController.userInfoModel!.isPhoneVerified! &&
+                                                      Get.find<SplashController>()
+                                                          .configModel!
+                                                          .centralizeLoginSetup!
+                                                          .phoneVerificationStatus!) {
+                                                    Get.dialog(const CustomLoaderWidget());
+                                                    await _updateProfile(
+                                                      profileController: profileController,
+                                                      fromButton: false,
+                                                      fromPhone: true,
+                                                    );
+                                                  }
+                                                },
+                                                child: Image.asset(
+                                                  Images.unverifiedIcon,
+                                                  height: 20,
+                                                  width: 20,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              )
+                                            : const SizedBox(),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -420,8 +402,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       fromPhone: false,
                     ),
                     margin: const EdgeInsets.all(
-                      Dimensions.paddingSizeSmall,
+                      Dimensions.paddingSizeDefault,
                     ),
+                    radius: Dimensions.radiusDefault,
                     buttonText: 'update'.tr,
                   ),
                 ),
@@ -510,59 +493,78 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       child: Align(
                         alignment: Alignment.topCenter,
                         child: Stack(
+                          clipBehavior: Clip.none,
                           children: [
-                            ClipOval(
-                              child: profileController.pickedFile != null
-                                  ? GetPlatform.isWeb
-                                  ? Image.network(
-                                profileController.pickedFile!.path,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              )
-                                  : Image.file(
-                                File(
-                                  profileController
-                                      .pickedFile!
-                                      .path,
+                            InkWell(
+                              onTap: () => _pickImage(profileController),
+                              borderRadius: BorderRadius.circular(50),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    width: 3,
+                                    color: Colors.white,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.1),
+                                      blurRadius: 8,
+                                      spreadRadius: 1,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              )
-                                  : CustomImage(
-                                image:
-                                '${profileController.userInfoModel!.imageFullUrl}',
-                                height: 100,
-                                width: 100,
-                                fit: BoxFit.cover,
+                                child: ClipOval(
+                                  child: profileController.pickedFile != null
+                                      ? GetPlatform.isWeb
+                                          ? Image.network(
+                                              profileController.pickedFile!.path,
+                                              width: 100,
+                                              height: 100,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.file(
+                                              File(profileController.pickedFile!.path),
+                                              width: 100,
+                                              height: 100,
+                                              fit: BoxFit.cover,
+                                            )
+                                      : CustomImage(
+                                          image: '${profileController.userInfoModel!.imageFullUrl}',
+                                          height: 100,
+                                          width: 100,
+                                          fit: BoxFit.cover,
+                                        ),
+                                ),
                               ),
                             ),
                             Positioned(
                               bottom: 0,
                               right: 0,
-                              top: 0,
-                              left: 0,
                               child: InkWell(
                                 onTap: () => _pickImage(profileController),
                                 child: Container(
+                                  height: 32,
+                                  width: 32,
                                   decoration: BoxDecoration(
-                                    color: Colors.black.withValues(alpha: 0.3),
+                                    color: Theme.of(context).primaryColor,
                                     shape: BoxShape.circle,
-                                  ),
-                                  child: Container(
-                                    margin: const EdgeInsets.all(25),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        width: 2,
-                                        color: Colors.white,
-                                      ),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.camera_alt,
+                                    border: Border.all(
+                                      width: 2,
                                       color: Colors.white,
                                     ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.15),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                    size: 16,
                                   ),
                                 ),
                               ),
@@ -590,7 +592,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                   focusNode: _nameFocus,
                                   nextFocus: _emailFocus,
                                   prefixIcon:
-                                  CupertinoIcons.person_alt_circle_fill,
+                                  CupertinoIcons.person_fill,
                                   labelText: 'name'.tr,
                                   required: true,
                                   validator: (value) =>
@@ -600,7 +602,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                       ),
                                 ),
                                 const SizedBox(
-                                  height: Dimensions.paddingSizeExtraOverLarge,
+                                  height: Dimensions.paddingSizeLarge,
                                 ),
                                 CustomTextField(
                                   titleText: 'enter_email'.tr,
@@ -647,7 +649,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                   },
                                 ),
                                 const SizedBox(
-                                  height: Dimensions.paddingSizeExtraOverLarge,
+                                  height: Dimensions.paddingSizeLarge,
                                 ),
                                 Stack(
                                   children: [
@@ -668,6 +670,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                       labelText: 'phone'.tr,
                                       required: true,
                                       isPhone: true,
+                                      prefixIcon: CupertinoIcons.phone_fill,
                                       onCountryChanged:
                                           (CountryCode countryCode) =>
                                       _countryDialCode =

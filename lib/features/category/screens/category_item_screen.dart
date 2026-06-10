@@ -164,7 +164,7 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
                               autofocus: true,
                               textInputAction: TextInputAction.search,
                               decoration: InputDecoration(
-                                hintText: 'Search...',
+                                hintText: 'search'.tr,
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(
                                     Dimensions.radiusDefault,
@@ -216,7 +216,11 @@ class CategoryItemScreenState extends State<CategoryItemScreen>
                           ),
                     centerTitle: false,
                     leading: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios),
+                      padding: EdgeInsets.zero,
+                      icon: const Padding(
+                        padding: EdgeInsets.only(left: 4),
+                        child: Icon(Icons.arrow_back_ios, size: 18),
+                      ),
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                       onPressed: () {
                         if (catController.isSearching) {

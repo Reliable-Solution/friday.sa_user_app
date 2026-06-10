@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
-import 'package:friday_sa/common/widgets/custom_ink_well.dart';
+import 'package:friday_sa/common/widgets/custom_image.dart';
 import 'package:friday_sa/features/coupon/controllers/coupon_controller.dart';
 import 'package:friday_sa/helper/price_converter.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/images.dart';
 import 'package:friday_sa/util/styles.dart';
 import 'package:friday_sa/common/widgets/custom_snackbar.dart';
+
+import '../../../splash/controllers/splash_controller.dart';
 
 class PromoCodeBannerView extends StatefulWidget {
   const PromoCodeBannerView({super.key});
@@ -50,20 +52,20 @@ class _PromoCodeBannerViewState extends State<PromoCodeBannerView> {
                               },
                             ),
                             itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
+                              final coupon = couponController.couponList![itemIndex];
+                              final String? storeName = coupon.store?.name ??
+                                  ((coupon.couponType == 'store_wise' && coupon.data != null) ? coupon.data : null);
+                              final String? storeLogoUrl = coupon.store?.logoFullUrl;
+
+                              // Check if it is an "All Stores" coupon
+                              final bool isAllStore = storeName == null || storeName.isEmpty;
+
                               return Container(
                                 height: 135,
                                 width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: Dimensions.paddingSizeDefault,
-                                  vertical: Dimensions.paddingSizeSmall,
-                                ),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(
-                                    context,
-                                  ).primaryColor.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(
-                                    Dimensions.radiusDefault,
-                                  ),
+                                  color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                                   image: const DecorationImage(
                                     image: AssetImage(Images.promoCodeBg),
                                     fit: BoxFit.cover,
@@ -71,128 +73,268 @@ class _PromoCodeBannerViewState extends State<PromoCodeBannerView> {
                                 ),
                                 child: Row(
                                   children: [
-                                    Expanded(
-                                      child: Image.asset(
-                                        Images.couponOfferIcon,
-                                        height: 92,
-                                        width: 115,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: Dimensions.paddingSizeDefault,
-                                    ),
-                                    Expanded(
-                                      flex: 2,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            '${couponController.couponList![itemIndex].title ?? ''} ${'min_order_of'.tr} ${PriceConverter.convertPrice(couponController.couponList![itemIndex].minPurchase)}',
-                                            textAlign: TextAlign.center,
-                                            style: robotoBold.copyWith(
-                                              fontSize:
-                                                  Dimensions.fontSizeLarge,
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge!
-                                                  .color!
-                                                  .withValues(alpha: 0.8),
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: Dimensions.paddingSizeSmall,
-                                          ),
-                                          DottedBorder(
-                                            color: Theme.of(
-                                              context,
-                                            ).primaryColor,
-                                            strokeWidth: 1,
-                                            strokeCap: StrokeCap.butt,
-                                            dashPattern: const [5, 5],
-                                            padding: const EdgeInsets.all(0),
-                                            borderType: BorderType.RRect,
-                                            radius: const Radius.circular(50),
-                                            child: Container(
-                                              height: 35,
-                                              width: 130,
-                                              alignment: Alignment.center,
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(
-                                                  context,
-                                                ).cardColor,
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                              ),
-                                              child: CustomInkWell(
-                                                onTap: () {
-                                                  if (couponController
-                                                          .couponList![itemIndex]
-                                                          .code !=
-                                                      null) {
-                                                    Clipboard.setData(
-                                                      ClipboardData(
-                                                        text:
-                                                            couponController
-                                                                .couponList![itemIndex]
-                                                                .code ??
-                                                            '',
+                                    // ---- Left: Logo/Icon section ----
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 12),
+                                      child: isAllStore
+                                          // ALL STORES: Show FRIDAY.SA logo with primary color
+                                          ? Stack(
+                                              clipBehavior: Clip.none,
+                                              children: [
+                                                Container(
+                                                  width: 76,
+                                                  height: 76,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius: BorderRadius.circular(12),
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(10),
+                                                    child: Image.asset(
+                                                      Images.logo,
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                  ),
+                                                ),
+                                                // Discount badge
+                                                Positioned(
+                                                  bottom: -6,
+                                                  left: -6,
+                                                  child: Container(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                                    decoration: BoxDecoration(
+                                                      color: Theme.of(context).primaryColor,
+                                                      borderRadius: BorderRadius.circular(20),
+                                                      border: Border.all(color: Colors.white, width: 1.5),
+                                                    ),
+                                                    child: Text(
+                                                      '${coupon.discount}${coupon.discountType == 'percent' ? '%' : Get.find<SplashController>().configModel!.currencySymbol} ${'off'.tr}',
+                                                      style: robotoBold.copyWith(
+                                                        fontSize: 9,
+                                                        color: Colors.white,
                                                       ),
-                                                    );
-                                                    showCustomSnackBar(
-                                                      'coupon_code_copied'.tr,
-                                                      isError: false,
-                                                    );
-                                                  }
-                                                },
-                                                radius: 50,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: Dimensions
-                                                          .paddingSizeSmall,
+                                                      maxLines: 1,
+                                                      softWrap: false,
                                                     ),
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          // STORE SPECIFIC: show store logo or generic icon
+                                          : storeLogoUrl != null && storeLogoUrl.isNotEmpty
+                                              ? Stack(
+                                                  clipBehavior: Clip.none,
                                                   children: [
-                                                    Icon(
-                                                      Icons.copy,
-                                                      color: Theme.of(
-                                                        context,
-                                                      ).primaryColor,
-                                                      size: 16,
+                                                    Container(
+                                                      width: 76,
+                                                      height: 76,
+                                                      decoration: BoxDecoration(
+                                                        color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                                                        borderRadius: BorderRadius.circular(12),
+                                                        border: Border.all(
+                                                          color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
+                                                          width: 1,
+                                                        ),
+                                                      ),
+                                                      child: ClipRRect(
+                                                        borderRadius: BorderRadius.circular(11),
+                                                        child: CustomImage(
+                                                          image: storeLogoUrl,
+                                                          height: 76,
+                                                          width: 76,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
                                                     ),
-                                                    const SizedBox(
-                                                      width: Dimensions
-                                                          .paddingSizeExtraSmall,
-                                                    ),
-                                                    Flexible(
-                                                      child: Text(
-                                                        couponController
-                                                                .couponList![itemIndex]
-                                                                .code ??
-                                                            '',
-                                                        style: robotoMedium
-                                                            .copyWith(
-                                                              color: Theme.of(
-                                                                context,
-                                                              ).primaryColor,
-                                                              fontSize: Dimensions
-                                                                  .fontSizeSmall,
+                                                    Positioned(
+                                                      bottom: -6,
+                                                      left: -6,
+                                                      child: Container(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                                        decoration: BoxDecoration(
+                                                          color: Theme.of(context).primaryColor,
+                                                          borderRadius: BorderRadius.circular(20),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                                                              blurRadius: 6,
+                                                              offset: const Offset(0, 2),
                                                             ),
-                                                        maxLines: 1,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
+                                                          ],
+                                                        ),
+                                                        child: Text(
+                                                          '${coupon.discount}${coupon.discountType == 'percent' ? '%' : Get.find<SplashController>().configModel!.currencySymbol} ${'off'.tr}',
+                                                          style: robotoBold.copyWith(
+                                                            fontSize: 9,
+                                                            color: Colors.white,
+                                                          ),
+                                                          maxLines: 1,
+                                                          softWrap: false,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : Image.asset(
+                                                  Images.couponOfferIcon,
+                                                  height: 90,
+                                                  width: 90,
+                                                ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    // ---- Right: Badge + title + copy button ----
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            // ALL STORES gold badge
+                                            if (isAllStore) ...[
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context).primaryColor,
+                                                  borderRadius: BorderRadius.circular(20),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.stars_rounded,
+                                                      size: 14,
+                                                      color: Colors.white,
+                                                    ),
+                                                    const SizedBox(width: 5),
+                                                    Text(
+                                                      'all_stores'.tr,
+                                                      style: robotoBold.copyWith(
+                                                        fontSize: Dimensions.fontSizeSmall,
+                                                        color: Colors.white,
+                                                        letterSpacing: 0.3,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                               ),
+                                              const SizedBox(height: 6),
+                                            ]
+                                            // STORE SPECIFIC badge
+                                            else if (storeName != null) ...[
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context).primaryColor,
+                                                  borderRadius: BorderRadius.circular(20),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Theme.of(context).primaryColor.withValues(alpha: 0.35),
+                                                      blurRadius: 8,
+                                                      offset: const Offset(0, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    if (storeLogoUrl != null && storeLogoUrl.isNotEmpty)
+                                                      ClipRRect(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        child: CustomImage(
+                                                          image: storeLogoUrl,
+                                                          height: 20,
+                                                          width: 20,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      )
+                                                    else
+                                                      const Icon(
+                                                        Icons.storefront_rounded,
+                                                        size: 16,
+                                                        color: Colors.white,
+                                                      ),
+                                                    const SizedBox(width: 6),
+                                                    ConstrainedBox(
+                                                      constraints: const BoxConstraints(maxWidth: 130),
+                                                      child: Text(
+                                                        storeName,
+                                                        style: robotoBold.copyWith(
+                                                          fontSize: Dimensions.fontSizeSmall,
+                                                          color: Colors.white,
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(height: 6),
+                                            ],
+                                            // Title
+                                            Text(
+                                              '${coupon.title ?? ''} ${'min_order_of'.tr} ${PriceConverter.convertPrice(coupon.minPurchase).replaceAll(' ', '\u00A0')}',
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: robotoBold.copyWith(
+                                                fontSize: Dimensions.fontSizeDefault,
+                                                color: Theme.of(context).textTheme.bodyLarge!.color!.withValues(alpha: 0.85),
+                                                height: 1.2,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                            const SizedBox(height: 8),
+                                            // Copy code button
+                                            DottedBorder(
+                                              color: Theme.of(context).primaryColor,
+                                              strokeWidth: 1.2,
+                                              strokeCap: StrokeCap.round,
+                                              dashPattern: const [5, 4],
+                                              padding: const EdgeInsets.all(0),
+                                              borderType: BorderType.RRect,
+                                              radius: const Radius.circular(50),
+                                              child: InkWell(
+                                                borderRadius: BorderRadius.circular(50),
+                                                onTap: () {
+                                                  if (coupon.code != null) {
+                                                    Clipboard.setData(ClipboardData(text: coupon.code ?? ''));
+                                                    showCustomSnackBar('coupon_code_copied'.tr, isError: false);
+                                                  }
+                                                },
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                                  decoration: BoxDecoration(
+                                                    color: Theme.of(context).cardColor.withValues(alpha: 0.85),
+                                                    borderRadius: BorderRadius.circular(50),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.copy_rounded,
+                                                        color: Theme.of(context).primaryColor,
+                                                        size: 14,
+                                                      ),
+                                                      const SizedBox(width: 5),
+                                                      Flexible(
+                                                        child: Text(
+                                                          coupon.code ?? '',
+                                                          style: robotoBold.copyWith(
+                                                            color: Theme.of(context).primaryColor,
+                                                            fontSize: Dimensions.fontSizeSmall,
+                                                            letterSpacing: 0.8,
+                                                          ),
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],

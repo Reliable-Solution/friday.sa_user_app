@@ -77,6 +77,7 @@ import 'package:friday_sa/features/parcel/screens/parcel_request_screen.dart';
 import 'package:friday_sa/features/profile/screens/profile_screen.dart';
 import 'package:friday_sa/features/profile/screens/update_profile_screen.dart';
 import 'package:friday_sa/features/store/screens/all_store_screen.dart';
+import 'package:friday_sa/features/store/screens/visit_again_screen.dart';
 import 'package:friday_sa/features/store/screens/store_item_search_screen.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
 import 'package:friday_sa/features/review/screens/review_screen.dart';
@@ -163,6 +164,7 @@ class RouteHelper {
   static const String subscriptionSuccess = '/subscription-success';
   static const String subscriptionPayment = '/subscription-payment';
   static const String newUserSetupScreen = '/new-user-setup-screen';
+  static const String visitAgain = '/visit-again';
 
   // static const String newHome = '/new-home';
   // static const String taxiModuleLocation = '/texi-module-location';
@@ -335,8 +337,8 @@ class RouteHelper {
     return '$categoryItem?id=$id&name=$data${storeId != null ? '&store_id=$storeId' : ''}';
   }
 
-  static String getPopularItemRoute(bool isPopular, bool isSpecial) =>
-      '$popularItems?page=${isPopular ? 'popular' : 'reviewed'}&special=${isSpecial.toString()}';
+  static String getPopularItemRoute(bool isPopular, bool isSpecial, {int? storeId}) =>
+      '$popularItems?page=${isPopular ? 'popular' : 'reviewed'}&special=${isSpecial.toString()}${storeId != null ? '&store_id=$storeId' : ''}';
 
   static String getItemCampaignRoute({bool isJustForYou = false}) =>
       itemCampaign +
@@ -430,6 +432,7 @@ class RouteHelper {
       '$loyalty?from_notification=$fromNotification';
 
   static String getReferAndEarnRoute() => referAndEarn;
+  static String getVisitAgainRoute() => visitAgain;
 
   static String getChatRoute({
     required NotificationBodyModel? notificationBody,
@@ -914,12 +917,30 @@ class RouteHelper {
     ),
     GetPage(
       name: popularItems,
-      page: () => getRoute(
-        PopularItemScreen(
-          isPopular: Get.parameters['page'] == 'popular',
-          isSpecial: Get.parameters['special'] == 'true',
-        ),
-      ),
+      page: () {
+        debugPrint('=== ROUTE HELPER POPULAR ITEMS ROUTE ===');
+        debugPrint('Get.arguments type: ${Get.arguments?.runtimeType}');
+        debugPrint('Get.arguments value: ${Get.arguments}');
+        debugPrint('Get.parameters store_id: ${Get.parameters['store_id']}');
+        int? parsedStoreId;
+        if (Get.arguments != null) {
+          if (Get.arguments is int) {
+            parsedStoreId = Get.arguments as int;
+          } else {
+            parsedStoreId = int.tryParse(Get.arguments.toString());
+          }
+        } else if (Get.parameters['store_id'] != null) {
+          parsedStoreId = int.tryParse(Get.parameters['store_id']!);
+        }
+        debugPrint('parsedStoreId: $parsedStoreId');
+        return getRoute(
+          PopularItemScreen(
+            isPopular: Get.parameters['page'] == 'popular',
+            isSpecial: Get.parameters['special'] == 'true',
+            storeId: parsedStoreId,
+          ),
+        );
+      },
     ),
     GetPage(
       name: itemCampaign,
@@ -999,6 +1020,10 @@ class RouteHelper {
           isNearbyStore: Get.parameters['nearby'] == 'true',
         ),
       ),
+    ),
+    GetPage(
+      name: visitAgain,
+      page: () => getRoute(const VisitAgainScreen()),
     ),
     GetPage(
       name: itemImages,

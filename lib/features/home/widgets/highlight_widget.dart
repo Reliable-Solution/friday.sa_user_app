@@ -11,6 +11,7 @@ import 'package:friday_sa/features/language/controllers/language_controller.dart
 import 'package:friday_sa/features/store/domain/models/store_model.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
 import 'package:friday_sa/features/favourite/controllers/favourite_controller.dart';
 import 'package:friday_sa/features/home/controllers/advertisement_controller.dart';
 import 'package:friday_sa/features/home/domain/models/advertisement_model.dart';

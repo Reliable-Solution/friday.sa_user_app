@@ -56,7 +56,7 @@ class CartItemWidget extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
+      padding: const EdgeInsets.only(bottom: 2.0),
       child: Slidable(
         key: UniqueKey(),
         endActionPane: ActionPane(
@@ -92,15 +92,7 @@ class CartItemWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-            boxShadow: !ResponsiveHelper.isMobile(context)
-                ? [const BoxShadow()]
-                : [
-                    const BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 5,
-                      spreadRadius: 1,
-                    ),
-                  ],
+            border: Border.all(color: Theme.of(context).hintColor.withValues(alpha: 0.1), width: 0.5),
           ),
           child: CustomInkWell(
             onTap: () {
@@ -127,15 +119,12 @@ class CartItemWidget extends StatelessWidget {
                     );
             },
             radius: Dimensions.radiusDefault,
-            padding: const EdgeInsets.symmetric(
-              vertical: Dimensions.paddingSizeExtraSmall,
-              horizontal: Dimensions.paddingSizeExtraSmall,
-            ),
+            padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Stack(
                       children: [
@@ -146,11 +135,11 @@ class CartItemWidget extends StatelessWidget {
                           child: CustomImage(
                             image: '${cart.item!.imageFullUrl}',
                             height: ResponsiveHelper.isDesktop(context)
-                                ? 90
-                                : 60,
+                                ? 100
+                                : 85,
                             width: ResponsiveHelper.isDesktop(context)
-                                ? 90
-                                : 60,
+                                ? 100
+                                : 85,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -165,7 +154,7 @@ class CartItemWidget extends StatelessWidget {
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(
-                                      Dimensions.radiusSmall,
+                                      Dimensions.radiusDefault,
                                     ),
                                     color: Colors.black.withValues(alpha: 0.6),
                                   ),
@@ -176,7 +165,7 @@ class CartItemWidget extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                     style: robotoRegular.copyWith(
                                       color: Colors.white,
-                                      fontSize: 8,
+                                      fontSize: 10,
                                     ),
                                   ),
                                 ),
@@ -189,87 +178,40 @@ class CartItemWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: Dimensions.paddingSizeExtraSmall,
+                            runSpacing: Dimensions.paddingSizeExtraSmall,
                             children: [
-                              Flexible(
-                                child: Text(
-                                  cart.item!.name!,
-                                  style: robotoMedium.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                              Text(
+                                cart.item!.name!,
+                                style: robotoMedium.copyWith(
+                                  fontSize: Dimensions.fontSizeSmall,
                                 ),
-                              ),
-                              const SizedBox(
-                                width: Dimensions.paddingSizeExtraSmall,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               ((Get.find<SplashController>()
-                                              .configModel!
-                                              .moduleConfig!
-                                              .module!
-                                              .unit! &&
-                                          cart.item!.unitType != null &&
-                                          !Get.find<SplashController>()
-                                              .getModuleConfig(
-                                                cart.item!.moduleType,
-                                              )
-                                              .newVariation!) ||
-                                      (Get.find<SplashController>()
                                               .configModel!
                                               .moduleConfig!
                                               .module!
                                               .vegNonVeg! &&
                                           Get.find<SplashController>()
                                               .configModel!
-                                              .toggleVegNonVeg!))
-                                  ? !Get.find<SplashController>()
-                                            .configModel!
-                                            .moduleConfig!
-                                            .module!
-                                            .unit!
-                                        ? CustomAssetImageWidget(
-                                            cart.item!.veg == 0
-                                                ? Images.nonVegImage
-                                                : Images.vegImage,
-                                            height: 11,
-                                            width: 11,
-                                          )
-                                        : Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: Dimensions
-                                                  .paddingSizeExtraSmall,
-                                              horizontal:
-                                                  Dimensions.paddingSizeSmall,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    Dimensions.radiusSmall,
-                                                  ),
-                                              color: Theme.of(context)
-                                                  .primaryColor
-                                                  .withValues(alpha: 0.1),
-                                            ),
-                                            child: Text(
-                                              cart.item!.unitType ?? '',
-                                              style: robotoMedium.copyWith(
-                                                fontSize: Dimensions
-                                                    .fontSizeExtraSmall,
-                                                color: Theme.of(
-                                                  context,
-                                                ).primaryColor,
-                                              ),
-                                            ),
-                                          )
+                                              .toggleVegNonVeg!) &&
+                                      !Get.find<SplashController>()
+                                          .configModel!
+                                          .moduleConfig!
+                                          .module!
+                                          .unit!)
+                                  ? CustomAssetImageWidget(
+                                      cart.item!.veg == 0
+                                          ? Images.nonVegImage
+                                          : Images.vegImage,
+                                      height: 11,
+                                      width: 11,
+                                    )
                                   : const SizedBox(),
-                              SizedBox(
-                                width:
-                                    cart.item!.isStoreHalalActive! &&
-                                        cart.item!.isHalalItem!
-                                    ? Dimensions.paddingSizeExtraSmall
-                                    : 0,
-                              ),
                               cart.item!.isStoreHalalActive! &&
                                       cart.item!.isHalalItem!
                                   ? const CustomAssetImageWidget(
@@ -280,6 +222,40 @@ class CartItemWidget extends StatelessWidget {
                                   : const SizedBox(),
                             ],
                           ),
+                          (Get.find<SplashController>()
+                                          .configModel!
+                                          .moduleConfig!
+                                          .module!
+                                          .unit! &&
+                                      cart.item!.unitType != null &&
+                                      !Get.find<SplashController>()
+                                          .getModuleConfig(
+                                            cart.item!.moduleType,
+                                          )
+                                          .newVariation!)
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: Dimensions.paddingSizeExtraSmall),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 3.0,
+                                      horizontal: Dimensions.paddingSizeSmall,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                      color: Theme.of(context)
+                                          .primaryColor
+                                          .withValues(alpha: 0.1),
+                                    ),
+                                    child: Text(
+                                      cart.item!.unitType ?? '',
+                                      style: robotoMedium.copyWith(
+                                        fontSize: Dimensions.fontSizeExtraSmall,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox(),
                           (genericName.isNotEmpty)
                               ? Padding(
                                   padding: const EdgeInsets.only(top: 2.0),
@@ -412,13 +388,23 @@ class CartItemWidget extends StatelessWidget {
                         ],
                       ),
                     ),
+                    const SizedBox(width: Dimensions.paddingSizeDefault),
                     GetBuilder<CartController>(
                       builder: (cartController) {
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                            top: Dimensions.paddingSizeDefault + 2,
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
                           ),
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               QuantityButton(
                                 onTap: cartController.isLoading

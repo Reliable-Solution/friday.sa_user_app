@@ -91,7 +91,7 @@ class MostPopularItemView extends StatelessWidget {
                         ),
                       )
                     : const SizedBox()
-              : const ItemShimmerView(isPopularItem: true);
+              : ItemShimmerView(isPopularItem: true);
         },
       ),
     );

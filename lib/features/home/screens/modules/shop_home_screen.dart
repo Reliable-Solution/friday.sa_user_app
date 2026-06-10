@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:friday_sa/features/home/widgets/brands_view_widget.dart';
 import 'package:friday_sa/features/home/widgets/highlight_widget.dart';
 import 'package:friday_sa/features/home/widgets/views/top_offers_near_me.dart';
-import 'package:friday_sa/helper/auth_helper.dart';
 import 'package:friday_sa/util/images.dart';
 import 'package:friday_sa/features/flash_sale/widgets/flash_sale_view_widget.dart';
 import 'package:friday_sa/features/home/widgets/views/product_with_categories_view.dart';
@@ -13,9 +12,7 @@ import 'package:friday_sa/features/home/widgets/views/just_for_you_view.dart';
 import 'package:friday_sa/features/home/widgets/views/most_popular_item_view.dart';
 import 'package:friday_sa/features/home/widgets/views/new_on_mart_view.dart';
 import 'package:friday_sa/features/home/widgets/views/middle_section_banner_view.dart';
-import 'package:friday_sa/features/home/widgets/views/special_offer_view.dart';
 import 'package:friday_sa/features/home/widgets/views/promotional_banner_view.dart';
-import 'package:friday_sa/features/home/widgets/views/visit_again_view.dart';
 import 'package:friday_sa/features/home/widgets/banner_view.dart';
 import 'package:friday_sa/features/home/widgets/views/category_view.dart';
 
@@ -24,7 +21,6 @@ class ShopHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isLoggedIn = AuthHelper.isLoggedIn();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -46,14 +42,14 @@ class ShopHomeScreen extends StatelessWidget {
         ),
 
         const CategoryView(),
-        isLoggedIn ? const VisitAgainView() : const SizedBox(),
+        // isLoggedIn ? const VisitAgainView() : const SizedBox(),
         const MostPopularItemView(isFood: false, isShop: true),
         const FlashSaleViewWidget(),
         const MiddleSectionBannerView(),
         const HighlightWidget(),
         const PopularStoreView(),
         const BrandsViewWidget(),
-        const SpecialOfferView(isFood: false, isShop: true),
+        // const SpecialOfferView(isFood: false, isShop: true),
         const ProductWithCategoriesView(fromShop: true),
         const JustForYouView(),
         const TopOffersNearMe(),

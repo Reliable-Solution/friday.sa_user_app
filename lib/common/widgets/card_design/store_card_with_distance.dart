@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:friday_sa/common/widgets/custom_ink_well.dart';
-import 'package:friday_sa/common/widgets/hover/text_hover.dart';
-import 'package:friday_sa/features/language/controllers/language_controller.dart';
 import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
 import 'package:friday_sa/features/store/controllers/store_controller.dart';
 import 'package:friday_sa/features/favourite/controllers/favourite_controller.dart';
@@ -11,17 +9,13 @@ import 'package:friday_sa/common/models/module_model.dart';
 import 'package:friday_sa/features/store/domain/models/store_model.dart';
 import 'package:friday_sa/helper/auth_helper.dart';
 import 'package:friday_sa/helper/route_helper.dart';
-import 'package:friday_sa/util/app_constants.dart';
-import 'package:friday_sa/util/dimensions.dart';
-import 'package:friday_sa/util/images.dart';
 import 'package:friday_sa/util/styles.dart';
-import 'package:friday_sa/common/widgets/custom_button.dart';
 import 'package:friday_sa/common/widgets/custom_image.dart';
 import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 import 'package:friday_sa/common/widgets/discount_tag.dart';
-import 'package:friday_sa/common/widgets/new_tag.dart';
 import 'package:friday_sa/common/widgets/not_available_widget.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
+import 'package:friday_sa/helper/string_extension.dart';
 
 class StoreCardWithDistance extends StatelessWidget {
   const StoreCardWithDistance({
@@ -30,554 +24,507 @@ class StoreCardWithDistance extends StatelessWidget {
     this.fromAllStore = false,
     this.isNewStore = false,
     this.fromTopOffers = false,
+    this.isFeatured = false,
   });
   final Store store;
   final bool fromAllStore;
   final bool? isNewStore;
   final bool? fromTopOffers;
+  final bool isFeatured;
 
   @override
   Widget build(BuildContext context) {
-    bool isPharmacy =
-        Get.find<SplashController>().module != null &&
-        Get.find<SplashController>().module!.moduleType.toString() ==
-            AppConstants.pharmacy;
     num distance = store.distance! / 1000;
-    num discount = store.discount?.discount ?? 0;
-    String discountType = store.discount?.discountType ?? '';
-    bool isRightSide =
-        Get.find<SplashController>().configModel!.currencySymbolDirection ==
-        'right';
     String currencySymbol =
         Get.find<SplashController>().configModel!.currencySymbol!;
 
-    return Stack(
-      children: [
-        Container(
-          width: fromAllStore ? double.infinity : 260,
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-            boxShadow: const [
-              BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1),
-            ],
-          ),
-          child: CustomInkWell(
-            onTap: () {
-              if (store.open == 0 || store.active == false) {
-                showCustomSnackBar('this_store_is_closed_now'.tr);
-              } else {
-                if (Get.find<SplashController>().moduleList != null) {
-                  for (ModuleModel module
-                      in Get.find<SplashController>().moduleList!) {
-                    if (module.id == store.moduleId) {
-                      Get.find<SplashController>().setModule(module);
-                      break;
-                    }
-                  }
-                }
-                Get.toNamed(
-                  RouteHelper.getStoreRoute(id: store.id, page: 'store'),
-                  arguments: StoreScreen(store: store, fromModule: false),
-                );
-              }
-            },
-            radius: Dimensions.radiusDefault,
-            child: TextHover(
-              builder: (hovered) {
-                return Column(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(Dimensions.radiusDefault),
-                          topRight: Radius.circular(Dimensions.radiusDefault),
-                        ),
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            CustomImage(
-                              isHovered: hovered,
-                              image: '${store.coverPhotoFullUrl}',
-                              fit: BoxFit.cover,
-                              height: double.infinity,
-                              width: double.infinity,
-                            ),
-                            !fromTopOffers!
-                                ? DiscountTag(
-                                    discount: Get.find<StoreController>()
-                                        .getDiscount(store),
-                                    discountType: Get.find<StoreController>()
-                                        .getDiscountType(store),
-                                    freeDelivery:
-                                        FreeDeliveryHelper.isFreeDelivery(
-                                          store,
-                                        ),
-                                  )
-                                : const SizedBox(),
-                            Get.find<StoreController>().isOpenNow(store)
-                                ? const SizedBox()
-                                : const NotAvailableWidget(isStore: true),
 
-                            /* AddFavouriteView(
-                          item: Item(id: store.id),
-                        ),*/
-                            fromTopOffers!
-                                ? Positioned(
-                                    right: 0,
-                                    bottom: 0,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: Dimensions.paddingSizeSmall,
-                                        vertical: 2,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(
-                                            Dimensions.radiusDefault,
-                                          ),
-                                        ),
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .error
-                                            .withValues(alpha: 0.8),
-                                      ),
-                                      child: Text(
-                                        discount > 0
-                                            ? '${(isRightSide || discountType == 'percent') ? '' : currencySymbol}$discount${discountType == 'percent'
-                                                  ? '%'
-                                                  : isRightSide
-                                                  ? currencySymbol
-                                                  : ''} ${'off'.tr}'
-                                            : FreeDeliveryHelper.isFreeDelivery(
-                                                store,
-                                              )
-                                            ? 'free_delivery'.tr
-                                            : '',
-                                        style: robotoMedium.copyWith(
-                                          color: Theme.of(context).cardColor,
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      // child: Text('new'.tr, style: robotoMedium.copyWith(color: Theme.of(context).cardColor, fontSize: Dimensions.fontSizeSmall)),
-                                    ),
-                                  )
-                                : const SizedBox(),
-                            Positioned(
-                              top: 15,
-                              left: Get.find<LocalizationController>().isLtr
-                                  ? null
-                                  : 15,
-                              right: Get.find<LocalizationController>().isLtr
-                                  ? 15
-                                  : null,
-                              child: GetBuilder<FavouriteController>(
-                                builder: (favouriteController) {
-                                  bool isWished = favouriteController
-                                      .wishStoreIdList
-                                      .contains(store.id);
-                                  return InkWell(
-                                    onTap: () {
-                                      if (AuthHelper.isLoggedIn()) {
-                                        isWished
-                                            ? favouriteController
-                                                  .removeFromFavouriteList(
-                                                    store.id,
-                                                    true,
-                                                  )
-                                            : favouriteController
-                                                  .addToFavouriteList(
-                                                    null,
-                                                    store.id,
-                                                    true,
-                                                  );
-                                      } else {
-                                        showCustomSnackBar(
-                                          'you_are_not_logged_in'.tr,
-                                        );
-                                      }
-                                    },
-                                    child: Icon(
-                                      isWished
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      size: 20,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            isNewStore! ? const NewTag() : const SizedBox(),
-                          ],
+    // Dynamic width calculation to fit horizontal scrolling or vertical grids perfectly
+    double cardWidth = fromAllStore
+        ? double.infinity
+        : (isFeatured ? MediaQuery.of(context).size.width - 30 : 270);
+
+    return Container(
+      width: cardWidth,
+      constraints: const BoxConstraints(minHeight: 150),
+      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            spreadRadius: 0,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: CustomInkWell(
+        onTap: () {
+          if (store.open == 0 || store.active == false) {
+            showCustomSnackBar('this_store_is_closed_now'.tr);
+          } else {
+            if (Get.find<SplashController>().moduleList != null) {
+              for (ModuleModel module
+                  in Get.find<SplashController>().moduleList!) {
+                if (module.id == store.moduleId) {
+                  Get.find<SplashController>().setModule(module);
+                  break;
+                }
+              }
+            }
+            Get.toNamed(
+              RouteHelper.getStoreRoute(id: store.id, page: 'store'),
+              arguments: StoreScreen(store: store, fromModule: false),
+            );
+          }
+        },
+        radius: 16,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 10.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Minimal stacked image container (Cover Image + Floating circular Logo/Icon + Discount Tag)
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Background Cover Image
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade200, width: 1),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(11),
+                      child: CustomImage(
+                        image: '${store.coverPhotoFullUrl}',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  if (!fromTopOffers!)
+                    DiscountTag(
+                      discount: Get.find<StoreController>().getDiscount(store),
+                      discountType: Get.find<StoreController>().getDiscountType(
+                        store,
+                      ),
+                      freeDelivery: FreeDeliveryHelper.isFreeDelivery(store),
+                      fontSize: 8,
+                    ),
+                  if (!Get.find<StoreController>().isOpenNow(store))
+                    const NotAvailableWidget(
+                      isStore: true,
+                      fontSize: 8,
+                      radius: 11,
+                    ),
+
+
+                  // Floating circular Store Logo/Icon overlapping bottom-right
+                  Positioned(
+                    bottom: -2,
+                    right: -2,
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(1.5),
+                      child: ClipOval(
+                        child: CustomImage(
+                          image: '${store.logoFullUrl}',
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: Column(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 95),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    // Store Name and PLUS badge row
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Row(
                                 children: [
-                                  const SizedBox(
-                                    height: Dimensions.paddingSizeExtraSmall,
-                                  ),
                                   Flexible(
                                     child: Text(
                                       store.name ?? '',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: robotoMedium,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: Dimensions.paddingSizeExtraSmall,
-                                  ),
-                                  !fromTopOffers!
-                                      ? Row(
-                                          children: [
-                                            Icon(
-                                              Icons.location_on_outlined,
-                                              color: isPharmacy
-                                                  ? Colors.blue
-                                                  : Theme.of(
-                                                      context,
-                                                    ).primaryColor,
-                                              size: 15,
-                                            ),
-                                            const SizedBox(
-                                              width: Dimensions
-                                                  .paddingSizeExtraSmall,
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                store.address ?? '',
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: robotoRegular.copyWith(
-                                                  color: Theme.of(
-                                                    context,
-                                                  ).disabledColor,
-                                                  fontSize: Dimensions
-                                                      .fontSizeExtraSmall,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      : const SizedBox(),
-                                  if (FreeDeliveryHelper.isFreeDelivery(store))
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.check_circle,
-                                            color: Theme.of(
-                                              context,
-                                            ).primaryColor,
-                                            size: 12,
-                                          ),
-                                          const SizedBox(
-                                            width: Dimensions
-                                                .paddingSizeExtraSmall,
-                                          ),
-                                          Text(
-                                            'free_delivery'.tr,
-                                            style: robotoMedium.copyWith(
-                                              color: Theme.of(
-                                                context,
-                                              ).primaryColor,
-                                              fontSize: 10,
-                                            ),
-                                          ),
-                                        ],
+                                      style: robotoBold.copyWith(
+                                        fontSize: 15,
+                                        color: Theme.of(
+                                          context,
+                                        ).textTheme.bodyLarge?.color,
                                       ),
                                     ),
+                                  ),
+                                  if (store.featured == 1) ...[
+                                    const SizedBox(width: 6),
+                                    Icon(
+                                      Icons.stars,
+                                      color: Theme.of(context).primaryColor,
+                                      size: 18,
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
-                          ),
-                          fromTopOffers!
-                              ? Expanded(
-                                  flex: 4,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: Dimensions.paddingSizeDefault,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          height:
-                                              Dimensions.paddingSizeExtraSmall,
-                                        ),
-                                        Flexible(
-                                          child: Text(
-                                            store.address ?? '',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: robotoRegular.copyWith(
-                                              color: Theme.of(
-                                                context,
-                                              ).disabledColor,
-                                              fontSize:
-                                                  Dimensions.fontSizeExtraSmall,
-                                            ),
-                                          ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            if (store.ratingCount! > 0)
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  right: Dimensions
-                                                      .paddingSizeDefault,
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.star,
-                                                      color: Theme.of(
-                                                        context,
-                                                      ).primaryColor,
-                                                      size: 14,
-                                                    ),
-                                                    const SizedBox(
-                                                      width: Dimensions
-                                                          .paddingSizeExtraSmall,
-                                                    ),
-                                                    Text(
-                                                      '${store.avgRating}',
-                                                      style: robotoRegular.copyWith(
-                                                        fontSize: Dimensions
-                                                            .fontSizeExtraSmall,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: Dimensions
-                                                          .paddingSizeExtraSmall,
-                                                    ),
-                                                    Text(
-                                                      '(${store.ratingCount})',
-                                                      style: robotoRegular.copyWith(
-                                                        fontSize: Dimensions
-                                                            .fontSizeExtraSmall,
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).disabledColor,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            Text(
-                                              '${store.itemCount} ${'items'.tr}',
-                                              style: robotoRegular.copyWith(
-                                                fontSize: Dimensions
-                                                    .fontSizeExtraSmall,
-                                                color: Theme.of(
-                                                  context,
-                                                ).primaryColor,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              : Expanded(
-                                  flex: 3,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: Dimensions.paddingSizeDefault,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 3,
-                                            horizontal:
-                                                Dimensions.paddingSizeSmall,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .primaryColor
-                                                .withValues(alpha: 0.1),
-                                            borderRadius: BorderRadius.circular(
-                                              Dimensions.radiusLarge,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Image.asset(
-                                                Images.distanceLine,
-                                                height: 15,
-                                                width: 15,
-                                              ),
-                                              const SizedBox(
-                                                width: Dimensions
-                                                    .paddingSizeExtraSmall,
-                                              ),
-                                              Text(
-                                                '${distance > 100 ? '100+' : distance.toStringAsFixed(2)} ${'km'.tr}',
-                                                style: robotoBold.copyWith(
-                                                  color: Theme.of(
-                                                    context,
-                                                  ).primaryColor,
-                                                  fontSize: Dimensions
-                                                      .fontSizeExtraSmall,
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: Dimensions
-                                                    .paddingSizeExtraSmall,
-                                              ),
-                                              Text(
-                                                'from_you'.tr,
-                                                style: robotoRegular.copyWith(
-                                                  color: Theme.of(
-                                                    context,
-                                                  ).primaryColor,
-                                                  fontSize: Dimensions
-                                                      .fontSizeExtraSmall,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        CustomButton(
-                                          height: 30,
-                                          width: fromAllStore ? 70 : 65,
-                                          radius: Dimensions.radiusSmall,
-                                          onPressed: () {
-                                            if (Get.find<SplashController>()
-                                                    .moduleList !=
-                                                null) {
-                                              for (ModuleModel module
-                                                  in Get.find<
-                                                        SplashController
-                                                      >()
-                                                      .moduleList!) {
-                                                if (module.id ==
-                                                    store.moduleId) {
-                                                  Get.find<SplashController>()
-                                                      .setModule(module);
-                                                  break;
-                                                }
-                                              }
-                                            }
-                                            Get.toNamed(
-                                              RouteHelper.getStoreRoute(
-                                                id: store.id,
-                                                page: 'store',
-                                              ),
-                                              arguments: StoreScreen(
-                                                store: store,
-                                                fromModule: false,
-                                              ),
-                                            );
-                                          },
-                                          buttonText: 'visit'.tr,
-                                          color: Theme.of(context).primaryColor,
-                                          textColor: Theme.of(
-                                            context,
-                                          ).cardColor,
-                                          fontSize: Dimensions.fontSizeSmall,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
-        Positioned(
-          top: fromTopOffers! ? 40 : 60,
-          left: 15,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                height: 65,
-                width: 65,
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                  child: CustomImage(
-                    image: '${store.logoFullUrl}',
-                    fit: BoxFit.cover,
-                    height: double.infinity,
-                    width: double.infinity,
-                  ),
-                ),
-              ),
-              store.avgRating! > 0
-                  ? Positioned(
-                      bottom: -5,
-                      right: 5,
-                      left: 5,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(
-                            Dimensions.radiusDefault,
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 5,
-                              spreadRadius: 1,
-                            ),
                           ],
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+
+                    // Ratings & Chips Wrap (Highly responsive, zero overflow, minimalistic bullet dots)
+                    Wrap(
+                      spacing: 3,
+                      runSpacing: 2,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
+                            const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 13,
+                            ),
+                            const SizedBox(width: 2),
                             Text(
-                              store.avgRating!.toStringAsFixed(1),
-                              style: robotoRegular.copyWith(
-                                fontSize: Dimensions.fontSizeSmall,
+                              '${store.avgRating?.toStringAsFixed(1) ?? '0.0'} (${store.ratingCount ?? '0'})',
+                              style: robotoBold.copyWith(
+                                fontSize: 11,
+                                color: Colors.grey.shade700,
                               ),
                             ),
-                            const SizedBox(width: 3),
-                            Icon(
-                              Icons.star,
+                          ],
+                        ),
+                        Text(
+                          '•',
+                          style: TextStyle(
+                            color: Colors.grey.shade400,
+                            fontSize: 12,
+                          ),
+                        ),
+                        if (store.delivery ?? false) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.delivery_dining_outlined,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  'home_delivery'.tr,
+                                  style: robotoBold.copyWith(
+                                    fontSize: 11,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            '•',
+                            style: TextStyle(
+                              color: Colors.grey.shade400,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                        if (store.takeAway ?? false) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.yellow.shade200,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.shopping_bag_outlined,
+                                  color: Colors.green.shade900,
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  'pickup'.tr,
+                                  style: robotoBold.copyWith(
+                                    fontSize: 11,
+                                    color: Colors.green.shade900,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            '•',
+                            style: TextStyle(
+                              color: Colors.grey.shade400,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                        if (FreeDeliveryHelper.isFreeDelivery(store)) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 1.5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.green.shade600,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.local_shipping,
+                                  color: Colors.white,
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  'free_delivery'.tr,
+                                  style: robotoBold.copyWith(
+                                    fontSize: 10,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            '•',
+                            style: TextStyle(
+                              color: Colors.grey.shade400,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade100,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.local_offer_outlined,
+                                color: Colors.green.shade900,
+                                size: 12,
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                'in_store_price'.tr,
+                                style: robotoBold.copyWith(
+                                  fontSize: 11,
+                                  color: Colors.green.shade900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if ((Get.find<StoreController>().getDiscount(store) ?? 0) > 0) ...[
+                          Text(
+                            '•',
+                            style: TextStyle(
+                              color: Colors.grey.shade400,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
                               color: Theme.of(context).primaryColor,
-                              size: 15,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.card_giftcard_outlined,
+                                  color: Colors.white,
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  'COUPON',
+                                  style: robotoBold.copyWith(
+                                    fontSize: 10,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+
+                    // Bottom Delivery Specs Row (no horizontal scrolling)
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.access_time_outlined,
+                              color: Colors.grey.shade600,
+                              size: 13,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              (store.deliveryTime ?? '30-45 mins').deliveryTimeTr,
+                              style: robotoMedium.copyWith(
+                                fontSize: 11,
+                                color: Colors.grey.shade700,
+                              ),
                             ),
                           ],
                         ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.location_on_outlined,
+                              color: Colors.grey.shade600,
+                              size: 13,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              '${distance.toStringAsFixed(1)} ${'km'.tr}',
+                              style: robotoMedium.copyWith(
+                                fontSize: 11,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Row(
+                        //   mainAxisSize: MainAxisSize.min,
+                        //   children: [
+                        //     Icon(
+                        //       Icons.directions_car_outlined,
+                        //       color: FreeDeliveryHelper.isFreeDelivery(store)
+                        //           ? Colors.green.shade600
+                        //           : Colors.grey.shade600,
+                        //       size: 13,
+                        //     ),
+                        //     const SizedBox(width: 2),
+                        //     Text(
+                        //       FreeDeliveryHelper.isFreeDelivery(store)
+                        //           ? 'free'.tr
+                        //           : '$currencySymbol ${store.minimumShippingCharge?.toStringAsFixed(0) ?? '0'}',
+                        //       style: FreeDeliveryHelper.isFreeDelivery(store)
+                        //           ? robotoBold.copyWith(
+                        //               fontSize: 11,
+                        //               color: Colors.green.shade600,
+                        //             )
+                        //           : robotoMedium.copyWith(
+                        //               fontSize: 11,
+                        //               color: Colors.grey.shade700,
+                        //             ),
+                        //     ),
+                        //   ],
+                        // ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+
+              // Wishlist Heart Icon placed beautifully at the trailing end of the card
+              GetBuilder<FavouriteController>(
+                builder: (favouriteController) {
+                  bool isWished = favouriteController.wishStoreIdList.contains(
+                    store.id,
+                  );
+                  return InkWell(
+                    onTap: () {
+                      if (AuthHelper.isLoggedIn()) {
+                        isWished
+                            ? favouriteController.removeFromFavouriteList(
+                                store.id,
+                                true,
+                              )
+                            : favouriteController.addToFavouriteList(
+                                null,
+                                store.id,
+                                true,
+                              );
+                      } else {
+                        showCustomSnackBar('you_are_not_logged_in'.tr);
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        isWished ? Icons.favorite : Icons.favorite_border,
+                        size: 22,
+                        color: isWished ? Theme.of(context).primaryColor : Colors.grey.shade400,
                       ),
-                    )
-                  : const SizedBox(),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

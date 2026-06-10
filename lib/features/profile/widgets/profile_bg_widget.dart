@@ -25,17 +25,29 @@ class ProfileBgWidget extends StatelessWidget {
             Container(
               width: 1170,
               height: 260,
-              color: Theme.of(context).primaryColor,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).primaryColor.withValues(alpha: 0.85),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
             ),
             SizedBox(
               width: context.width,
               height: 260,
               child: Center(
-                child: Image.asset(
-                  Images.profileBg,
-                  height: 260,
-                  width: 1170,
-                  fit: BoxFit.fill,
+                child: Opacity(
+                  opacity: 0.12,
+                  child: Image.asset(
+                    Images.profileBg,
+                    height: 260,
+                    width: 1170,
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
             ),

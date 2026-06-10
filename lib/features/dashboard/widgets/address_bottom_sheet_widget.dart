@@ -161,6 +161,7 @@ class AddressBottomSheetWidget extends StatelessWidget {
                               : Alignment.topCenter,
                           child: TextButton.icon(
                             onPressed: () {
+                              Get.back();
                               Get.find<LocationController>().checkPermission(
                                 () async {
                                   Get.dialog(
@@ -331,6 +332,7 @@ class AddressBottomSheetWidget extends StatelessWidget {
                                                 isSelected: selected,
                                                 fromDashBoard: true,
                                                 onTap: () {
+                                                  Get.back();
                                                   Get.dialog(
                                                     const CustomLoaderWidget(),
                                                     barrierDismissible: false,

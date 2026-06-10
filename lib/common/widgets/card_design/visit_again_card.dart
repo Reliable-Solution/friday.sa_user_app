@@ -52,10 +52,14 @@ class VisitAgainCard extends StatelessWidget {
                     bottom: Dimensions.paddingSizeSmall,
                   ),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                    borderRadius: BorderRadius.circular(
+                      Dimensions.radiusDefault,
+                    ),
                     color: Theme.of(context).cardColor,
                     border: Border.all(
-                      color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.2),
                       width: 1,
                     ),
                     boxShadow: const [
@@ -209,13 +213,16 @@ class VisitAgainCard extends StatelessWidget {
                                                     decoration: BoxDecoration(
                                                       borderRadius:
                                                           BorderRadius.circular(
-                                                            (isPharmacy || isFood)
+                                                            (isPharmacy ||
+                                                                    isFood)
                                                                 ? 100
                                                                 : Dimensions
                                                                       .radiusSmall,
                                                           ),
                                                       color: Colors.black
-                                                          .withValues(alpha: 0.5),
+                                                          .withValues(
+                                                            alpha: 0.5,
+                                                          ),
                                                     ),
                                                     child: Center(
                                                       child: Text(
@@ -292,9 +299,8 @@ class VisitAgainCard extends StatelessWidget {
                   right: Get.find<LocalizationController>().isLtr ? 10 : null,
                   child: GetBuilder<FavouriteController>(
                     builder: (favouriteController) {
-                      bool isWished = favouriteController.wishStoreIdList.contains(
-                        store.id,
-                      );
+                      bool isWished = favouriteController.wishStoreIdList
+                          .contains(store.id);
                       return InkWell(
                         onTap: () {
                           if (AuthHelper.isLoggedIn()) {

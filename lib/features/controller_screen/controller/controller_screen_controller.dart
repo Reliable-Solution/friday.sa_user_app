@@ -33,14 +33,14 @@ class ControllerController extends GetxController implements GetxService {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text("Error"),
-          content: Text("Something went wrong: $e"),
+          title: Text("Error".tr),
+          content: Text("${'something_went_wrong'.tr}: $e"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text("OK"),
+              child: Text("ok".tr),
             ),
           ],
         ),
@@ -68,14 +68,14 @@ class ControllerController extends GetxController implements GetxService {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text("Error"),
-          content: Text("Something went wrong: $e"),
+          title: Text("Error".tr),
+          content: Text("${'something_went_wrong'.tr}: $e"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text("OK"),
+              child: Text("ok".tr),
             ),
           ],
         ),

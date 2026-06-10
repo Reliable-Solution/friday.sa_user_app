@@ -864,172 +864,85 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                     return GetBuilder<CartController>(
                                       builder: (cartController) {
                                         return Container(
-                                          width: 1170,
-                                          padding: const EdgeInsets.all(
-                                            Dimensions.paddingSizeSmall,
+                                          width: Dimensions.webMaxWidth,
+                                          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).cardColor,
+                                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -5))],
                                           ),
-                                          child: CustomButton(
-                                            isLoading: cartController.isLoading,
-                                            color: isStoreClosed ? Theme.of(context).disabledColor : (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).disabledColor : Theme.of(context).primaryColor,
-                                            textColor: isStoreClosed ? Theme.of(context).cardColor : (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).cardColor : Colors.white,
-                                            buttonText: isStoreClosed
-                                                ? 'this_store_is_closed_now'.tr
-                                                : (Get.find<SplashController>()
-                                                        .configModel!
-                                                        .moduleConfig!
-                                                        .module!
-                                                        .stock! &&
-                                                    stock! <= 0)
-                                                ? 'out_of_stock'.tr
-                                                : itemController
-                                                          .item!
-                                                          .availableDateStarts !=
-                                                      null
-                                                ? 'order_now'.tr
-                                                : itemController.cartIndex != -1
-                                                ? 'update_in_cart'.tr
-                                                : 'add_to_cart'.tr,
-                                            onPressed: isStoreClosed ? null :
-                                                (!Get.find<SplashController>()
-                                                        .configModel!
-                                                        .moduleConfig!
-                                                        .module!
-                                                        .stock! ||
-                                                    (stock! > 0 && ((itemController.cartIndex != -1 && isChanged) || (itemController.cartIndex == -1 && itemController.quantity! > 0))))
-                                                ? () async {
-                                                if (!Get.find<
-                                                          SplashController
-                                                        >()
-                                                        .configModel!
-                                                        .moduleConfig!
-                                                        .module!
-                                                        .stock! ||
-                                                    stock! > 0) {
-                                                  if (itemController
-                                                          .item!
-                                                          .availableDateStarts !=
-                                                      null) {
-                                                    Get.toNamed(
-                                                      RouteHelper.getCheckoutRoute(
-                                                        'campaign',
-                                                      ),
-                                                      arguments: CheckoutScreen(
-                                                        storeId: null,
-                                                        fromCart: false,
-                                                        cartList: [cartModel],
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    if (cartController.existAnotherStoreItem(
-                                                      cartModel!.item!.storeId,
-                                                      Get.find<
-                                                                    SplashController
-                                                                  >()
-                                                                  .module ==
-                                                              null
-                                                          ? Get.find<
-                                                                  SplashController
-                                                                >()
-                                                                .cacheModule!
-                                                                .id
-                                                          : Get.find<
-                                                                  SplashController
-                                                                >()
-                                                                .module!
-                                                                .id,
-                                                    )) {
-                                                      Get.dialog(
-                                                        ConfirmationDialog(
-                                                          icon: Images.warning,
-                                                          title:
-                                                              'are_you_sure_to_reset'
-                                                                  .tr,
-                                                          description:
-                                                              Get.find<
-                                                                    SplashController
-                                                                  >()
-                                                                  .configModel!
-                                                                  .moduleConfig!
-                                                                  .module!
-                                                                  .showRestaurantText!
-                                                              ? 'if_you_continue'
-                                                                    .tr
-                                                              : 'if_you_continue_without_another_store'
-                                                                    .tr,
-                                                          onYesPressed: () {
-                                                            Get.back();
-                                                            cartController.clearCartOnline().then((
-                                                              success,
-                                                            ) async {
-                                                              if (success) {
-                                                                await cartController
-                                                                    .addToCartOnline(
-                                                                      cart!,
-                                                                    );
-                                                                itemController
-                                                                    .setExistInCart(
-                                                                      widget
-                                                                          .item,
-                                                                      null,
-                                                                    );
-                                                                //showCartSnackBar();
-                                                              }
-                                                            });
-                                                          },
-                                                        ),
-                                                        barrierDismissible:
-                                                            false,
-                                                      );
-                                                    } else {
-                                                      if (itemController
-                                                              .cartIndex ==
-                                                          -1) {
-                                                        await cartController
-                                                            .addToCartOnline(
-                                                              cart!,
-                                                            )
-                                                            .then((success) {
-                                                              if (success) {
-                                                                itemController
-                                                                    .setExistInCart(
-                                                                      widget
-                                                                          .item,
-                                                                      null,
-                                                                    );
-                                                                //showCartSnackBar();
-                                                                _key.currentState!
-                                                                    .shake();
-                                                                _initInitialState();
-                                                                setState(() {});
-                                                              }
-                                                            });
-                                                      } else {
-                                                        await cartController
-                                                            .updateCartOnline(
-                                                              cart!,
-                                                            )
-                                                            .then((success) {
-                                                              if (success) {
-                                                                //showCartSnackBar();
-                                                                _key.currentState!
-                                                                    .shake();
-                                                                _initInitialState();
-                                                                setState(() {});
-                                                              }
-                                                            });
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: CustomButton(
+                                                  isLoading: cartController.isLoading,
+                                                  radius: Dimensions.radiusLarge,
+                                                  height: 50,
+                                                  color: isStoreClosed ? Theme.of(context).disabledColor : (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).disabledColor : Theme.of(context).primaryColor,
+                                                  textColor: isStoreClosed ? Theme.of(context).cardColor : (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).cardColor : Colors.white,
+                                                  buttonText: isStoreClosed
+                                                      ? 'this_store_is_closed_now'.tr
+                                                      : (Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && stock! <= 0)
+                                                      ? 'out_of_stock'.tr
+                                                      : itemController.item!.availableDateStarts != null
+                                                      ? 'order_now'.tr
+                                                      : itemController.cartIndex != -1
+                                                      ? 'update_in_cart'.tr
+                                                      : 'add_to_cart'.tr,
+                                                  onPressed: isStoreClosed ? null :
+                                                      (!Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! || (stock! > 0 && ((itemController.cartIndex != -1 && isChanged) || (itemController.cartIndex == -1 && itemController.quantity! > 0))))
+                                                      ? () async {
+                                                      if (!Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! || stock! > 0) {
+                                                        if (itemController.item!.availableDateStarts != null) {
+                                                          Get.toNamed(RouteHelper.getCheckoutRoute('campaign'), arguments: CheckoutScreen(storeId: null, fromCart: false, cartList: [cartModel]));
+                                                        } else {
+                                                          if (cartController.existAnotherStoreItem(cartModel!.item!.storeId, Get.find<SplashController>().module == null ? Get.find<SplashController>().cacheModule!.id : Get.find<SplashController>().module!.id)) {
+                                                            Get.dialog(ConfirmationDialog(
+                                                              icon: Images.warning,
+                                                              title: 'are_you_sure_to_reset'.tr,
+                                                              description: Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! ? 'if_you_continue'.tr : 'if_you_continue_without_another_store'.tr,
+                                                              onYesPressed: () {
+                                                                Get.back();
+                                                                cartController.clearCartOnline().then((success) async {
+                                                                  if (success) {
+                                                                    await cartController.addToCartOnline(cart!);
+                                                                    itemController.setExistInCart(widget.item, null);
+                                                                  }
+                                                                });
+                                                              },
+                                                            ), barrierDismissible: false);
+                                                          } else {
+                                                            if (itemController.cartIndex == -1) {
+                                                              await cartController.addToCartOnline(cart!).then((success) {
+                                                                if (success) {
+                                                                  itemController.setExistInCart(widget.item, null);
+                                                                  _key.currentState!.shake();
+                                                                  _initInitialState();
+                                                                  setState(() {});
+                                                                }
+                                                              });
+                                                            } else {
+                                                              await cartController.updateCartOnline(cart!).then((success) {
+                                                                if (success) {
+                                                                  _key.currentState!.shake();
+                                                                  _initInitialState();
+                                                                  setState(() {});
+                                                                }
+                                                              });
+                                                            }
+                                                          }
+                                                        }
                                                       }
-                                                    }
-                                                  }
-                                                }
-                                              }
-                                            : null,
-                                      ),
+                                                    } : null,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
                                     );
-                                       },
-                                     );
-                                   },
-                                 ),
-                               ],
+                                  },
+                                ),
+                              ],
                             )
                     : const Center(child: CircularProgressIndicator()),
               ),
@@ -1101,6 +1014,20 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
       if (list1[i] != list2[i]) return false;
     }
     return true;
+  }
+
+  Widget _quantityButton(BuildContext context, IconData icon, bool isActive, VoidCallback onTap) {
+    return InkWell(
+      onTap: isActive ? onTap : null,
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isActive ? Theme.of(context).primaryColor : Theme.of(context).disabledColor.withValues(alpha: 0.2),
+        ),
+        child: Icon(icon, color: Colors.white, size: 20),
+      ),
+    );
   }
 }
 

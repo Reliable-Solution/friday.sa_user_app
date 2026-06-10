@@ -22,12 +22,19 @@ class OnBoardingScreen extends StatefulWidget {
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final PageController _pageController = PageController();
+  bool _isNavigating = false;
 
   @override
   void initState() {
     super.initState();
 
     Get.find<OnBoardingController>().getOnBoardingList();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -107,8 +114,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                 },
                                 onPageChanged: (index) {
                                   onBoardingController.changeSelectIndex(index);
-                                  if (onBoardingController.selectedIndex == 3) {
-                                    _configureToRouteInitialPage();
+                                  if (onBoardingController.selectedIndex == 3 && !_isNavigating) {
+                                    _navigateToInitialPage();
                                   }
                                 },
                               ),
@@ -135,15 +142,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                             : Expanded(
                                                 child: CustomButton(
                                                   transparent: true,
-                                                  onPressed: () {
-                                                    _configureToRouteInitialPage();
+                                                  onPressed: _isNavigating ? null : () {
+                                                    _navigateToInitialPage();
                                                   },
                                                   buttonText: 'skip'.tr,
                                                 ),
                                               ),
                                         Expanded(
                                           child: CustomButton(
-                                            onPressed: () {
+                                            onPressed: _isNavigating ? null : () {
                                               if (onBoardingController.selectedIndex != 2) {
                                                 _pageController.nextPage(
                                                   duration: const Duration(
@@ -152,7 +159,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                                   curve: Curves.ease,
                                                 );
                                               } else {
-                                                _configureToRouteInitialPage();
+                                                _navigateToInitialPage();
                                               }
                                             },
                                             buttonText: onBoardingController.selectedIndex != 2 ? 'next'.tr : 'get_started'.tr,
@@ -200,6 +207,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     return indicators;
   }
 
+  void _navigateToInitialPage() {
+    if (_isNavigating) return;
+    setState(() {
+      _isNavigating = true;
+    });
+    _configureToRouteInitialPage();
+  }
+
   Future<void> _configureToRouteInitialPage() async {
     Get.dialog(const CustomLoaderWidget(), barrierDismissible: false);
     try {
@@ -220,11 +235,24 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               _pageController.jumpToPage(
                 Get.find<OnBoardingController>().onBoardingList.length - 2,
               );
+              // Reset flag after location flow completes to allow user to interact again
+              Future.delayed(const Duration(milliseconds: 500), () {
+                if (mounted) {
+                  setState(() {
+                    _isNavigating = false;
+                  });
+                }
+              });
             });
       }
     } catch (e) {
       if (Get.isDialogOpen!) {
         Get.back();
+      }
+      if (mounted) {
+        setState(() {
+          _isNavigating = false;
+        });
       }
     }
   }

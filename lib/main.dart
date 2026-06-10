@@ -162,10 +162,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _route() async {
-    // final baseUrl = Get.find<SharedPreferences>().getString('baseUrl');
-    // if (baseUrl?.isNotEmpty ?? false) {
-    //   Get.find<SplashController>().changeCountry(baseUrl: baseUrl);
-    // }
+    final baseUrl = Get.find<SharedPreferences>().getString('baseUrl');
+    if (baseUrl?.isNotEmpty ?? false) {
+      Get.find<SplashController>().changeCountry(baseUrl: baseUrl);
+    }
     if (GetPlatform.isWeb) {
       Get.find<SplashController>().initSharedData();
       if (AddressHelper.getUserAddressFromSharedPref() != null &&

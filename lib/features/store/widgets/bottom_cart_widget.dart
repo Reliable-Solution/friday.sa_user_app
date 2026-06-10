@@ -5,7 +5,7 @@ import 'package:friday_sa/helper/price_converter.dart';
 import 'package:friday_sa/helper/route_helper.dart';
 import 'package:friday_sa/util/dimensions.dart';
 import 'package:friday_sa/util/styles.dart';
-import 'package:friday_sa/common/widgets/custom_button.dart';
+
 
 class BottomCartWidget extends StatelessWidget {
   const BottomCartWidget({super.key});
@@ -16,67 +16,81 @@ class BottomCartWidget extends StatelessWidget {
       builder: (cartController) {
         return IntrinsicHeight(
           child: Container(
-            // height: GetPlatform.isIOS ? 100 : 70,
             width: Get.width,
-            padding: const EdgeInsets.symmetric(
-              horizontal: Dimensions.paddingSizeExtraLarge,
-              /* vertical: Dimensions.PADDING_SIZE_SMALL*/
-              vertical: 8,
-            ),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF2A2A2A).withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
+            color: Colors.transparent,
+            padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeDefault, 0, Dimensions.paddingSizeDefault, Dimensions.paddingSizeDefault),
             child: SafeArea(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '${'item'.tr}: ${cartController.cartList.length}',
-                        style: robotoMedium.copyWith(
-                          fontSize: Dimensions.fontSizeDefault,
-                        ),
+              child: InkWell(
+                onTap: () => Get.toNamed(RouteHelper.getCartRoute()),
+                borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+                child: Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
                       ),
-                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                      Row(
+                    ],
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge),
+                  child: Row(
+                    children: [
+                      // Cart Icon & Count
+                      Stack(
+                        clipBehavior: Clip.none,
                         children: [
-                          Text(
-                            '${'total'.tr}: ',
-                            style: robotoMedium.copyWith(
-                              fontSize: Dimensions.fontSizeLarge,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          Text(
-                            PriceConverter.convertPrice(
-                              cartController.calculationCart(),
-                            ),
-                            style: robotoMedium.copyWith(
-                              fontSize: Dimensions.fontSizeLarge,
-                              color: Theme.of(context).primaryColor,
+                          const Icon(Icons.shopping_bag_rounded, color: Colors.white, size: 28),
+                          Positioned(
+                            top: -5, right: -5,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                              child: Text(
+                                '${cartController.cartList.length}',
+                                style: robotoBold.copyWith(color: Theme.of(context).primaryColor, fontSize: 10),
+                              ),
                             ),
                           ),
                         ],
                       ),
+                      const SizedBox(width: Dimensions.paddingSizeLarge),
+
+                      // Price Info
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'total'.tr,
+                              style: robotoMedium.copyWith(color: Colors.white.withValues(alpha: 0.7), fontSize: Dimensions.fontSizeExtraSmall),
+                            ),
+                            Text(
+                              PriceConverter.convertPrice(cartController.calculationCart()),
+                              style: robotoBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeLarge),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Action
+                      Row(
+                        children: [
+                          Text(
+                            'view_cart'.tr,
+                            style: robotoBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeDefault),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
+                        ],
+                      ),
                     ],
                   ),
-                  CustomButton(
-                    buttonText: 'view_cart'.tr,
-                    width: 130,
-                    height: 45,
-                    onPressed: () => Get.toNamed(RouteHelper.getCartRoute()),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

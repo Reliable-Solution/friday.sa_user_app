@@ -484,9 +484,15 @@ class LocationController extends GetxController implements GetxService {
               Get.find<SplashController>().module!.moduleType == 'ecommerce')) {
         await Get.toNamed(RouteHelper.getInterestRoute());
       } else {
+        if (Get.isDialogOpen == true) {
+          Get.back();
+        }
         locationServiceInterface.handleRoute(fromSignUp, route, canRoute);
       }
     } else {
+      if (Get.isDialogOpen == true) {
+        Get.back();
+      }
       locationServiceInterface.handleRoute(fromSignUp, route, canRoute);
     }
   }

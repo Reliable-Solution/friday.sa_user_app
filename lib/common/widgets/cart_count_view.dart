@@ -13,10 +13,12 @@ class CartCountView extends StatelessWidget {
     required this.item,
     this.child,
     this.index = -1,
+    this.isCompact = false,
   });
   final Item item;
   final Widget? child;
   final int? index;
+  final bool isCompact;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,8 @@ class CartCountView extends StatelessWidget {
         return cartQty != 0
             ? Center(
                 child: Container(
-                  width: 100,
+                  width: isCompact ? 92 : 115,
+                  height: isCompact ? 32 : 36,
                   decoration: BoxDecoration(
                     color: Theme.of(context).primaryColor,
                     borderRadius: BorderRadius.circular(
@@ -78,34 +81,35 @@ class CartCountView extends StatelessWidget {
                               color: Theme.of(context).primaryColor,
                             ),
                           ),
-                          padding: const EdgeInsets.all(
-                            Dimensions.paddingSizeExtraSmall,
+                          padding: EdgeInsets.all(
+                            isCompact ? 4 : Dimensions.paddingSizeExtraSmall,
                           ),
                           child: Icon(
                             Icons.remove,
-                            size: 16,
+                            size: isCompact ? 16 : 20,
                             color: Theme.of(context).primaryColor,
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: Dimensions.paddingSizeSmall,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isCompact ? 3 : Dimensions.paddingSizeSmall,
                         ),
                         child:
                             cartController.isLoading &&
                                 cartController.directAddCartItemIndex == index
                             ? SizedBox(
-                                height: 20,
-                                width: 20,
+                                height: isCompact ? 16 : 20,
+                                width: isCompact ? 16 : 20,
                                 child: CircularProgressIndicator(
                                   color: Theme.of(context).cardColor,
+                                  strokeWidth: isCompact ? 1.5 : 2.0,
                                 ),
                               )
                             : Text(
                                 cartQty.toString(),
                                 style: robotoMedium.copyWith(
-                                  fontSize: Dimensions.fontSizeSmall,
+                                  fontSize: isCompact ? 13 : 15,
                                   color: Theme.of(context).cardColor,
                                 ),
                               ),
@@ -136,12 +140,12 @@ class CartCountView extends StatelessWidget {
                               color: Theme.of(context).primaryColor,
                             ),
                           ),
-                          padding: const EdgeInsets.all(
-                            Dimensions.paddingSizeExtraSmall,
+                          padding: EdgeInsets.all(
+                            isCompact ? 4 : Dimensions.paddingSizeExtraSmall,
                           ),
                           child: Icon(
                             Icons.add,
-                            size: 16,
+                            size: isCompact ? 16 : 20,
                             color: Theme.of(context).primaryColor,
                           ),
                         ),
@@ -155,6 +159,7 @@ class CartCountView extends StatelessWidget {
                   if (item.storeOpen == 0 || item.storeActive == false || (item.storeOpen == null && Get.find<StoreController>().store != null && item.storeId == Get.find<StoreController>().store!.id && (Get.find<StoreController>().store!.open == 0 || Get.find<StoreController>().store!.active == false))) {
                     Get.find<ItemController>().showStoreClosedSnackbar();
                   } else {
+                    cartController.setDirectlyAddToCartIndex(index);
                     Get.find<ItemController>().itemDirectlyAddToCart(
                       item,
                       context,

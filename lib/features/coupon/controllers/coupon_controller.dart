@@ -66,6 +66,7 @@ class CouponController extends GetxController implements GetxService {
     _isLoading = true;
     _discount = 0;
     update();
+    print("====== check Coupon ===== ");
     CouponModel? couponModel = await couponServiceInterface.applyCoupon(
       coupon,
       storeID,
@@ -79,6 +80,7 @@ class CouponController extends GetxController implements GetxService {
       }
     } else {
       _discount = 0.0;
+      showCustomSnackBar('apply_coupon_code_not_found'.tr);
     }
     _isLoading = false;
     update();
@@ -160,6 +162,9 @@ class CouponController extends GetxController implements GetxService {
       } else {
         _discount = 0.0;
       }
+    } else {
+      _discount = 0.0;
+      showCustomSnackBar('apply_coupon_code_not_found'.tr);
     }
     _isLoading = false;
     update();

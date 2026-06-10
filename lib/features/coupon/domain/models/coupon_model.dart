@@ -81,19 +81,25 @@ class CouponModel {
 }
 
 class Store {
-  Store({this.id, this.name});
+  Store({this.id, this.name, this.logo, this.logoFullUrl});
 
   Store.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
+    logo = json['logo'];
+    logoFullUrl = json['logo_full_url'];
   }
   int? id;
   String? name;
+  String? logo;
+  String? logoFullUrl;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['name'] = name;
+    data['logo'] = logo;
+    data['logo_full_url'] = logoFullUrl;
     return data;
   }
 }

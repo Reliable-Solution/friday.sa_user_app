@@ -12,6 +12,8 @@ import 'package:friday_sa/helper/date_converter.dart';
 import 'package:friday_sa/helper/responsive_helper.dart';
 import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 import 'package:friday_sa/features/chat/domain/services/chat_service_interface.dart';
+import 'package:friday_sa/util/app_constants.dart';
+
 
 class ChatController extends GetxController implements GetxService {
   ChatController({required this.chatServiceInterface});
@@ -170,7 +172,7 @@ class ChatController extends GetxController implements GetxService {
             id: 0,
             conversationId: 0,
             senderId: 0,
-            message: 'Welcome to Sixam Mart',
+            message: '${'welcome_to'.tr} ${AppConstants.appName}',
             createdAt: '2024-07-14T05:05:20.000000Z',
             updatedAt: '2024-07-14T05:05:20.000000Z',
           ),

@@ -16,7 +16,7 @@ class PopularStoreView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-        vertical: Dimensions.paddingSizeDefault,
+        vertical: Dimensions.paddingSizeExtraSmall,
       ),
       child: GetBuilder<StoreController>(
         builder: (storeController) {
@@ -28,7 +28,7 @@ class PopularStoreView extends StatelessWidget {
                 padding: const EdgeInsets.only(
                   left: Dimensions.paddingSizeDefault,
                   right: Dimensions.paddingSizeDefault,
-                  bottom: Dimensions.paddingSizeDefault,
+                  bottom: Dimensions.paddingSizeSmall,
                 ),
                 child: TitleWidget(
                   title: 'popular_stores'.tr,

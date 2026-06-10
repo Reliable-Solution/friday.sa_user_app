@@ -114,28 +114,29 @@ class OrderInfoWidget extends StatelessWidget {
                 : const SizedBox(),
 
             Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: Dimensions.paddingSizeSmall,
+                vertical: 4,
+              ),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: ResponsiveHelper.isMobile(context)
-                    ? const BorderRadius.vertical(
-                        top: Radius.circular(Dimensions.radiusExtraLarge),
-                      )
-                    : BorderRadius.circular(
-                        isDesktop ? Dimensions.radiusDefault : 0,
-                      ),
+                borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                 boxShadow: [
-                  isDesktop
-                      ? const BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 5,
-                          spreadRadius: 1,
-                        )
-                      : const BoxShadow(),
+                  BoxShadow(
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 2),
+                  ),
                 ],
+                border: Border.all(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                  width: 1,
+                ),
               ),
               padding: const EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeLarge,
-                vertical: Dimensions.paddingSizeLarge,
+                horizontal: Dimensions.paddingSizeDefault,
+                vertical: Dimensions.paddingSizeSmall,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +154,13 @@ class OrderInfoWidget extends StatelessWidget {
                   isDesktop
                       ? const SizedBox(height: Dimensions.paddingSizeSmall)
                       : const SizedBox(),
-                  Text('general_info'.tr, style: robotoMedium),
+                  Row(
+                    children: [
+                      Icon(Icons.receipt_long_outlined, size: 18, color: Theme.of(context).primaryColor),
+                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                      Text('general_info'.tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                    ],
+                  ),
                   const SizedBox(height: Dimensions.paddingSizeLarge),
                   Row(
                     children: [
@@ -162,7 +169,24 @@ class OrderInfoWidget extends StatelessWidget {
                         style: robotoRegular,
                       ),
                       const Expanded(child: SizedBox()),
-                      Text('#${order.id}', style: robotoBold),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                          border: Border.all(
+                            color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          '#${order.id}',
+                          style: robotoBold.copyWith(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: Dimensions.fontSizeSmall,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   Divider(
@@ -292,28 +316,63 @@ class OrderInfoWidget extends StatelessWidget {
                         ),
                         const Expanded(child: SizedBox()),
                         Container(
-                          height: 7,
-                          width: 7,
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
                             color:
                                 (order.orderStatus == 'failed' ||
                                     order.orderStatus == 'canceled' ||
                                     order.orderStatus ==
                                         'refund_request_canceled')
-                                ? Colors.red
+                                ? Colors.red.withValues(alpha: 0.1)
                                 : order.orderStatus == 'refund_requested'
-                                ? Colors.yellow
-                                : Colors.green,
-                            shape: BoxShape.circle,
+                                ? Colors.orange.withValues(alpha: 0.1)
+                                : order.orderStatus == 'delivered'
+                                ? Colors.green.withValues(alpha: 0.1)
+                                : Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                           ),
-                        ),
-                        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                        Text(
-                          order.orderStatus == 'delivered'
-                              ? '${'delivered_at'.tr} \n${DateConverter.dateTimeStringToDateTime(order.delivered!)}'
-                              : order.orderStatus!.tr,
-                          style: robotoRegular.copyWith(
-                            fontSize: Dimensions.fontSizeSmall,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                height: 6,
+                                width: 6,
+                                decoration: BoxDecoration(
+                                  color:
+                                      (order.orderStatus == 'failed' ||
+                                          order.orderStatus == 'canceled' ||
+                                          order.orderStatus ==
+                                              'refund_request_canceled')
+                                      ? Colors.red
+                                      : order.orderStatus == 'refund_requested'
+                                      ? Colors.orange
+                                      : order.orderStatus == 'delivered'
+                                      ? Colors.green
+                                      : Theme.of(context).primaryColor,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                order.orderStatus == 'delivered'
+                                    ? 'delivered_at'.tr
+                                    : order.orderStatus!.tr,
+                                style: robotoMedium.copyWith(
+                                  fontSize: Dimensions.fontSizeExtraSmall,
+                                  color:
+                                      (order.orderStatus == 'failed' ||
+                                          order.orderStatus == 'canceled' ||
+                                          order.orderStatus ==
+                                              'refund_request_canceled')
+                                      ? Colors.red
+                                      : order.orderStatus == 'refund_requested'
+                                      ? Colors.orange
+                                      : order.orderStatus == 'delivered'
+                                      ? Colors.green
+                                      : Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -602,19 +661,28 @@ class OrderInfoWidget extends StatelessWidget {
             !isDesktop
                 ? (parcel || orderController.orderDetails!.isNotEmpty)
                       ? Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: Dimensions.paddingSizeSmall,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                             boxShadow: [
                               BoxShadow(
-                                color: Theme.of(
-                                  context,
-                                ).primaryColor.withValues(alpha: 0.05),
-                                blurRadius: 10,
+                                color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                                offset: const Offset(0, 2),
                               ),
                             ],
+                            border: Border.all(
+                              color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                              width: 1,
+                            ),
                           ),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: Dimensions.paddingSizeLarge,
+                            horizontal: Dimensions.paddingSizeDefault,
                             vertical: Dimensions.paddingSizeSmall,
                           ),
                           child: parcel
@@ -638,7 +706,13 @@ class OrderInfoWidget extends StatelessWidget {
                               : Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('item_info'.tr, style: robotoMedium),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.shopping_bag_outlined, size: 18, color: Theme.of(context).primaryColor),
+                                        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                        Text('item_info'.tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                                      ],
+                                    ),
                                     const SizedBox(
                                       height: Dimensions.paddingSizeSmall,
                                     ),
@@ -698,23 +772,28 @@ class OrderInfoWidget extends StatelessWidget {
                     order.orderAttachmentFullUrl != null &&
                     order.orderAttachmentFullUrl!.isNotEmpty)
                 ? Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: Dimensions.paddingSizeSmall,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(
-                        isDesktop ? Dimensions.radiusDefault : 0,
-                      ),
+                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                       boxShadow: [
-                        isDesktop
-                            ? const BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 5,
-                                spreadRadius: 1,
-                              )
-                            : const BoxShadow(),
+                        BoxShadow(
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                          offset: const Offset(0, 2),
+                        ),
                       ],
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                        width: 1,
+                      ),
                     ),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: Dimensions.paddingSizeLarge,
+                      horizontal: Dimensions.paddingSizeDefault,
                       vertical: Dimensions.paddingSizeSmall,
                     ),
                     child: Column(
@@ -832,22 +911,28 @@ class OrderInfoWidget extends StatelessWidget {
                     order.orderProofFullUrl != null &&
                     order.orderProofFullUrl!.isNotEmpty)
                 ? Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: Dimensions.paddingSizeSmall,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                       boxShadow: [
                         BoxShadow(
-                          color: Theme.of(
-                            context,
-                          ).primaryColor.withValues(alpha: 0.05),
-                          blurRadius: 10,
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                          offset: const Offset(0, 2),
                         ),
                       ],
-                    ),
-                    margin: const EdgeInsets.symmetric(
-                      vertical: Dimensions.paddingSizeSmall,
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                        width: 1,
+                      ),
                     ),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: Dimensions.paddingSizeLarge,
+                      horizontal: Dimensions.paddingSizeDefault,
                       vertical: Dimensions.paddingSizeSmall,
                     ),
                     child: Column(
@@ -909,23 +994,28 @@ class OrderInfoWidget extends StatelessWidget {
                 : const SizedBox(),
             order.deliveryMan != null
                 ? Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: Dimensions.paddingSizeSmall,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(
-                        isDesktop ? Dimensions.radiusDefault : 0,
-                      ),
+                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                       boxShadow: [
-                        isDesktop
-                            ? const BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 5,
-                                spreadRadius: 1,
-                              )
-                            : const BoxShadow(),
+                        BoxShadow(
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                          offset: const Offset(0, 2),
+                        ),
                       ],
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                        width: 1,
+                      ),
                     ),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: Dimensions.paddingSizeLarge,
+                      horizontal: Dimensions.paddingSizeDefault,
                       vertical: Dimensions.paddingSizeSmall,
                     ),
                     child: Column(
@@ -1004,12 +1094,20 @@ class OrderInfoWidget extends StatelessWidget {
                                                 );
                                                 startApiCall();
                                               },
-                                              child: Image.asset(
-                                                Images.chatOrderDetails,
-                                                height: 25,
-                                                width: 25,
-                                                matchTextDirection: true,
-                                              ),
+                                              child: Container(
+                                                 padding: const EdgeInsets.all(8),
+                                                 decoration: BoxDecoration(
+                                                   color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                                   shape: BoxShape.circle,
+                                                 ),
+                                                 child: Image.asset(
+                                                   Images.chatOrderDetails,
+                                                   height: 18,
+                                                   width: 18,
+                                                   matchTextDirection: true,
+                                                   color: Theme.of(context).primaryColor,
+                                                 ),
+                                               )
                                             )
                                           : const SizedBox(),
                                       SizedBox(
@@ -1033,11 +1131,19 @@ class OrderInfoWidget extends StatelessWidget {
                                             );
                                           }
                                         },
-                                        child: Image.asset(
-                                          Images.phoneOrderDetails,
-                                          height: 20,
-                                          width: 20,
-                                        ),
+                                        child: Container(
+                                           padding: const EdgeInsets.all(8),
+                                           decoration: BoxDecoration(
+                                             color: Colors.green.withValues(alpha: 0.1),
+                                             shape: BoxShape.circle,
+                                           ),
+                                           child: Image.asset(
+                                             Images.phoneOrderDetails,
+                                             height: 18,
+                                             width: 18,
+                                             color: Colors.green,
+                                           ),
+                                         )
                                       ),
                                     ],
                                   )
@@ -1062,7 +1168,7 @@ class OrderInfoWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(
-                        isDesktop ? Dimensions.radiusDefault : 0,
+                        Dimensions.radiusDefault,
                       ),
                       boxShadow: const [
                         BoxShadow(
@@ -1105,30 +1211,41 @@ class OrderInfoWidget extends StatelessWidget {
 
             (!parcel && order.store != null)
                 ? Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: Dimensions.paddingSizeSmall,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(
-                        isDesktop ? Dimensions.radiusDefault : 0,
+                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                        width: 1,
                       ),
-                      boxShadow: isDesktop
-                          ? const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 5,
-                                spreadRadius: 1,
-                              ),
-                            ]
-                          : [],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: Dimensions.paddingSizeLarge,
+                      horizontal: Dimensions.paddingSizeDefault,
                       vertical: Dimensions.paddingSizeSmall,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         !isDesktop
-                            ? Text('delivery_details'.tr, style: robotoMedium)
+                            ? Row(
+                                children: [
+                                  Icon(Icons.local_shipping_outlined, size: 18, color: Theme.of(context).primaryColor),
+                                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                  Text('delivery_details'.tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                                ],
+                              )
                             : const SizedBox(),
                         !isDesktop
                             ? const SizedBox(
@@ -1170,23 +1287,28 @@ class OrderInfoWidget extends StatelessWidget {
                 ? const SizedBox(height: Dimensions.paddingSizeDefault)
                 : const SizedBox(),
             Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: Dimensions.paddingSizeSmall,
+                vertical: 4,
+              ),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(
-                  isDesktop ? Dimensions.radiusDefault : 0,
+                borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+                border: Border.all(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                  width: 1,
                 ),
-                boxShadow: isDesktop
-                    ? const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 5,
-                          spreadRadius: 1,
-                        ),
-                      ]
-                    : [],
               ),
               padding: const EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeLarge,
+                horizontal: Dimensions.paddingSizeDefault,
                 vertical: Dimensions.paddingSizeSmall,
               ),
               child: Column(
@@ -1322,12 +1444,20 @@ class OrderInfoWidget extends StatelessWidget {
                                         ),
                                       );
                                     },
-                                    child: Image.asset(
-                                      Images.chatOrderDetails,
-                                      height: 25,
-                                      width: 25,
-                                      matchTextDirection: true,
-                                    ),
+                                    child: Container(
+                                                 padding: const EdgeInsets.all(8),
+                                                 decoration: BoxDecoration(
+                                                   color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                                   shape: BoxShape.circle,
+                                                 ),
+                                                 child: Image.asset(
+                                                   Images.chatOrderDetails,
+                                                   height: 18,
+                                                   width: 18,
+                                                   matchTextDirection: true,
+                                                   color: Theme.of(context).primaryColor,
+                                                 ),
+                                               )
                                   )
                                 : const SizedBox(),
                             !isGuestLoggedIn &&
@@ -1412,23 +1542,28 @@ class OrderInfoWidget extends StatelessWidget {
                 ? const SizedBox(height: Dimensions.paddingSizeLarge)
                 : const SizedBox(),
             Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: Dimensions.paddingSizeSmall,
+                vertical: 4,
+              ),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(
-                  isDesktop ? Dimensions.radiusDefault : 0,
+                borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+                border: Border.all(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
+                  width: 1,
                 ),
-                boxShadow: isDesktop
-                    ? const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 5,
-                          spreadRadius: 1,
-                        ),
-                      ]
-                    : [],
               ),
               padding: const EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeLarge,
+                horizontal: Dimensions.paddingSizeDefault,
                 vertical: Dimensions.paddingSizeSmall,
               ),
               child: Column(

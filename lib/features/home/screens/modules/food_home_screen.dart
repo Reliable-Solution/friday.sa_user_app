@@ -4,16 +4,12 @@ import 'package:friday_sa/common/controllers/theme_controller.dart';
 import 'package:friday_sa/features/home/widgets/highlight_widget.dart';
 import 'package:friday_sa/features/home/widgets/views/category_view.dart';
 import 'package:friday_sa/features/home/widgets/views/top_offers_near_me.dart';
-import 'package:friday_sa/helper/auth_helper.dart';
 import 'package:friday_sa/util/images.dart';
-import 'package:friday_sa/features/home/widgets/views/best_reviewed_item_view.dart';
 import 'package:friday_sa/features/home/widgets/views/best_store_nearby_view.dart';
 import 'package:friday_sa/features/home/widgets/views/item_that_you_love_view.dart';
 import 'package:friday_sa/features/home/widgets/views/just_for_you_view.dart';
 import 'package:friday_sa/features/home/widgets/views/most_popular_item_view.dart';
 import 'package:friday_sa/features/home/widgets/views/new_on_mart_view.dart';
-import 'package:friday_sa/features/home/widgets/views/special_offer_view.dart';
-import 'package:friday_sa/features/home/widgets/views/visit_again_view.dart';
 import 'package:friday_sa/features/home/widgets/banner_view.dart';
 
 class FoodHomeScreen extends StatelessWidget {
@@ -21,7 +17,6 @@ class FoodHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isLoggedIn = AuthHelper.isLoggedIn();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -44,8 +39,8 @@ class FoodHomeScreen extends StatelessWidget {
           ),
         ),
         const CategoryView(),
-        isLoggedIn ? const VisitAgainView(fromFood: true) : const SizedBox(),
-        const SpecialOfferView(isFood: true, isShop: false),
+        // isLoggedIn ? const VisitAgainView(fromFood: true) : const SizedBox(),
+        // const SpecialOfferView(isFood: true, isShop: false),
         const HighlightWidget(),
         const TopOffersNearMe(),
         // const BestReviewItemView(),

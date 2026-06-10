@@ -6,6 +6,7 @@ import 'package:friday_sa/common/widgets/custom_ink_well.dart';
 import 'package:friday_sa/common/widgets/hover/text_hover.dart';
 import 'package:friday_sa/features/language/controllers/language_controller.dart';
 import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
+import 'package:friday_sa/features/store/controllers/store_controller.dart';
 import 'package:friday_sa/features/favourite/controllers/favourite_controller.dart';
 import 'package:friday_sa/common/models/module_model.dart';
 import 'package:friday_sa/features/store/domain/models/store_model.dart';
@@ -22,6 +23,7 @@ import 'package:friday_sa/common/widgets/hover/on_hover.dart';
 import 'package:friday_sa/common/widgets/not_available_widget.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
 import 'package:friday_sa/features/home/screens/home_screen.dart';
+import 'package:friday_sa/helper/string_extension.dart';
 
 class StoreCardWidget extends StatelessWidget {
   const StoreCardWidget({super.key, required this.store});
@@ -33,6 +35,7 @@ class StoreCardWidget extends StatelessWidget {
     String? discountType = store!.discount != null
         ? store!.discount!.discountType
         : 'percent';
+    num couponDiscount = Get.find<StoreController>().getDiscount(store!) ?? 0;
     bool isAvailable = store!.open == 1 && store!.active!;
     return OnHover(
       isItem: true,
@@ -326,7 +329,7 @@ class StoreCardWidget extends StatelessWidget {
                                         width: Dimensions.paddingSizeExtraSmall,
                                       ),
                                       Text(
-                                        '${store!.deliveryTime}',
+                                        (store!.deliveryTime ?? '').deliveryTimeTr,
                                         style: robotoMedium.copyWith(
                                           fontSize: Dimensions.fontSizeSmall,
                                           color: Theme.of(
@@ -336,6 +339,39 @@ class StoreCardWidget extends StatelessWidget {
                                       ),
                                     ],
                                   ),
+                                  if (couponDiscount > 0) ...[
+                                    SizedBox(
+                                      width: Dimensions.paddingSizeSmall,
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.card_giftcard_outlined,
+                                            color: Colors.white,
+                                            size: 13,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'COUPON',
+                                            style: robotoBold.copyWith(
+                                              fontSize: 10,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ],

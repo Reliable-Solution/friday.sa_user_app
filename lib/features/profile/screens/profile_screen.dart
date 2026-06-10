@@ -22,6 +22,9 @@ import 'package:friday_sa/features/profile/widgets/profile_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/features/profile/widgets/web_profile_widget.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -69,94 +72,177 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: (isLoggedIn && ResponsiveHelper.isDesktop(context))
                         ? const WebProfileWidget()
                         : Container(
-                            color: Theme.of(
-                              context,
-                            ).primaryColor.withValues(alpha: 0.2),
+                            color: Theme.of(context).cardColor,
                             width: Dimensions.webMaxWidth,
-                            height: context.height,
                             child: Center(
                               child: Column(
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: Dimensions.paddingSizeLarge,
-                                      vertical: Dimensions.paddingSizeSmall,
-                                    ),
-                                    child: SafeArea(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          !ResponsiveHelper.isDesktop(context)
-                                              ? IconButton(
-                                                  onPressed: Get.back,
-                                                  icon: const Icon(
-                                                    Icons.arrow_back_ios,
+                                  Container(
+                                    color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: Dimensions.paddingSizeLarge,
+                                            vertical: Dimensions.paddingSizeSmall,
+                                          ),
+                                          child: SafeArea(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                !ResponsiveHelper.isDesktop(context)
+                                                    ? IconButton(
+                                                        onPressed: Get.back,
+                                                        icon: const Icon(
+                                                          Icons.arrow_back_ios,
+                                                        ),
+                                                      )
+                                                    : const SizedBox(),
+                                                Text(
+                                                  'profile'.tr,
+                                                  style: robotoBold.copyWith(
+                                                    fontSize:
+                                                        Dimensions.fontSizeLarge,
                                                   ),
-                                                )
-                                              : const SizedBox(),
-                                          Text(
-                                            'profile'.tr,
-                                            style: robotoBold.copyWith(
-                                              fontSize:
-                                                  Dimensions.fontSizeLarge,
+                                                ),
+                                                const SizedBox(width: 50),
+                                              ],
                                             ),
                                           ),
-                                          const SizedBox(width: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: Dimensions.paddingSizeExtremeLarge,
-                                      right: Dimensions.paddingSizeExtremeLarge,
-                                      bottom: Dimensions.paddingSizeLarge,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        ClipOval(
-                                          child: CustomImage(
-                                            placeholder: Images.guestIcon,
-                                            image:
-                                                '${(profileController.userInfoModel != null && isLoggedIn) ? profileController.userInfoModel!.imageFullUrl : ''}',
-                                            height: 70,
-                                            width: 70,
-                                            fit: BoxFit.cover,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: Dimensions.paddingSizeExtremeLarge,
+                                            right: Dimensions.paddingSizeExtremeLarge,
+                                            bottom: Dimensions.paddingSizeLarge,
                                           ),
-                                        ),
-                                        const SizedBox(
-                                          width: Dimensions.paddingSizeDefault,
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                          child: Row(
                                             children: [
-                                              Text(
-                                                isLoggedIn
-                                                    ? '${profileController.userInfoModel?.fName ?? ''} ${profileController.userInfoModel?.lName ?? ''}'
-                                                    : 'guest_user'.tr,
-                                                style: robotoBold.copyWith(
-                                                  fontSize: Dimensions
-                                                      .fontSizeExtraLarge,
+                                              ClipOval(
+                                                child: CustomImage(
+                                                  placeholder: Images.guestIcon,
+                                                  image:
+                                                      '${(profileController.userInfoModel != null && isLoggedIn) ? profileController.userInfoModel!.imageFullUrl : ''}',
+                                                  height: 70,
+                                                  width: 70,
+                                                  fit: BoxFit.cover,
                                                 ),
                                               ),
                                               const SizedBox(
-                                                height: Dimensions
-                                                    .paddingSizeExtraSmall,
+                                                width: Dimensions.paddingSizeDefault,
+                                              ),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      isLoggedIn
+                                                          ? '${profileController.userInfoModel?.fName ?? ''} ${profileController.userInfoModel?.lName ?? ''}'
+                                                          : 'guest_user'.tr,
+                                                      style: robotoBold.copyWith(
+                                                        fontSize: Dimensions
+                                                            .fontSizeExtraLarge,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: Dimensions
+                                                          .paddingSizeExtraSmall,
+                                                    ),
+                                                    isLoggedIn
+                                                        ? Text(
+                                                            '${'joined'.tr} ${DateConverter.containTAndZToUTCFormat(profileController.userInfoModel!.createdAt!)}',
+                                                            style: robotoMedium
+                                                                .copyWith(
+                                                                  fontSize: Dimensions
+                                                                      .fontSizeSmall,
+                                                                  color: Theme.of(
+                                                                    context,
+                                                                  ).primaryColor,
+                                                                ),
+                                                          )
+                                                        : InkWell(
+                                                            onTap: () async {
+                                                              if (!ResponsiveHelper.isDesktop(
+                                                                context,
+                                                              )) {
+                                                                await Get.toNamed(
+                                                                  RouteHelper.getSignInRoute(
+                                                                    Get.currentRoute,
+                                                                  ),
+                                                                );
+                                                                if (AuthHelper.isLoggedIn()) {
+                                                                  profileController
+                                                                      .getUserInfo();
+                                                                }
+                                                              } else {
+                                                                Get.dialog(
+                                                                  const Center(
+                                                                    child:
+                                                                        AuthDialogWidget(
+                                                                          exitFromApp:
+                                                                              false,
+                                                                          backFromThis:
+                                                                              false,
+                                                                        ),
+                                                                  ),
+                                                                );
+                                                              }
+                                                            },
+                                                            child: Text(
+                                                              'login_to_view_all_feature'
+                                                                  .tr,
+                                                              style: robotoMedium
+                                                                  .copyWith(
+                                                                    fontSize: Dimensions
+                                                                        .fontSizeSmall,
+                                                                    color: Theme.of(
+                                                                      context,
+                                                                    ).primaryColor,
+                                                                  ),
+                                                            ),
+                                                          ),
+                                                  ],
+                                                ),
                                               ),
                                               isLoggedIn
-                                                  ? Text(
-                                                      '${'joined'.tr} ${DateConverter.containTAndZToUTCFormat(profileController.userInfoModel!.createdAt!)}',
-                                                      style: robotoMedium
-                                                          .copyWith(
-                                                            fontSize: Dimensions
-                                                                .fontSizeSmall,
-                                                            color: Theme.of(
-                                                              context,
-                                                            ).primaryColor,
-                                                          ),
+                                                  ? InkWell(
+                                                      onTap: () => Get.toNamed(
+                                                        RouteHelper.getUpdateProfileRoute(),
+                                                      ),
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                          shape: BoxShape.circle,
+                                                          color: Theme.of(
+                                                            context,
+                                                          ).cardColor,
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: Theme.of(context)
+                                                                  .primaryColor
+                                                                  .withValues(
+                                                                    alpha: 0.05,
+                                                                  ),
+                                                              blurRadius: 5,
+                                                              spreadRadius: 1,
+                                                              offset: const Offset(
+                                                                3,
+                                                                3,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        padding: const EdgeInsets.all(
+                                                          Dimensions
+                                                              .paddingSizeSmall,
+                                                        ),
+                                                        child: Icon(
+                                                          Icons.edit_outlined,
+                                                          size: 24,
+                                                          color: Theme.of(context).primaryColor,
+                                                        ),
+                                                      ),
                                                     )
                                                   : InkWell(
                                                       onTap: () async {
@@ -175,143 +261,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                         } else {
                                                           Get.dialog(
                                                             const Center(
-                                                              child:
-                                                                  AuthDialogWidget(
-                                                                    exitFromApp:
-                                                                        false,
-                                                                    backFromThis:
-                                                                        false,
-                                                                  ),
+                                                              child: AuthDialogWidget(
+                                                                exitFromApp: false,
+                                                                backFromThis: false,
+                                                              ),
                                                             ),
                                                           );
                                                         }
                                                       },
-                                                      child: Text(
-                                                        'login_to_view_all_feature'
-                                                            .tr,
-                                                        style: robotoMedium
-                                                            .copyWith(
-                                                              fontSize: Dimensions
-                                                                  .fontSizeSmall,
-                                                              color: Theme.of(
-                                                                context,
-                                                              ).primaryColor,
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                Dimensions
+                                                                    .radiusDefault,
+                                                              ),
+                                                          color: Theme.of(
+                                                            context,
+                                                          ).primaryColor,
+                                                        ),
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              vertical: Dimensions
+                                                                  .paddingSizeSmall,
+                                                              horizontal: Dimensions
+                                                                  .paddingSizeLarge,
                                                             ),
+                                                        child: Text(
+                                                          'login'.tr,
+                                                          style: robotoMedium
+                                                              .copyWith(
+                                                                color: Theme.of(
+                                                                  context,
+                                                                ).cardColor,
+                                                              ),
+                                                        ),
                                                       ),
                                                     ),
                                             ],
                                           ),
                                         ),
-                                        isLoggedIn
-                                            ? InkWell(
-                                                onTap: () => Get.toNamed(
-                                                  RouteHelper.getUpdateProfileRoute(),
-                                                ),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).cardColor,
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Theme.of(context)
-                                                            .primaryColor
-                                                            .withValues(
-                                                              alpha: 0.05,
-                                                            ),
-                                                        blurRadius: 5,
-                                                        spreadRadius: 1,
-                                                        offset: const Offset(
-                                                          3,
-                                                          3,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  padding: const EdgeInsets.all(
-                                                    Dimensions
-                                                        .paddingSizeExtraSmall,
-                                                  ),
-                                                  child: const Icon(
-                                                    Icons.edit_outlined,
-                                                    size: 24,
-                                                    color: Colors.blue,
-                                                  ),
-                                                ),
-                                              )
-                                            : InkWell(
-                                                onTap: () async {
-                                                  if (!ResponsiveHelper.isDesktop(
-                                                    context,
-                                                  )) {
-                                                    await Get.toNamed(
-                                                      RouteHelper.getSignInRoute(
-                                                        Get.currentRoute,
-                                                      ),
-                                                    );
-                                                    if (AuthHelper.isLoggedIn()) {
-                                                      profileController
-                                                          .getUserInfo();
-                                                    }
-                                                  } else {
-                                                    Get.dialog(
-                                                      const Center(
-                                                        child: AuthDialogWidget(
-                                                          exitFromApp: false,
-                                                          backFromThis: false,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }
-                                                },
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          Dimensions
-                                                              .radiusDefault,
-                                                        ),
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).primaryColor,
-                                                  ),
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        vertical: Dimensions
-                                                            .paddingSizeSmall,
-                                                        horizontal: Dimensions
-                                                            .paddingSizeLarge,
-                                                      ),
-                                                  child: Text(
-                                                    'login'.tr,
-                                                    style: robotoMedium
-                                                        .copyWith(
-                                                          color: Theme.of(
-                                                            context,
-                                                          ).cardColor,
-                                                        ),
-                                                  ),
-                                                ),
-                                              ),
                                       ],
                                     ),
                                   ),
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            const BorderRadius.vertical(
-                                              top: Radius.circular(
-                                                Dimensions.radiusExtraLarge,
-                                              ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          const BorderRadius.vertical(
+                                            top: Radius.circular(
+                                              Dimensions.radiusExtraLarge,
                                             ),
-                                        color: Theme.of(context).cardColor,
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: Dimensions.paddingSizeLarge,
-                                        vertical: Dimensions.paddingSizeDefault,
-                                      ),
+                                          ),
+                                      color: Theme.of(context).cardColor,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: Dimensions.paddingSizeLarge,
+                                      vertical: Dimensions.paddingSizeDefault,
+                                    ),
                                       child: Column(
                                         children: [
                                           const SizedBox(
@@ -320,7 +326,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           (showWalletCard && isLoggedIn)
                                               ? Row(
                                                   children: [
-                                                    Get.find<SplashController>()
+                                                     Get.find<SplashController>()
                                                                 .configModel!
                                                                 .loyaltyPointStatus ==
                                                             1
@@ -341,6 +347,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                               title:
                                                                   'loyalty_points'
                                                                       .tr,
+                                                              onTap: () => Get.toNamed(
+                                                                RouteHelper.getLoyaltyRoute(),
+                                                              ),
                                                             ),
                                                           )
                                                         : const SizedBox(),
@@ -368,6 +377,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                               title:
                                                                   'total_order'
                                                                       .tr,
+                                                              onTap: () => Get.toNamed(
+                                                                RouteHelper.getOrderRoute(),
+                                                              ),
                                                             ),
                                                           )
                                                         : const SizedBox(),
@@ -399,6 +411,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                               title:
                                                                   'wallet_balance'
                                                                       .tr,
+                                                              onTap: () => Get.toNamed(
+                                                                RouteHelper.getWalletRoute(),
+                                                              ),
                                                             ),
                                                           )
                                                         : const SizedBox(),
@@ -516,6 +531,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 : 0,
                                           ),
 
+                                          if (kDebugMode) ...[
+                                            ProfileButtonWidget(
+                                              icon: Icons.key_outlined,
+                                              title: 'Get Bearer Token (Debug)',
+                                              onTap: () {
+                                                final token = Get.find<AuthController>().getUserToken();
+                                                final bearerToken = 'Bearer $token====';
+                                                Clipboard.setData(ClipboardData(text: bearerToken));
+                                                showCustomSnackBar('Bearer Token copied to clipboard!', isError: false);
+                                                debugPrint('Bearer Token: $bearerToken');
+                                              },
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeSmall,
+                                            ),
+                                          ],
+
                                           // Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                                           //   Text('${'version'.tr}:', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall)),
                                           //   const SizedBox(width: Dimensions.paddingSizeExtraSmall),
@@ -524,11 +556,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ],
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
                   ),
                 );
         },

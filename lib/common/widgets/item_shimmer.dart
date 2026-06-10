@@ -67,42 +67,51 @@ class ItemShimmer extends StatelessWidget {
                           height: isStore ? Dimensions.paddingSizeSmall : 0,
                         ),
                         !isStore
-                            ? Row(
-                                children: List.generate(5, (index) {
-                                  return Icon(
-                                    Icons.star,
-                                    color: Theme.of(context).shadowColor,
-                                    size: 12,
-                                  );
-                                }),
+                            ? SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: List.generate(5, (index) {
+                                    return Icon(
+                                      Icons.star,
+                                      color: Theme.of(context).shadowColor,
+                                      size: 12,
+                                    );
+                                  }),
+                                ),
                               )
                             : const SizedBox(),
                         isStore
-                            ? Row(
-                                children: List.generate(5, (index) {
-                                  return Icon(
-                                    Icons.star,
-                                    color: Theme.of(context).shadowColor,
-                                    size: 12,
-                                  );
-                                }),
+                            ? SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: List.generate(5, (index) {
+                                    return Icon(
+                                      Icons.star,
+                                      color: Theme.of(context).shadowColor,
+                                      size: 12,
+                                    );
+                                  }),
+                                ),
                               )
-                            : Row(
-                                children: [
-                                  Container(
-                                    height: desktop ? 20 : 15,
-                                    width: 30,
-                                    color: Theme.of(context).shadowColor,
-                                  ),
-                                  const SizedBox(
-                                    width: Dimensions.paddingSizeExtraSmall,
-                                  ),
-                                  Container(
-                                    height: desktop ? 15 : 10,
-                                    width: 20,
-                                    color: Theme.of(context).shadowColor,
-                                  ),
-                                ],
+                            : SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      height: desktop ? 20 : 15,
+                                      width: 30,
+                                      color: Theme.of(context).shadowColor,
+                                    ),
+                                    const SizedBox(
+                                      width: Dimensions.paddingSizeExtraSmall,
+                                    ),
+                                    Container(
+                                      height: desktop ? 15 : 10,
+                                      width: 20,
+                                      color: Theme.of(context).shadowColor,
+                                    ),
+                                  ],
+                                ),
                               ),
                       ],
                     ),

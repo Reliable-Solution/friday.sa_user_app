@@ -39,6 +39,7 @@ class FavItemViewWidget extends StatelessWidget {
                       stores: favouriteController.wishStoreList,
                       noDataText: 'no_wish_data_found'.tr,
                       isFeatured: true,
+                      isFavourite: true,
                     ),
                   ),
                 ),

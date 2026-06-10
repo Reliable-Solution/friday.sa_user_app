@@ -100,6 +100,9 @@ class ItemController extends GetxController implements GetxService {
   BasicMedicineModel? _basicMedicineModel;
   BasicMedicineModel? get basicMedicineModel => _basicMedicineModel;
 
+  String? _stockError;
+  String? get stockError => _stockError;
+
   List<CommonConditionModel>? _commonConditions;
   List<CommonConditionModel>? get commonConditions => _commonConditions;
 
@@ -463,6 +466,7 @@ class ItemController extends GetxController implements GetxService {
   }
 
   void initData(Item? item, CartModel? cart) {
+    _stockError = null;
     _variationIndex = [];
     _addOnQtyList = [];
     _addOnActiveList = [];
@@ -590,14 +594,27 @@ class ItemController extends GetxController implements GetxService {
     int? quantityLimit, {
     bool getxSnackBar = false,
   }) async {
+    _stockError = null;
+    int oldQty = _quantity!;
+    
+    bool moduleStock = Get.find<SplashController>().configModel!.moduleConfig!.module!.stock!;
+
     _quantity = await itemServiceInterface.setQuantity(
       isIncrement,
-      Get.find<SplashController>().configModel!.moduleConfig!.module!.stock!,
+      moduleStock,
       stock,
       _quantity!,
       quantityLimit,
       getxSnackBar: getxSnackBar,
     );
+    
+    if(isIncrement && _quantity == oldQty) {
+      if (moduleStock && _quantity! >= stock!) {
+        _stockError = 'out_of_stock'.tr;
+      } else if (quantityLimit != null && _quantity! >= quantityLimit && quantityLimit != 0) {
+        _stockError = '${'maximum_quantity_limit'.tr} $quantityLimit';
+      }
+    }
     update();
   }
 

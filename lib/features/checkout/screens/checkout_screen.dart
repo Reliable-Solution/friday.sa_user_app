@@ -712,14 +712,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                   : Container(
                                       decoration: BoxDecoration(
                                         color: Theme.of(context).cardColor,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Theme.of(context)
-                                                .primaryColor
-                                                .withValues(alpha: 0.1),
-                                            blurRadius: 10,
-                                          ),
-                                        ],
+                                        border: Border(top: BorderSide(color: Theme.of(context).hintColor.withValues(alpha: 0.1), width: 0.5)),
                                       ),
                                       child: Column(
                                         children: [

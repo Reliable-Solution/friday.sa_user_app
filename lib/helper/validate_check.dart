@@ -30,7 +30,7 @@ class ValidateCheck {
 
   static String? ibanValidation(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter your IBAN (International Bank Account Number)';
+      return 'pleaseEnterIban'.tr;
     }
     // else if (!isValid(value)) {
     //   return 'Please enter valid IBAN number';

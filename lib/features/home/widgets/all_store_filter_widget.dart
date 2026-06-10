@@ -15,90 +15,43 @@ class AllStoreFilterWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<StoreController>(
       builder: (storeController) {
-        return Center(
+        return Align(
+          alignment: Alignment.topCenter,
           child: Container(
             width: Dimensions.webMaxWidth,
-            transform: Matrix4.translationValues(0, -2, 0),
-            color: Theme.of(context).colorScheme.surface,
-            padding: const EdgeInsets.only(
-              left: Dimensions.paddingSizeDefault,
-              top: Dimensions.paddingSizeSmall,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
             ),
-            child: ResponsiveHelper.isDesktop(context)
-                ?  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              Get.find<SplashController>()
-                                      .configModel!
-                                      .moduleConfig!
-                                      .module!
-                                      .showRestaurantText!
-                                  ? 'restaurants'.tr
-                                  : 'stores'.tr,
-                              style: robotoBold.copyWith(
-                                fontSize: Dimensions.fontSizeLarge,
-                              ),
-                            ),
-                            Text(
-                              '${storeController.storeModel?.totalSize ?? 0} ${Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! ? 'restaurants_near_you'.tr : 'stores_near_you'.tr}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: robotoRegular.copyWith(
-                                color: Theme.of(context).disabledColor,
-                                fontSize: Dimensions.fontSizeSmall,
-                              ),
-                            ),
-                          ],
+            padding: const EdgeInsets.only(top: 0, bottom: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! ? 'restaurants'.tr : 'stores'.tr,
+                          style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge),
                         ),
-                      ),
-                      const SizedBox(width: Dimensions.paddingSizeSmall),
-                      filter(context, storeController),
-                    ],
-                  )
-                : Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: Dimensions.paddingSizeSmall,
+                        Text(
+                          '${storeController.storeModel?.totalSize ?? 0} ${Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! ? 'restaurants_near_you'.tr : 'stores_near_you'.tr}',
+                          style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeExtraSmall),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              Get.find<SplashController>()
-                                      .configModel!
-                                      .moduleConfig!
-                                      .module!
-                                      .showRestaurantText!
-                                  ? 'restaurants'.tr
-                                  : 'stores'.tr,
-                              style: robotoBold.copyWith(
-                                fontSize: Dimensions.fontSizeLarge,
-                              ),
-                            ),
-                            Flexible(
-                              child: Text(
-                                '${storeController.storeModel?.totalSize ?? 0} ${Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! ? 'restaurants_near_you'.tr : 'stores_near_you'.tr}',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: robotoRegular.copyWith(
-                                  color: Theme.of(context).disabledColor,
-                                  fontSize: Dimensions.fontSizeSmall,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: Dimensions.paddingSizeSmall),
-                      filter(context, storeController),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              filter(context, storeController),
+            ],
           ),
+        ),
         );
       },
     );
@@ -106,17 +59,15 @@ class AllStoreFilterWidget extends StatelessWidget {
 
   Widget filter(BuildContext context, StoreController storeController) {
     return SizedBox(
-      height: ResponsiveHelper.isDesktop(context) ? 40 : 30,
+      height: ResponsiveHelper.isDesktop(context) ? 45 : 40,
       child: Align(
         alignment: Alignment.centerLeft,
         child: ListView(
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
-          padding: EdgeInsets.zero,
+          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
           children: [
-            ResponsiveHelper.isDesktop(context)
-                ? const SizedBox()
-                : FilterView(storeController: storeController),
+            ResponsiveHelper.isDesktop(context) ? const SizedBox() : FilterView(storeController: storeController),
             const SizedBox(width: Dimensions.paddingSizeSmall),
             StoreFilterButtonWidget(
               buttonText: 'all'.tr,
@@ -142,9 +93,7 @@ class AllStoreFilterWidget extends StatelessWidget {
               isSelected: storeController.storeType == 'top_rated',
             ),
             const SizedBox(width: Dimensions.paddingSizeSmall),
-            ResponsiveHelper.isDesktop(context)
-                ? FilterView(storeController: storeController)
-                : const SizedBox(),
+            ResponsiveHelper.isDesktop(context) ? FilterView(storeController: storeController) : const SizedBox(),
           ],
         ),
       ),

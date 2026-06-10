@@ -15,9 +15,11 @@ class PopularItemScreen extends StatefulWidget {
     super.key,
     required this.isPopular,
     required this.isSpecial,
+    this.storeId,
   });
   final bool isPopular;
   final bool isSpecial;
+  final int? storeId;
 
   @override
   State<PopularItemScreen> createState() => _PopularItemScreenState();
@@ -58,8 +60,26 @@ class _PopularItemScreenState extends State<PopularItemScreen> {
         Get.find<SplashController>().module!.moduleType.toString() ==
             AppConstants.eCommerce;
 
+    final resolvedStoreId = widget.storeId ?? 
+        (Get.arguments is int ? Get.arguments as int : 
+        (Get.arguments != null ? int.tryParse(Get.arguments.toString()) : null)) ?? 
+        (Get.parameters['store_id'] != null ? int.tryParse(Get.parameters['store_id']!) : null);
+
     return GetBuilder<ItemController>(
       builder: (itemController) {
+        debugPrint('=== DEBUG POPULAR ITEM SCREEN ===');
+        debugPrint('widget.storeId: ${widget.storeId}');
+        debugPrint('resolvedStoreId: $resolvedStoreId');
+        debugPrint('widget.isSpecial: ${widget.isSpecial}');
+        if (itemController.discountedItemList != null) {
+          debugPrint('discountedItemList size: ${itemController.discountedItemList!.length}');
+          for (var item in itemController.discountedItemList!) {
+            debugPrint('Item: ${item.name}, itemStoreId: ${item.storeId}, itemStoreName: ${item.storeName}');
+          }
+        } else {
+          debugPrint('discountedItemList is NULL');
+        }
+        debugPrint('==================================');
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
           appBar: CustomAppBar(
@@ -110,7 +130,9 @@ class _PopularItemScreenState extends State<PopularItemScreen> {
                       items: widget.isPopular
                           ? itemController.popularItemList
                           : widget.isSpecial
-                          ? itemController.discountedItemList
+                          ? (resolvedStoreId != null
+                              ? itemController.discountedItemList?.where((item) => item.storeId == resolvedStoreId).toList()
+                              : itemController.discountedItemList)
                           : itemController.reviewedItemList,
                     ),
                   ),

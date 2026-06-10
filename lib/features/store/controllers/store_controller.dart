@@ -540,12 +540,42 @@ class StoreController extends GetxController implements GetxService {
   void setCategoryList() {
     if (_store != null) {
       _categoryList.clear();
-      if (_store!.categories != null && _store!.categories!.isNotEmpty) {
+      CategoryModel? findById(List<CategoryModel> list, int id) {
+        for (var category in list) {
+          if (category.id == id) {
+            return category;
+          }
+        }
+        return null;
+      }
+
+      if (_store!.categoryIds != null && _store!.categoryIds!.isNotEmpty) {
+        final storeCats = _store!.categories ?? [];
+        final addedIds = <int>{};
+        for (var id in _store!.categoryIds!) {
+          if (!addedIds.contains(id)) {
+            var category = findById(storeCats, id);
+            if (category == null) {
+              category = findById(
+                Get.find<CategoryController>().storeCategoryList,
+                id,
+              );
+            }
+            if (category != null) {
+              _categoryList.add(category);
+              addedIds.add(id);
+            }
+          }
+        }
+      } else if (_store!.categories != null && _store!.categories!.isNotEmpty) {
         _categoryList.addAll(_store!.categories!);
       } else {
-        for (var category in Get.find<CategoryController>().storeCategoryList) {
-          if (_store!.categoryIds!.contains(category.id)) {
+        final storeCats = Get.find<CategoryController>().storeCategoryList;
+        final addedIds = <int>{};
+        for (var category in storeCats) {
+          if (category.id != null && (_store!.categoryIds?.contains(category.id) ?? false) && !addedIds.contains(category.id)) {
             _categoryList.add(category);
+            addedIds.add(category.id!);
           }
         }
       }
@@ -571,6 +601,7 @@ class StoreController extends GetxController implements GetxService {
     if (_store == null || _store!.id != store.id || slug.isNotEmpty) {
       _categoryIndex = 0;
       _subCategoryIndex = 0;
+      _categoryList.clear();
       _subCategoryList.clear();
     }
     if (store.name != null) {
@@ -617,11 +648,8 @@ class StoreController extends GetxController implements GetxService {
             ),
           );
         }
-        if (fromModule) {
-          HomeScreen.loadData(false);
-        } else {
-          Get.find<CheckoutController>().clearPrevData();
-        }
+        HomeScreen.loadData(false);
+        Get.find<CheckoutController>().clearPrevData();
       }
       Get.find<CheckoutController>().setOrderType(
         _store != null
@@ -823,11 +851,12 @@ class StoreController extends GetxController implements GetxService {
           .getSubCategoryList(
             _categoryList[_categoryIndex].id?.toString() ?? "0",
             storeId: _store?.id?.toString(),
+            loadCategoryItems: false,
           )
           .then((value) {
             isSubCatLoad = false;
             _subCategoryList.clear();
-            if (value != null) {
+            if (value != null && value.isNotEmpty) {
               _subCategoryList.addAll(value);
             }
             update();
@@ -953,7 +982,7 @@ class StoreController extends GetxController implements GetxService {
       );
       setCategoryList();
       setCategoryIndex(0);
-      if (Get.find<CategoryController>().categoryList?.isEmpty ?? true) {
+      if (categoryList.isEmpty) {
         getStoreItemList(storeId ?? store?.id, 1, 'all', false);
       }
     }

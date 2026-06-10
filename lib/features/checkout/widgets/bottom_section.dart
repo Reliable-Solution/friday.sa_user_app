@@ -73,13 +73,7 @@ class BottomSection extends StatelessWidget {
           ? BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 5,
-                  spreadRadius: 1,
-                ),
-              ],
+              border: Border.all(color: Theme.of(context).hintColor.withValues(alpha: 0.1), width: 0.5),
             )
           : null,
       padding: const EdgeInsets.symmetric(
@@ -110,12 +104,6 @@ class BottomSection extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                ),
-              ],
             ),
             padding: const EdgeInsets.symmetric(
               vertical: Dimensions.paddingSizeDefault,
@@ -435,8 +423,9 @@ class BottomSection extends StatelessWidget {
                     ? Dimensions.paddingSizeSmall
                     : 0.0,
               ),
-              (AuthHelper.isGuestLoggedIn() &&
-                      checkoutController.guestAddress == null)
+              ((AuthHelper.isGuestLoggedIn() &&
+                          checkoutController.guestAddress == null) ||
+                      takeAway)
                   ? const SizedBox()
                   : Builder(
                       builder: (context) {
@@ -483,8 +472,9 @@ class BottomSection extends StatelessWidget {
                     Get.find<SplashController>()
                             .configModel!
                             .additionalChargeStatus! &&
-                        !(AuthHelper.isGuestLoggedIn() &&
-                            checkoutController.guestAddress == null)
+                        !((AuthHelper.isGuestLoggedIn() &&
+                                checkoutController.guestAddress == null) ||
+                            takeAway)
                     ? Dimensions.paddingSizeSmall
                     : 0,
               ),
@@ -524,7 +514,7 @@ class BottomSection extends StatelessWidget {
                         Text('paid_by_wallet'.tr, style: robotoRegular),
                         Row(
                           children: [
-                            Text('\u{200E}"(-) ', style: robotoRegular),
+                            Text('\u{200E}(-) ', style: robotoRegular),
                             PriceConverter.convertAnimationPrice(
                               Get.find<ProfileController>()
                                   .userInfoModel!

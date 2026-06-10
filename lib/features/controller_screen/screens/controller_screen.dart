@@ -129,7 +129,7 @@ class _ControllerScreenState extends State<ControllerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: name ?? "Controller"),
+      appBar: CustomAppBar(title: name ?? "controller".tr),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -552,14 +552,14 @@ class _ControllerScreenState extends State<ControllerScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Error"),
+        title: Text("Error".tr),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text("OK"),
+            child: Text("ok".tr),
           ),
         ],
       ),

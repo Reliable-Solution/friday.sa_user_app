@@ -111,13 +111,7 @@ class TopSection extends StatelessWidget {
           ? BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 5,
-                  spreadRadius: 1,
-                ),
-              ],
+              border: Border.all(color: Theme.of(context).hintColor.withValues(alpha: 0.1), width: 0.5),
             )
           : null,
       child: Column(
@@ -126,14 +120,6 @@ class TopSection extends StatelessWidget {
               ? Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(
-                          context,
-                        ).primaryColor.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                      ),
-                    ],
                   ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: Dimensions.paddingSizeLarge,
@@ -335,12 +321,6 @@ class TopSection extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                ),
-              ],
             ),
             padding: const EdgeInsets.symmetric(
               horizontal: Dimensions.paddingSizeLarge,
@@ -528,14 +508,6 @@ class TopSection extends StatelessWidget {
                 ? const BoxDecoration()
                 : BoxDecoration(
                     color: Theme.of(context).cardColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(
-                          context,
-                        ).primaryColor.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                      ),
-                    ],
                   ),
             padding: const EdgeInsets.symmetric(
               vertical: Dimensions.paddingSizeLarge,
