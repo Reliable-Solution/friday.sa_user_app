@@ -44,7 +44,8 @@ class _DeliveryManTipsSectionState extends State<DeliveryManTipsSection> {
         return Column(
           children: [
             (!widget.takeAway &&
-                    Get.find<SplashController>().configModel?.dmTipsStatus == 1)
+                    Get.find<SplashController>().configModel?.dmTipsStatus == 1 &&
+                    checkoutController.store?.useExternalDriver != 1)
                 ? Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
@@ -336,7 +337,8 @@ class _DeliveryManTipsSectionState extends State<DeliveryManTipsSection> {
                   (!widget.takeAway &&
                       widget.storeId == null &&
                       Get.find<SplashController>().configModel!.dmTipsStatus ==
-                          1)
+                          1 &&
+                      checkoutController.store?.useExternalDriver != 1)
                   ? Dimensions.paddingSizeSmall
                   : 0,
             ),

@@ -28,4 +28,5 @@ abstract class CheckoutRepositoryInterface extends RepositoryInterface {
     String dmTips,
     String deliveryInstruction,
   );
+  Future<Response> getExternalDeliveryCharge(int storeId, double lat, double lng, double? distance);
 }

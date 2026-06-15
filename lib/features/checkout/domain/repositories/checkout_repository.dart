@@ -143,4 +143,12 @@ class CheckoutRepository implements CheckoutRepositoryInterface {
   Future update(Map<String, dynamic> body, int? id) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<Response> getExternalDeliveryCharge(int storeId, double lat, double lng, double? distance) async {
+    return apiClient.getData(
+      '${AppConstants.externalDeliveryChargeUri}?store_id=$storeId&latitude=$lat&longitude=$lng${distance != null ? '&distance=$distance' : ''}',
+      handleError: false,
+    );
+  }
 }

@@ -371,7 +371,7 @@ class BottomSection extends StatelessWidget {
               ),
               (!takeAway &&
                       Get.find<SplashController>().configModel!.dmTipsStatus ==
-                          1)
+                          1 && checkoutController.store?.useExternalDriver != 1)
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -394,7 +394,7 @@ class BottomSection extends StatelessWidget {
                         Get.find<SplashController>()
                                 .configModel!
                                 .dmTipsStatus ==
-                            1
+                            1 && checkoutController.store?.useExternalDriver != 1
                     ? Dimensions.paddingSizeSmall
                     : 0.0,
               ),

@@ -114,6 +114,9 @@ class CheckoutController extends GetxController implements GetxService {
   num? _extraCharge;
   num? get extraCharge => _extraCharge;
 
+  num? _externalDeliveryCharge;
+  num? get externalDeliveryCharge => _externalDeliveryCharge;
+
   String? _orderType = 'delivery';
   String? get orderType => _orderType;
 
@@ -260,6 +263,7 @@ class CheckoutController extends GetxController implements GetxService {
     _selectedDateSlot = 0;
     _selectedTimeSlot = 0;
     _distance = null;
+    _externalDeliveryCharge = null;
     _orderAttachment = null;
     _rawAttachment = null;
   }
@@ -389,7 +393,16 @@ class CheckoutController extends GetxController implements GetxService {
       }
     }
     if (!fromDashboard) {
-      await _getExtraCharge(_distance);
+      if (_store?.useExternalDriver == 1) {
+        await getExternalDeliveryCharge(
+          _store!.id!,
+          originLatLng.latitude,
+          originLatLng.longitude,
+          _distance == -1 ? null : _distance?.toDouble(),
+        );
+      } else {
+        await _getExtraCharge(_distance);
+      }
     }
     update();
     return _distance;
@@ -403,6 +416,32 @@ class CheckoutController extends GetxController implements GetxService {
     _extraCharge = null;
     _extraCharge = await checkoutServiceInterface.getExtraCharge(distance);
     return _extraCharge;
+  }
+
+  Future<num?> getExternalDeliveryCharge(
+    int storeId,
+    double lat,
+    double lng,
+    double? distance,
+  ) async {
+    _externalDeliveryCharge = null;
+    try {
+      Response response = await checkoutServiceInterface.getExternalDeliveryCharge(
+        storeId,
+        lat,
+        lng,
+        distance,
+      );
+      if (response.statusCode == 200 && response.body != null) {
+        _externalDeliveryCharge = num.tryParse(response.body['delivery_charge']?.toString() ?? '0');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('GET_EXTERNAL_DELIVERY_CHARGE_ERROR: $e');
+      }
+    }
+    update();
+    return _externalDeliveryCharge;
   }
 
   Future<bool> checkBalanceStatus(num totalPrice, num discount) async {

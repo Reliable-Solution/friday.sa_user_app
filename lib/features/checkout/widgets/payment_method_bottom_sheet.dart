@@ -83,6 +83,11 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
     bool isLoggedIn = AuthHelper.isLoggedIn();
     bool isDesktop = ResponsiveHelper.isDesktop(context);
 
+    bool noPaymentAvailable = !(widget.isCashOnDeliveryActive && notHideCod) &&
+        !(widget.storeId == null && widget.isWalletActive && notHideWallet && isLoggedIn) &&
+        !(widget.storeId == null && widget.isDigitalPaymentActive && notHideDigital) &&
+        !widget.isOfflinePaymentActive;
+
     return SizedBox(
       width: 550,
       child: Container(
@@ -165,6 +170,38 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                             ),
                           ),
                           const SizedBox(height: Dimensions.paddingSizeLarge),
+                          if (noPaymentAvailable)
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.error,
+                                  width: 0.5,
+                                ),
+                              ),
+                              padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                              margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeLarge),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.error_outline_rounded,
+                                    color: Theme.of(context).colorScheme.error,
+                                    size: 24,
+                                  ),
+                                  const SizedBox(width: Dimensions.paddingSizeSmall),
+                                  Expanded(
+                                    child: Text(
+                                      'no_payment_method_is_available'.tr,
+                                      style: robotoMedium.copyWith(
+                                        color: Theme.of(context).colorScheme.error,
+                                        fontSize: Dimensions.fontSizeSmall,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           notHideCod &&
                                       (widget.isCashOnDeliveryActive &&
                                           notHideCod) ||

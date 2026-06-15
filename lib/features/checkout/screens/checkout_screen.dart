@@ -395,7 +395,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                       taxIncluded: taxIncluded,
                       tax: tax,
                       orderType: checkoutController.orderType!,
-                      tips: checkoutController.tips,
+                      tips: checkoutController.store?.useExternalDriver == 1 ? 0 : checkoutController.tips,
                       additionalCharge: additionalCharge,
                       extraPackagingCharge: extraPackagingCharge,
                     );
@@ -1178,10 +1178,11 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                         chargePayer: null,
                         dmTips:
                             (checkoutController.orderType == 'take_away' ||
-                                checkoutController.tipController.text ==
-                                    'not_now')
-                            ? ''
-                            : checkoutController.tipController.text.trim(),
+                                    checkoutController.tipController.text ==
+                                        'not_now' ||
+                                    checkoutController.store?.useExternalDriver == 1)
+                                ? ''
+                                : checkoutController.tipController.text.trim(),
                         cutlery: Get.find<CartController>().addCutlery ? 1 : 0,
                         unavailableItemNote:
                             Get.find<CartController>().notAvailableIndex != -1
@@ -1352,6 +1353,9 @@ class CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   bool _checkCODActive({required Store? store, required AddressModel? address}) {
+    if (store?.useExternalDriver == 1) {
+      return false;
+    }
     bool isCashOnDeliveryActive = false;
     if (store != null && address != null) {
       for (ZoneData zData in address.zoneData ?? []) {
@@ -1736,6 +1740,10 @@ class CheckoutScreenState extends State<CheckoutScreen> {
     required num? extraCharge,
   }) {
     num deliveryCharge = -1;
+
+    if (store != null && store.useExternalDriver == 1) {
+      return Get.find<CheckoutController>().externalDeliveryCharge ?? 0;
+    }
 
     Pivot? moduleData;
     ZoneData? zoneData;
