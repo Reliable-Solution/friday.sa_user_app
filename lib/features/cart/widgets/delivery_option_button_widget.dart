@@ -135,9 +135,9 @@ class _DeliveryOptionButtonWidgetState
                               : 'free'.tr,
                           style: robotoRegular.copyWith(
                             fontSize: Dimensions.fontSizeSmall,
-                            color: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium!.color,
+                            color: (widget.deliveryChargeForView == 'calculating'.tr || widget.deliveryChargeForView.toLowerCase().contains('calculat'))
+                                ? Colors.green
+                                : Theme.of(context).textTheme.bodyMedium!.color,
                           ),
                         ),
                         const SizedBox(width: Dimensions.paddingSizeExtraSmall),

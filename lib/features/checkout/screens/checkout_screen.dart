@@ -233,6 +233,12 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                   store: checkoutController.store,
                 );
 
+                if (address.isNotEmpty && !checkoutController.isSmartAddressChecked) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    checkoutController.checkSmartAddressSelection(address);
+                  });
+                }
+
                 AddressModel? selectedAddress = isGuestLoggedIn
                     ? (checkoutController.guestAddress ??
                         AddressHelper.getUserAddressFromSharedPref())
@@ -368,7 +374,10 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                       orderAmount: orderAmount,
                     )..printWithName("here delivery charge");
 
-                    if (checkoutController.orderType != 'take_away' &&
+                    if (checkoutController.isAddressLoading) {
+                      _deliveryChargeForView = 'calculating'.tr;
+                      deliveryCharge = -1;
+                    } else if (checkoutController.orderType != 'take_away' &&
                         checkoutController.store != null) {
                       _deliveryChargeForView =
                           (checkoutController.orderType == 'delivery'
@@ -993,6 +1002,9 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                           .tr,
                     );
                   } else if (checkoutController.orderType != 'take_away' &&
+                      (isGuestLogIn ? (checkoutController.guestAddress == null) : address.isEmpty)) {
+                    showCustomSnackBar('please_setup_your_delivery_address_first'.tr);
+                  } else if (checkoutController.orderType != 'take_away' &&
                       checkoutController.distance == -1 &&
                       deliveryCharge == -1) {
                     showCustomSnackBar('delivery_fee_not_set_yet'.tr);
@@ -1009,7 +1021,11 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                   } else {
                     AddressModel? finalAddress = isGuestLogIn
                         ? checkoutController.guestAddress
-                        : address[checkoutController.addressIndex!];
+                        : (address.isNotEmpty &&
+                                checkoutController.addressIndex! < address.length &&
+                                checkoutController.addressIndex! >= 0)
+                            ? address[checkoutController.addressIndex!]
+                            : null;
 
                     if (isGuestLogIn &&
                         checkoutController.orderType == 'take_away') {
@@ -1321,14 +1337,15 @@ class CheckoutScreenState extends State<CheckoutScreen> {
   }) {
     List<AddressModel> address = [];
 
-    if (AddressHelper.getUserAddressFromSharedPref() != null) {
-      address.add(AddressHelper.getUserAddressFromSharedPref()!);
-    }
-
-    if (addressList != null && store != null) {
-      for (int index = 0; index < addressList.length; index++) {
-        if (addressList[index].zoneIds!.contains(store.zoneId)) {
-          address.add(addressList[index]);
+    if (addressList != null && addressList.isNotEmpty) {
+      if (AddressHelper.getUserAddressFromSharedPref() != null) {
+        address.add(AddressHelper.getUserAddressFromSharedPref()!);
+      }
+      if (store != null) {
+        for (int index = 0; index < addressList.length; index++) {
+          if (addressList[index].zoneIds!.contains(store.zoneId)) {
+            address.add(addressList[index]);
+          }
         }
       }
     }

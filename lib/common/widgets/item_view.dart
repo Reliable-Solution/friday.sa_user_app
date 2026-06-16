@@ -11,6 +11,7 @@ import 'package:friday_sa/common/widgets/item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:friday_sa/features/favourite/widgets/fav_item_card_widget.dart';
+import 'package:friday_sa/helper/free_delivery_helper.dart';
 import 'package:friday_sa/features/favourite/widgets/fav_store_card_widget.dart';
 
 class ItemsView extends StatefulWidget {
@@ -91,7 +92,7 @@ class _ItemsViewState extends State<ItemsView> {
                             ? 225
                             : ResponsiveHelper.isMobile(context)
                             ? widget.stores != null && widget.isStore
-                                  ? 150
+                                  ? (widget.stores!.any((s) => s != null && FreeDeliveryHelper.isFreeDelivery(s)) ? 130 : 110)
                                   : 125
                             : 125,
                         crossAxisCount: widget.isFavourite

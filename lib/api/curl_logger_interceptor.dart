@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -14,34 +15,45 @@ class CurlLoggerInterceptor extends Interceptor {
       final headers = options.headers;
       final data = options.data;
 
-      final curl = StringBuffer("curl --location --request $method '$uri'");
+      final curl = StringBuffer("curl --location --request $method '$uri' \\\n");
 
       headers.forEach((key, value) {
         if (key != 'cookie') {
-          curl.write(" --header '$key: $value'");
+          curl.write("  --header '$key: $value' \\\n");
         }
       });
 
       if (data != null) {
-        if (data is Map && data.isNotEmpty) {
-          curl.write(" --data-raw '${jsonEncode(data)}'");
-        } else if (data is String && data.isNotEmpty) {
-          curl.write(" --data-raw '$data'");
-        } else if (data is FormData) {
+        if (data is FormData) {
           for (var field in data.fields) {
-            curl.write(" --form '${field.key}=\"${field.value}\"'");
+            curl.write("  --form '${field.key}=\"${field.value}\"' \\\n");
           }
           for (var file in data.files) {
-            curl.write(" --form '${file.key}=\"@${file.value.filename}\"'");
+            curl.write("  --form '${file.key}=\"@${file.value.filename}\"' \\\n");
+          }
+        } else {
+          try {
+            curl.write("  --data-raw '${jsonEncode(data)}' \\\n");
+          } catch (_) {
+            curl.write("  --data-raw '$data' \\\n");
           }
         }
       }
 
-      debugPrint('\n\u001b[36m' + '=' * 60);
-      debugPrint('🚀 CURL COMMAND GENERATED');
-      debugPrint('=' * 60 + '\u001b[0m');
-      debugPrint('\u001b[36m${curl.toString()}\u001b[0m');
-      debugPrint('\u001b[36m' + '=' * 60 + '\u001b[0m\n');
+      // Remove the trailing backslash and newline
+      String curlString = curl.toString().trimRight();
+      if (curlString.endsWith('\\')) {
+        curlString = curlString.substring(0, curlString.length - 1).trimRight();
+      }
+
+      dev.log(
+        '\n============================================================\n'
+        '🚀 CURL COMMAND GENERATED\n'
+        '============================================================\n'
+        '$curlString\n'
+        '============================================================',
+        name: 'friday.curl',
+      );
     } catch (e) {
       debugPrint('Error generating cURL: $e');
     }

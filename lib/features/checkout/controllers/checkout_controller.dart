@@ -24,6 +24,8 @@ import 'package:friday_sa/features/checkout/widgets/order_successfull_dialog.dar
 import 'package:friday_sa/features/checkout/widgets/partial_pay_dialog_widget.dart';
 import 'package:friday_sa/features/home/screens/home_screen.dart';
 import 'package:friday_sa/helper/auth_helper.dart';
+import 'package:friday_sa/helper/address_helper.dart';
+import 'package:friday_sa/features/location/controllers/location_controller.dart';
 import 'package:friday_sa/helper/responsive_helper.dart';
 import 'package:friday_sa/helper/route_helper.dart';
 import 'package:friday_sa/util/app_constants.dart';
@@ -82,6 +84,9 @@ class CheckoutController extends GetxController implements GetxService {
   int? _addressIndex = 0;
   int? get addressIndex => _addressIndex;
 
+  bool _isSmartAddressChecked = false;
+  bool get isSmartAddressChecked => _isSmartAddressChecked;
+
   XFile? _orderAttachment;
   XFile? get orderAttachment => _orderAttachment;
 
@@ -113,6 +118,14 @@ class CheckoutController extends GetxController implements GetxService {
 
   num? _extraCharge;
   num? get extraCharge => _extraCharge;
+
+  bool _isAddressLoading = false;
+  bool get isAddressLoading => _isAddressLoading;
+
+  void setAddressLoading(bool loading) {
+    _isAddressLoading = loading;
+    update();
+  }
 
   String? _orderType = 'delivery';
   String? get orderType => _orderType;
@@ -154,6 +167,21 @@ class CheckoutController extends GetxController implements GetxService {
       false,
     );
     initializeTimeSlot(_store!);
+
+    AddressModel? address = AddressHelper.getUserAddressFromSharedPref();
+    if (address != null && (address.zoneData == null || address.zoneData!.isEmpty) && address.latitude != null) {
+      setAddressLoading(true);
+      var zoneResp = await Get.find<LocationController>().getZone(
+        address.latitude,
+        address.longitude,
+        false,
+      );
+      if (zoneResp.isSuccess) {
+        address.zoneData = zoneResp.zoneData;
+        await AddressHelper.saveUserAddressInSharedPref(address);
+      }
+      setAddressLoading(false);
+    }
   }
 
   void showTipsField() {
@@ -202,6 +230,105 @@ class CheckoutController extends GetxController implements GetxService {
   void setAddressIndex(int? index) {
     _addressIndex = index;
     update();
+  }
+
+  Future<void> checkSmartAddressSelection(List<AddressModel> addresses) async {
+    if (_isSmartAddressChecked || addresses.isEmpty) return;
+    _isSmartAddressChecked = true;
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
+        Position position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        );
+        double closestDistance = double.infinity;
+        int closestIndex = -1;
+        
+        debugPrint('=== Smart Location Check Started ===');
+        debugPrint('User Live GPS: Lat: ${position.latitude}, Lng: ${position.longitude}');
+        
+        // Loop starts from 1 because index 0 is the temporary current/active location
+        for (int i = 1; i < addresses.length; i++) {
+          double? lat = double.tryParse(addresses[i].latitude ?? '');
+          double? lng = double.tryParse(addresses[i].longitude ?? '');
+          if (lat != null && lng != null) {
+            double distance = Geolocator.distanceBetween(
+              position.latitude,
+              position.longitude,
+              lat,
+              lng,
+            );
+            debugPrint('Saved Address [$i] (${addresses[i].addressType}): Distance is $distance meters');
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestIndex = i;
+            }
+          }
+        }
+        
+        // Threshold check: 500 meters
+        int chosenIndex = (closestIndex != -1 && closestDistance <= 500) ? closestIndex : 0;
+        _addressIndex = chosenIndex;
+        update();
+
+        if (chosenIndex < addresses.length) {
+          AddressModel targetAddress = addresses[chosenIndex];
+          double? originLat = double.tryParse(targetAddress.latitude ?? '');
+          double? originLng = double.tryParse(targetAddress.longitude ?? '');
+          double? destLat = double.tryParse(store?.latitude ?? '');
+          double? destLng = double.tryParse(store?.longitude ?? '');
+          if (originLat != null && originLng != null && destLat != null && destLng != null) {
+            setAddressLoading(true);
+            if (targetAddress.zoneData == null || targetAddress.zoneData!.isEmpty) {
+              var zoneResp = await Get.find<LocationController>().getZone(
+                targetAddress.latitude,
+                targetAddress.longitude,
+                false,
+              );
+              if (zoneResp.isSuccess) {
+                targetAddress.zoneData = zoneResp.zoneData;
+              }
+            }
+            await getDistanceInKM(
+              LatLng(originLat, originLng),
+              LatLng(destLat, destLng),
+            );
+            setAddressLoading(false);
+          }
+        }
+      } else {
+        debugPrint('Location permission not granted. Defaulting to Index 0');
+        _addressIndex = 0;
+        update();
+        if (addresses.isNotEmpty) {
+          AddressModel targetAddress = addresses[0];
+          double? originLat = double.tryParse(targetAddress.latitude ?? '');
+          double? originLng = double.tryParse(targetAddress.longitude ?? '');
+          double? destLat = double.tryParse(store?.latitude ?? '');
+          double? destLng = double.tryParse(store?.longitude ?? '');
+          if (originLat != null && originLng != null && destLat != null && destLng != null) {
+            setAddressLoading(true);
+            if (targetAddress.zoneData == null || targetAddress.zoneData!.isEmpty) {
+              var zoneResp = await Get.find<LocationController>().getZone(
+                targetAddress.latitude,
+                targetAddress.longitude,
+                false,
+              );
+              if (zoneResp.isSuccess) {
+                targetAddress.zoneData = zoneResp.zoneData;
+              }
+            }
+            await getDistanceInKM(
+              LatLng(originLat, originLng),
+              LatLng(destLat, destLng),
+            );
+            setAddressLoading(false);
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error in checkSmartAddressSelection: $e');
+    }
   }
 
   void setGuestAddress(AddressModel? address, {bool isUpdate = true}) {
@@ -255,6 +382,7 @@ class CheckoutController extends GetxController implements GetxService {
 
   void clearPrevData() {
     _addressIndex = 0;
+    _isSmartAddressChecked = false;
     _acceptTerms = true;
     _paymentMethodIndex = -1;
     _selectedDateSlot = 0;

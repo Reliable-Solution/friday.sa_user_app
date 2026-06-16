@@ -149,8 +149,8 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                   ),
                   child: GetBuilder<CheckoutController>(
                     builder: (checkoutController) {
-                      "widget.isDigitalPaymentActive == ${widget.isDigitalPaymentActive}"
-                          .print;
+                      "widget.isDigitalPaymentActive == ${widget.isDigitalPaymentActive}".print;
+                      "activePaymentMethodList: ${Get.find<SplashController>().configModel!.activePaymentMethodList?.map((e) => e.getWay).toList()}".print;
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -168,8 +168,7 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                           notHideCod &&
                                       (widget.isCashOnDeliveryActive &&
                                           notHideCod) ||
-                                  (widget.storeId == null &&
-                                      widget.isWalletActive &&
+                                  (widget.isWalletActive &&
                                       notHideWallet &&
                                       isLoggedIn)
                               ? Column(
@@ -204,8 +203,7 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                                       child: Padding(
                                         padding: EdgeInsets.only(
                                           right:
-                                              widget.storeId == null &&
-                                                  widget.isWalletActive &&
+                                              widget.isWalletActive &&
                                                   notHideWallet &&
                                                   isLoggedIn
                                               ? Dimensions.paddingSizeSmall
@@ -229,8 +227,7 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                                   : const SizedBox(),
 
                               // SizedBox(width: widget.storeId == null && widget.isWalletActive && notHideWallet && isLoggedIn ? 0 : Dimensions.paddingSizeLarge),
-                              widget.storeId == null &&
-                                      widget.isWalletActive &&
+                              widget.isWalletActive &&
                                       notHideWallet &&
                                       isLoggedIn
                                   ? Expanded(
@@ -275,8 +272,7 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                             ],
                           ),
                           const SizedBox(height: Dimensions.paddingSizeLarge),
-                          widget.storeId == null &&
-                                  widget.isDigitalPaymentActive &&
+                          widget.isDigitalPaymentActive &&
                                   notHideDigital
                               ? Row(
                                   children: [
@@ -298,14 +294,12 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                               : const SizedBox(),
                           SizedBox(
                             height:
-                                widget.storeId == null &&
-                                    widget.isDigitalPaymentActive &&
+                                widget.isDigitalPaymentActive &&
                                     notHideDigital
                                 ? Dimensions.paddingSizeLarge
                                 : 0,
                           ),
-                          widget.storeId == null &&
-                                  widget.isDigitalPaymentActive &&
+                          widget.isDigitalPaymentActive &&
                                   notHideDigital
                               ? ListView.builder(
                                   physics: const NeverScrollableScrollPhysics(),

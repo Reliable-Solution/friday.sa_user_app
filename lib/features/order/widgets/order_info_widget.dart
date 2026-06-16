@@ -1199,17 +1199,17 @@ class OrderInfoWidget extends StatelessWidget {
                   )
                 : const SizedBox(),
 
-            (!parcel && isDesktop)
+            (!parcel && isDesktop && order.orderType != 'take_away')
                 ? const SizedBox(height: Dimensions.paddingSizeSmall)
                 : const SizedBox(),
-            (!parcel && isDesktop)
+            (!parcel && isDesktop && order.orderType != 'take_away')
                 ? Text('delivery_details'.tr, style: robotoMedium)
                 : const SizedBox(),
-            (!parcel && isDesktop)
+            (!parcel && isDesktop && order.orderType != 'take_away')
                 ? const SizedBox(height: Dimensions.paddingSizeLarge)
                 : const SizedBox(),
 
-            (!parcel && order.store != null)
+            (!parcel && order.store != null && order.orderType != 'take_away')
                 ? Container(
                     margin: const EdgeInsets.symmetric(
                       horizontal: Dimensions.paddingSizeSmall,

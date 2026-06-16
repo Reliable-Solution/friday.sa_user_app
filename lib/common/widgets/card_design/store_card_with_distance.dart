@@ -44,9 +44,11 @@ class StoreCardWithDistance extends StatelessWidget {
         ? double.infinity
         : (isFeatured ? MediaQuery.of(context).size.width - 30 : 270);
 
+    bool isFreeDelivery = FreeDeliveryHelper.isFreeDelivery(store);
+
     return Container(
       width: cardWidth,
-      constraints: const BoxConstraints(minHeight: 150),
+      constraints: BoxConstraints(minHeight: isFreeDelivery ? 120 : 108),
       margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -82,7 +84,7 @@ class StoreCardWithDistance extends StatelessWidget {
         },
         radius: 16,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 4.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -113,7 +115,7 @@ class StoreCardWithDistance extends StatelessWidget {
                       discountType: Get.find<StoreController>().getDiscountType(
                         store,
                       ),
-                      freeDelivery: FreeDeliveryHelper.isFreeDelivery(store),
+                      freeDelivery: false,
                       fontSize: 8,
                     ),
                   if (!Get.find<StoreController>().isOpenNow(store))

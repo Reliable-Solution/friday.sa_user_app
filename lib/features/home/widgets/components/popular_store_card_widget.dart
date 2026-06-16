@@ -65,7 +65,7 @@ class PopularStoreCard extends StatelessWidget {
                     discountType: Get.find<StoreController>().getDiscountType(
                       store,
                     ),
-                    freeDelivery: FreeDeliveryHelper.isFreeDelivery(store),
+                    freeDelivery: false,
                   ),
                   Positioned(
                     bottom: 0,

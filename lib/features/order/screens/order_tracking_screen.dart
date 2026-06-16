@@ -1,6 +1,11 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:friday_sa/util/styles.dart';
+import 'package:friday_sa/common/widgets/custom_image.dart';
+import 'package:friday_sa/common/widgets/rating_bar.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:friday_sa/common/controllers/theme_controller.dart';
 import 'package:friday_sa/common/widgets/custom_snackbar.dart';
@@ -125,226 +130,634 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
           }
 
           return track != null
-              ? SingleChildScrollView(
-                  physics: isHovered || !ResponsiveHelper.isDesktop(context)
-                      ? const NeverScrollableScrollPhysics()
-                      : const AlwaysScrollableScrollPhysics(),
-                  child: FooterView(
-                    child: Center(
-                      child: SizedBox(
-                        width: Dimensions.webMaxWidth,
-                        height: ResponsiveHelper.isDesktop(context)
-                            ? 700
-                            : MediaQuery.of(context).size.height * 0.85,
-                        child: Stack(
-                          children: [
-                            MouseRegion(
-                              onEnter: (event) => onEntered(true),
-                              onExit: (event) => onEntered(false),
-                              child: GoogleMap(
-                                initialCameraPosition: CameraPosition(
-                                  target: LatLng(
-                                    double.parse(
-                                      track.deliveryAddress!.latitude!,
-                                    ),
-                                    double.parse(
-                                      track.deliveryAddress!.longitude!,
-                                    ),
-                                  ),
-                                  zoom: 16,
-                                ),
-                                minMaxZoomPreference:
-                                    const MinMaxZoomPreference(0, 16),
-                                zoomControlsEnabled: false,
-                                markers: _markers,
-                                onMapCreated: (GoogleMapController controller) {
-                                  _controller = controller;
-                                  _isLoading = false;
-                                  setMarker(
-                                    track!.orderType == 'parcel'
-                                        ? Store(
-                                            latitude:
-                                                track.receiverDetails!.latitude,
-                                            longitude: track
-                                                .receiverDetails!
-                                                .longitude,
-                                            address:
-                                                track.receiverDetails!.address,
-                                            name: track
-                                                .receiverDetails!
-                                                .contactPersonName,
-                                          )
-                                        : track.store,
-                                    track.deliveryMan,
-                                    track.orderType == 'take_away'
-                                        ? Get.find<LocationController>()
-                                                      .position
-                                                      .latitude ==
-                                                  0
-                                              ? track.deliveryAddress
-                                              : AddressModel(
-                                                  latitude:
-                                                      Get.find<
-                                                            LocationController
-                                                          >()
-                                                          .position
-                                                          .latitude
-                                                          .toString(),
-                                                  longitude:
-                                                      Get.find<
-                                                            LocationController
-                                                          >()
-                                                          .position
-                                                          .longitude
-                                                          .toString(),
-                                                  address:
-                                                      Get.find<
-                                                            LocationController
-                                                          >()
-                                                          .address,
-                                                )
-                                        : track.deliveryAddress,
-                                    track.orderType == 'take_away',
-                                    track.orderType == 'parcel',
-                                    track.moduleType == 'food',
-                                  );
-                                },
-                                style: Get.isDarkMode
-                                    ? Get.find<ThemeController>().darkMap
-                                    : Get.find<ThemeController>().lightMap,
-                              ),
-                            ),
-                            _isLoading
-                                ? const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : const SizedBox(),
-                            Positioned(
-                              top: Dimensions.paddingSizeSmall,
-                              left: Dimensions.paddingSizeSmall,
-                              right: Dimensions.paddingSizeSmall,
-                              child: TrackingStepperWidget(
-                                status: track.orderStatus,
-                                takeAway: track.orderType == 'take_away',
-                              ),
-                            ),
-                            Positioned(
-                              right: 15,
-                              bottom:
-                                  track.orderType != 'take_away' &&
-                                      track.deliveryMan == null
-                                  ? 150
-                                  : 220,
-                              child: InkWell(
-                                onTap: () => _checkPermission(() async {
-                                  AddressModel address =
-                                      await Get.find<LocationController>()
-                                          .getCurrentLocation(
-                                            false,
-                                            mapController: _controller,
-                                          );
-                                  setMarker(
-                                    track!.orderType == 'parcel'
-                                        ? Store(
-                                            latitude:
-                                                track.receiverDetails!.latitude,
-                                            longitude: track
-                                                .receiverDetails!
-                                                .longitude,
-                                            address:
-                                                track.receiverDetails!.address,
-                                            name: track
-                                                .receiverDetails!
-                                                .contactPersonName,
-                                          )
-                                        : track.store,
-                                    track.deliveryMan,
-                                    track.orderType == 'take_away'
-                                        ? Get.find<LocationController>()
-                                                      .position
-                                                      .latitude ==
-                                                  0
-                                              ? track.deliveryAddress
-                                              : AddressModel(
-                                                  latitude:
-                                                      Get.find<
-                                                            LocationController
-                                                          >()
-                                                          .position
-                                                          .latitude
-                                                          .toString(),
-                                                  longitude:
-                                                      Get.find<
-                                                            LocationController
-                                                          >()
-                                                          .position
-                                                          .longitude
-                                                          .toString(),
-                                                  address:
-                                                      Get.find<
-                                                            LocationController
-                                                          >()
-                                                          .address,
-                                                )
-                                        : track.deliveryAddress,
-                                    track.orderType == 'take_away',
-                                    track.orderType == 'parcel',
-                                    track.moduleType == 'food',
-                                    currentAddress: address,
-                                    fromCurrentLocation: true,
-                                  );
-                                }),
+              ? (track.orderType == 'take_away' && !ResponsiveHelper.isDesktop(context))
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
+                      child: Column(
+                        children: [
+                          TrackingStepperWidget(
+                            status: track.orderStatus,
+                            takeAway: true,
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: SingleChildScrollView(
                                 child: Container(
-                                  padding: const EdgeInsets.all(
-                                    Dimensions.paddingSizeSmall,
-                                  ),
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: Colors.white,
+                                    color: Theme.of(context).cardColor,
+                                    borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.04),
+                                        blurRadius: 20,
+                                        spreadRadius: 2,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
                                   ),
-                                  child: Icon(
-                                    Icons.my_location_outlined,
-                                    color: Theme.of(context).primaryColor,
-                                    size: 25,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'store_detail'.tr,
+                                        style: robotoBold.copyWith(
+                                          fontSize: Dimensions.fontSizeLarge,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                      const SizedBox(height: Dimensions.paddingSizeDefault),
+                                      Container(
+                                        padding: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.2), width: 2),
+                                        ),
+                                        child: ClipOval(
+                                          child: CustomImage(
+                                            image: '${track.store != null ? track.store!.logoFullUrl : ''}',
+                                            height: 70,
+                                            width: 70,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: Dimensions.paddingSizeSmall),
+                                      Text(
+                                        track.store != null ? track.store!.name! : '',
+                                        textAlign: TextAlign.center,
+                                        style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge),
+                                      ),
+                                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                      Text(
+                                        track.store != null ? track.store!.address! : '',
+                                        textAlign: TextAlign.center,
+                                        style: robotoRegular.copyWith(
+                                          fontSize: Dimensions.fontSizeSmall,
+                                          color: Theme.of(context).disabledColor,
+                                        ),
+                                      ),
+                                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                      RatingBar(
+                                        rating: track.store?.avgRating?.toDouble(),
+                                        size: 15,
+                                        ratingCount: track.store?.ratingCount,
+                                      ),
+                                      const SizedBox(height: Dimensions.paddingSizeLarge),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        height: 45,
+                                        child: ElevatedButton.icon(
+                                          onPressed: () async {
+                                            String url =
+                                                'https://www.google.com/maps/dir/?api=1&destination=${track!.store != null ? track.store!.latitude : ''}'
+                                                ',${track.store != null ? track.store!.longitude : ''}&mode=d';
+                                            if (await canLaunchUrlString(url)) {
+                                              await launchUrlString(
+                                                url,
+                                                mode: LaunchMode.externalApplication,
+                                              );
+                                            } else {
+                                              showCustomSnackBar(
+                                                'unable_to_launch_google_map'.tr,
+                                              );
+                                            }
+                                          },
+                                          icon: const Icon(Icons.directions, color: Colors.white),
+                                          label: Text(
+                                            'direction'.tr,
+                                            style: robotoBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeDefault),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Theme.of(context).primaryColor,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: Dimensions.paddingSizeDefault),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: InkWell(
+                                              onTap: () async {
+                                                if (track?.store?.phone != null &&
+                                                    await canLaunchUrlString('tel:${track!.store!.phone}')) {
+                                                  launchUrlString(
+                                                    'tel:${track!.store!.phone}',
+                                                    mode: LaunchMode.externalApplication,
+                                                  );
+                                                }
+                                              },
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                                  color: Colors.green.withValues(alpha: 0.1),
+                                                  border: Border.all(color: Colors.green, width: 1),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    const Icon(Icons.phone, color: Colors.green, size: 18),
+                                                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                                    Text(
+                                                      'call'.tr,
+                                                      style: robotoMedium.copyWith(color: Colors.green, fontSize: Dimensions.fontSizeSmall),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          if (showChatPermission) ...[
+                                            const SizedBox(width: Dimensions.paddingSizeDefault),
+                                            Expanded(
+                                              child: InkWell(
+                                                onTap: () async {
+                                                  _timer?.cancel();
+                                                  await Get.toNamed(
+                                                    RouteHelper.getChatRoute(
+                                                      notificationBody: NotificationBodyModel(
+                                                        deliverymanId: null,
+                                                        orderId: int.parse(widget.orderID!),
+                                                        restaurantId: track?.store?.vendorId,
+                                                      ),
+                                                      user: User(
+                                                        id: track?.store?.vendorId,
+                                                        fName: track?.store?.name,
+                                                        lName: '',
+                                                        imageFullUrl: track?.store?.logoFullUrl,
+                                                      ),
+                                                    ),
+                                                  );
+                                                  _startApiCall();
+                                                },
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                                    border: Border.all(color: Theme.of(context).primaryColor, width: 1),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Icon(Icons.chat, color: Theme.of(context).primaryColor, size: 18),
+                                                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                                      Text(
+                                                        'chat'.tr,
+                                                        style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeSmall),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             ),
-                            Positioned(
-                              bottom: Dimensions.paddingSizeSmall,
-                              left: Dimensions.paddingSizeSmall,
-                              right: Dimensions.paddingSizeSmall,
-                              child: TrackDetailsViewWidget(
-                                status: track.orderStatus,
-                                track: track,
-                                showChatPermission: showChatPermission,
-                                callback: () async {
-                                  _timer?.cancel();
-                                  await Get.toNamed(
-                                    RouteHelper.getChatRoute(
-                                      notificationBody: NotificationBodyModel(
-                                        deliverymanId: track!.deliveryMan!.id,
-                                        orderId: int.parse(widget.orderID!),
+                          ),
+                          const SizedBox(height: Dimensions.paddingSizeDefault),
+                          const SizedBox(),
+                        ],
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      physics: isHovered || !ResponsiveHelper.isDesktop(context)
+                          ? const NeverScrollableScrollPhysics()
+                          : const AlwaysScrollableScrollPhysics(),
+                      child: FooterView(
+                        child: Center(
+                          child: SizedBox(
+                            width: Dimensions.webMaxWidth,
+                            height: ResponsiveHelper.isDesktop(context)
+                                ? 700
+                                : MediaQuery.of(context).size.height * 0.85,
+                            child: Stack(
+                              children: [
+                                if (track.orderType != 'take_away')
+                                  MouseRegion(
+                                    onEnter: (event) => onEntered(true),
+                                    onExit: (event) => onEntered(false),
+                                    child: GoogleMap(
+                                      initialCameraPosition: CameraPosition(
+                                        target: LatLng(
+                                          double.parse(
+                                            track.deliveryAddress!.latitude!,
+                                          ),
+                                          double.parse(
+                                            track.deliveryAddress!.longitude!,
+                                          ),
+                                        ),
+                                        zoom: 16,
                                       ),
-                                      user: User(
-                                        id: track.deliveryMan!.id,
-                                        fName: track.deliveryMan!.fName,
-                                        lName: track.deliveryMan!.lName,
-                                        imageFullUrl:
-                                            track.deliveryMan!.imageFullUrl,
+                                      minMaxZoomPreference:
+                                          const MinMaxZoomPreference(0, 16),
+                                      zoomControlsEnabled: false,
+                                      markers: _markers,
+                                      onMapCreated: (GoogleMapController controller) {
+                                        _controller = controller;
+                                        _isLoading = false;
+                                        setMarker(
+                                          track!.orderType == 'parcel'
+                                              ? Store(
+                                                  latitude:
+                                                      track.receiverDetails!.latitude,
+                                                  longitude: track
+                                                      .receiverDetails!
+                                                      .longitude,
+                                                  address:
+                                                      track.receiverDetails!.address,
+                                                  name: track
+                                                      .receiverDetails!
+                                                      .contactPersonName,
+                                                )
+                                              : track.store,
+                                          track.deliveryMan,
+                                          track.orderType == 'take_away'
+                                              ? Get.find<LocationController>()
+                                                            .position
+                                                            .latitude ==
+                                                        0
+                                                    ? track.deliveryAddress
+                                                    : AddressModel(
+                                                        latitude:
+                                                            Get.find<
+                                                                  LocationController
+                                                                >()
+                                                                .position
+                                                                .latitude
+                                                                .toString(),
+                                                        longitude:
+                                                            Get.find<
+                                                                  LocationController
+                                                                >()
+                                                                .position
+                                                                .longitude
+                                                                .toString(),
+                                                        address:
+                                                            Get.find<
+                                                                  LocationController
+                                                                >()
+                                                                .address,
+                                                      )
+                                              : track.deliveryAddress,
+                                          track.orderType == 'take_away',
+                                          track.orderType == 'parcel',
+                                          track.moduleType == 'food',
+                                        );
+                                      },
+                                      style: Get.isDarkMode
+                                          ? Get.find<ThemeController>().darkMap
+                                          : Get.find<ThemeController>().lightMap,
+                                    ),
+                                  ),
+                                _isLoading && track.orderType != 'take_away'
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : const SizedBox(),
+                                Positioned(
+                                  top: Dimensions.paddingSizeSmall,
+                                  left: Dimensions.paddingSizeSmall,
+                                  right: Dimensions.paddingSizeSmall,
+                                  child: TrackingStepperWidget(
+                                    status: track.orderStatus,
+                                    takeAway: track.orderType == 'take_away',
+                                  ),
+                                ),
+                                if (track.orderType == 'take_away')
+                                  Positioned(
+                                    top: 110,
+                                    bottom: 125,
+                                    left: Dimensions.paddingSizeDefault,
+                                    right: Dimensions.paddingSizeDefault,
+                                    child: Center(
+                                      child: SingleChildScrollView(
+                                        child: Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).cardColor,
+                                            borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withValues(alpha: 0.04),
+                                                blurRadius: 20,
+                                                spreadRadius: 2,
+                                                offset: const Offset(0, 4),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'store_detail'.tr,
+                                                style: robotoBold.copyWith(
+                                                  fontSize: Dimensions.fontSizeLarge,
+                                                  color: Theme.of(context).primaryColor,
+                                                ),
+                                              ),
+                                              const SizedBox(height: Dimensions.paddingSizeDefault),
+                                              Container(
+                                                padding: const EdgeInsets.all(3),
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.2), width: 2),
+                                                ),
+                                                child: ClipOval(
+                                                  child: CustomImage(
+                                                    image: '${track.store != null ? track.store!.logoFullUrl : ''}',
+                                                    height: 70,
+                                                    width: 70,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: Dimensions.paddingSizeSmall),
+                                              Text(
+                                                track.store != null ? track.store!.name! : '',
+                                                textAlign: TextAlign.center,
+                                                style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge),
+                                              ),
+                                              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                              Text(
+                                                track.store != null ? track.store!.address! : '',
+                                                textAlign: TextAlign.center,
+                                                style: robotoRegular.copyWith(
+                                                  fontSize: Dimensions.fontSizeSmall,
+                                                  color: Theme.of(context).disabledColor,
+                                                ),
+                                              ),
+                                              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                              RatingBar(
+                                                rating: track.store?.avgRating?.toDouble(),
+                                                size: 15,
+                                                ratingCount: track.store?.ratingCount,
+                                              ),
+                                              const SizedBox(height: Dimensions.paddingSizeLarge),
+                                              SizedBox(
+                                                width: double.infinity,
+                                                height: 45,
+                                                child: ElevatedButton.icon(
+                                                  onPressed: () async {
+                                                    String url =
+                                                        'https://www.google.com/maps/dir/?api=1&destination=${track!.store != null ? track.store!.latitude : ''}'
+                                                        ',${track.store != null ? track.store!.longitude : ''}&mode=d';
+                                                    if (await canLaunchUrlString(url)) {
+                                                      await launchUrlString(
+                                                        url,
+                                                        mode: LaunchMode.externalApplication,
+                                                      );
+                                                    } else {
+                                                      showCustomSnackBar(
+                                                        'unable_to_launch_google_map'.tr,
+                                                      );
+                                                    }
+                                                  },
+                                                  icon: const Icon(Icons.directions, color: Colors.white),
+                                                  label: Text(
+                                                    'direction'.tr,
+                                                    style: robotoBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeDefault),
+                                                  ),
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: Dimensions.paddingSizeDefault),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: InkWell(
+                                                      onTap: () async {
+                                                        if (track?.store?.phone != null &&
+                                                            await canLaunchUrlString('tel:${track!.store!.phone}')) {
+                                                          launchUrlString(
+                                                            'tel:${track!.store!.phone}',
+                                                            mode: LaunchMode.externalApplication,
+                                                          );
+                                                        }
+                                                      },
+                                                      child: Container(
+                                                        padding: const EdgeInsets.symmetric(vertical: 10),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                                          color: Colors.green.withValues(alpha: 0.1),
+                                                          border: Border.all(color: Colors.green, width: 1),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            const Icon(Icons.phone, color: Colors.green, size: 18),
+                                                            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                                            Text(
+                                                              'call'.tr,
+                                                              style: robotoMedium.copyWith(color: Colors.green, fontSize: Dimensions.fontSizeSmall),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  if (showChatPermission) ...[
+                                                    const SizedBox(width: Dimensions.paddingSizeDefault),
+                                                    Expanded(
+                                                      child: InkWell(
+                                                        onTap: () async {
+                                                          _timer?.cancel();
+                                                          await Get.toNamed(
+                                                            RouteHelper.getChatRoute(
+                                                              notificationBody: NotificationBodyModel(
+                                                                deliverymanId: null,
+                                                                orderId: int.parse(widget.orderID!),
+                                                                restaurantId: track?.store?.vendorId,
+                                                              ),
+                                                              user: User(
+                                                                id: track?.store?.vendorId,
+                                                                fName: track?.store?.name,
+                                                                lName: '',
+                                                                imageFullUrl: track?.store?.logoFullUrl,
+                                                              ),
+                                                            ),
+                                                          );
+                                                          _startApiCall();
+                                                        },
+                                                        child: Container(
+                                                          padding: const EdgeInsets.symmetric(vertical: 10),
+                                                          decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                                            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                                            border: Border.all(color: Theme.of(context).primaryColor, width: 1),
+                                                          ),
+                                                          child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Icon(Icons.chat, color: Theme.of(context).primaryColor, size: 18),
+                                                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                                              Text(
+                                                                'chat'.tr,
+                                                                style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeSmall),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  );
-                                  _startApiCall();
-                                },
-                              ),
+                                  ),
+                                if (track.orderType != 'take_away')
+                                  Positioned(
+                                    right: 15,
+                                    bottom:
+                                        track.orderType != 'take_away' &&
+                                            track.deliveryMan == null
+                                        ? 150
+                                        : 220,
+                                    child: InkWell(
+                                      onTap: () => _checkPermission(() async {
+                                        AddressModel address =
+                                            await Get.find<LocationController>()
+                                                .getCurrentLocation(
+                                                  false,
+                                                  mapController: _controller,
+                                                );
+                                        setMarker(
+                                          track!.orderType == 'parcel'
+                                              ? Store(
+                                                  latitude:
+                                                      track.receiverDetails!.latitude,
+                                                  longitude: track
+                                                      .receiverDetails!
+                                                      .longitude,
+                                                  address:
+                                                      track.receiverDetails!.address,
+                                                  name: track
+                                                      .receiverDetails!
+                                                      .contactPersonName,
+                                                )
+                                              : track.store,
+                                          track.deliveryMan,
+                                          track.orderType == 'take_away'
+                                              ? Get.find<LocationController>()
+                                                            .position
+                                                            .latitude ==
+                                                        0
+                                                    ? track.deliveryAddress
+                                                    : AddressModel(
+                                                        latitude:
+                                                            Get.find<
+                                                                  LocationController
+                                                                >()
+                                                                .position
+                                                                .latitude
+                                                                .toString(),
+                                                        longitude:
+                                                            Get.find<
+                                                                  LocationController
+                                                                >()
+                                                                .position
+                                                                .longitude
+                                                                .toString(),
+                                                        address:
+                                                            Get.find<
+                                                                  LocationController
+                                                                >()
+                                                                .address,
+                                                      )
+                                              : track.deliveryAddress,
+                                          track.orderType == 'take_away',
+                                          track.orderType == 'parcel',
+                                          track.moduleType == 'food',
+                                          currentAddress: address,
+                                          fromCurrentLocation: true,
+                                        );
+                                      }),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(
+                                          Dimensions.paddingSizeSmall,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(50),
+                                          color: Colors.white,
+                                        ),
+                                        child: Icon(
+                                          Icons.my_location_outlined,
+                                          color: Theme.of(context).primaryColor,
+                                          size: 25,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                if (track.orderType != 'take_away')
+                                  Positioned(
+                                    bottom: Dimensions.paddingSizeSmall,
+                                    left: Dimensions.paddingSizeSmall,
+                                    right: Dimensions.paddingSizeSmall,
+                                    child: TrackDetailsViewWidget(
+                                      status: track.orderStatus,
+                                      track: track,
+                                      showChatPermission: showChatPermission,
+                                      callback: () async {
+                                        _timer?.cancel();
+                                        await Get.toNamed(
+                                          RouteHelper.getChatRoute(
+                                            notificationBody: NotificationBodyModel(
+                                              deliverymanId: track!.orderType == 'take_away'
+                                                  ? null
+                                                  : track.deliveryMan?.id,
+                                              orderId: int.parse(widget.orderID!),
+                                              restaurantId: track.orderType == 'take_away'
+                                                  ? track.store?.vendorId
+                                                  : null,
+                                            ),
+                                            user: track.orderType == 'take_away'
+                                                ? User(
+                                                    id: track.store!.vendorId,
+                                                    fName: track.store!.name,
+                                                    lName: '',
+                                                    imageFullUrl: track.store!.logoFullUrl,
+                                                  )
+                                                : User(
+                                                    id: track.deliveryMan!.id,
+                                                    fName: track.deliveryMan!.fName,
+                                                    lName: track.deliveryMan!.lName,
+                                                    imageFullUrl:
+                                                        track.deliveryMan!.imageFullUrl,
+                                                  ),
+                                          ),
+                                        );
+                                        _startApiCall();
+                                      },
+                                    ),
+                                  ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                )
+                    )
               : const Center(child: CircularProgressIndicator());
         },
       ),

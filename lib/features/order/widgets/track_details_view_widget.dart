@@ -57,11 +57,137 @@ class TrackDetailsViewWidget extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             )
-          : Column(
-              children: [
-                Text('trip_route'.tr, style: robotoMedium),
-                const SizedBox(height: Dimensions.paddingSizeLarge),
-                Row(
+          : takeAway
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      Get.find<SplashController>()
+                              .configModel!
+                              .moduleConfig!
+                              .module!
+                              .showRestaurantText!
+                          ? 'restaurant_details'.tr
+                          : 'store_details'.tr,
+                      style: robotoMedium.copyWith(
+                        fontSize: Dimensions.fontSizeSmall,
+                        color: Theme.of(context).disabledColor,
+                      ),
+                    ),
+                    const SizedBox(height: Dimensions.paddingSizeSmall),
+                    Row(
+                      children: [
+                        ClipOval(
+                          child: CustomImage(
+                            image: '${track.store != null ? track.store!.logoFullUrl : ''}',
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(width: Dimensions.paddingSizeSmall),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                track.store != null ? track.store!.name! : '',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                track.store != null ? track.store!.address! : '',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: robotoRegular.copyWith(
+                                  fontSize: Dimensions.fontSizeExtraSmall,
+                                  color: Theme.of(context).disabledColor,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              RatingBar(
+                                rating: track.store?.avgRating?.toDouble(),
+                                size: 12,
+                                ratingCount: track.store?.ratingCount,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: Dimensions.paddingSizeDefault),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () async {
+                              if (track.store?.phone != null &&
+                                  await canLaunchUrlString('tel:${track.store!.phone}')) {
+                                launchUrlString(
+                                  'tel:${track.store!.phone}',
+                                  mode: LaunchMode.externalApplication,
+                                );
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                color: Colors.green.withValues(alpha: 0.1),
+                                border: Border.all(color: Colors.green, width: 1),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.phone, color: Colors.green, size: 18),
+                                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                  Text(
+                                    'call'.tr,
+                                    style: robotoMedium.copyWith(color: Colors.green, fontSize: Dimensions.fontSizeSmall),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (showChatPermission) ...[
+                          const SizedBox(width: Dimensions.paddingSizeDefault),
+                          Expanded(
+                            child: InkWell(
+                              onTap: callback as void Function()?,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                  border: Border.all(color: Theme.of(context).primaryColor, width: 1),
+                                  ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.chat, color: Theme.of(context).primaryColor, size: 18),
+                                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                    Text(
+                                      'chat'.tr,
+                                      style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeSmall),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    Text('trip_route'.tr, style: robotoMedium),
+                    const SizedBox(height: Dimensions.paddingSizeLarge),
+                    Row(
                   children: [
                     Expanded(
                       flex: 3,

@@ -38,7 +38,7 @@ class StoreCard extends StatelessWidget {
 
     return Container(
       width: 300,
-      height: 145,
+      height: 110,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -105,7 +105,7 @@ class StoreCard extends StatelessWidget {
                       discountType: Get.find<StoreController>().getDiscountType(
                         store,
                       ),
-                      freeDelivery: FreeDeliveryHelper.isFreeDelivery(store),
+                      freeDelivery: false,
                       fontSize: 8,
                     ),
                   if (!Get.find<StoreController>().isOpenNow(store))
