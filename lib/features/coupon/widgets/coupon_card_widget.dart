@@ -61,7 +61,6 @@ class CouponCardWidget extends StatelessWidget {
                       : size.width * 0.3,
                   child: Center(
                     child: FittedBox(
-
                       fit: BoxFit.scaleDown,
                       child: Stack(
                         clipBehavior: Clip.none,

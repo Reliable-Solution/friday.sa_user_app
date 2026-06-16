@@ -184,9 +184,4 @@ class CheckoutService implements CheckoutServiceInterface {
       deliveryInstruction,
     );
   }
-
-  @override
-  Future<Response> getExternalDeliveryCharge(int storeId, double lat, double lng, double? distance) async {
-    return await checkoutRepositoryInterface.getExternalDeliveryCharge(storeId, lat, lng, distance);
-  }
 }

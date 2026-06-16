@@ -178,7 +178,6 @@ class Store {
     }
     cashPaymentPermission = json['cash_payment_permission'];
     digitalPaymentPermission = json['digital_payment_permission'];
-    useExternalDriver = json['use_external_driver'] != null ? int.tryParse(json['use_external_driver'].toString()) : 0;
   }
   int? id;
   String? name;
@@ -235,7 +234,6 @@ class Store {
   List<CategoryModel>? categories;
   int? cashPaymentPermission;
   int? digitalPaymentPermission;
-  int? useExternalDriver;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -302,7 +300,6 @@ class Store {
     }
     // data['cash_payment_permission'] = cashPaymentPermission;
     // data['digital_payment_permission'] = digitalPaymentPermission;
-    data['use_external_driver'] = useExternalDriver;
     return data;
   }
 }

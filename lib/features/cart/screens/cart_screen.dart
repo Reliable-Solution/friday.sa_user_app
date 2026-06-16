@@ -995,10 +995,6 @@ num _calculateOriginalDeliveryCharge({
 }) {
   num deliveryCharge = -1;
 
-  if (store != null && store.useExternalDriver == 1) {
-    return Get.find<CheckoutController>().externalDeliveryCharge ?? 0;
-  }
-
   Pivot? moduleData;
   ZoneData? zoneData;
   if (store != null) {
