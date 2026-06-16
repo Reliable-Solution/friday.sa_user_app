@@ -70,7 +70,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   void _initInitialState() {
       ItemController itemController = Get.find<ItemController>();
     CartController cartController = Get.find<CartController>();
-    if (itemController.cartIndex != -1) {
+    if (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length) {
       CartModel cart = cartController.cartList[itemController.cartIndex];
       _initialQuantity = cart.quantity;
       _initialVariationIndex = List.from(itemController.variationIndex!);
@@ -212,7 +212,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                 '',
                 variation != null ? [variation] : [],
                 null,
-                itemController.cartIndex != -1
+                (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length)
                     ? cartController.cartList[itemController.cartIndex].quantity
                     : itemController.quantity,
                 listOfAddOnId,
@@ -249,7 +249,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
 
             bool isChanged = false;
             if (itemController.item != null && _initialQuantity != null) {
-              int currentQuantity = itemController.cartIndex != -1
+              int currentQuantity = (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length)
                   ? cartController.cartList[itemController.cartIndex].quantity!
                   : itemController.quantity!;
 
@@ -518,19 +518,19 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                                     .isLoading
                                                                 ? null
                                                                 : () {
-                                                                    if (itemController.cartIndex != -1) {
-                                                                      if (cartController.cartList[itemController.cartIndex].quantity! > 1) {
-                                                                        cartController.setQuantity(
-                                                                          false,
-                                                                          itemController.cartIndex,
-                                                                          stock,
-                                                                          cartController.cartList[itemController.cartIndex].quantity,
-                                                                        );
-                                                                      } else {
-                                                                         cartController.removeFromCart(itemController.cartIndex, item: itemController.item);
-                                                                         itemController.setQuantity(false, stock, itemController.item!.quantityLimit);
-                                                                      }
-                                                                    } else {
+                                                                     if (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length) {
+                                                                       if (cartController.cartList[itemController.cartIndex].quantity! > 1) {
+                                                                         cartController.setQuantity(
+                                                                           false,
+                                                                           itemController.cartIndex,
+                                                                           stock,
+                                                                           cartController.cartList[itemController.cartIndex].quantity,
+                                                                         );
+                                                                       } else {
+                                                                          cartController.removeFromCart(itemController.cartIndex, item: itemController.item);
+                                                                          itemController.setQuantity(false, stock, itemController.item!.quantityLimit);
+                                                                       }
+                                                                     } else {
                                                                       if (itemController.quantity! > 0) {
                                                                         itemController.setQuantity(
                                                                           false,
@@ -557,43 +557,39 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                               ),
                                                             ),
                                                           ),
-                                                          Text(
-                                                            itemController
-                                                                        .cartIndex !=
-                                                                    -1
-                                                                ? cartController
-                                                                      .cartList[itemController
-                                                                          .cartIndex]
-                                                                      .quantity
-                                                                      .toString()
-                                                                : itemController
-                                                                      .quantity
-                                                                      .toString(),
-                                                            style: robotoMedium
-                                                                .copyWith(
-                                                                  fontSize:
-                                                                      Dimensions
-                                                                          .fontSizeExtraLarge,
-                                                                ),
-                                                          ),
-                                                          InkWell(
-                                                            onTap:
-                                                                cartController
-                                                                    .isLoading
-                                                                ? null
-                                                                : () =>
-                                                                      itemController
-                                                                              .cartIndex !=
-                                                                          -1
-                                                                      ? cartController.setQuantity(
-                                                                          true,
-                                                                          itemController
-                                                                              .cartIndex,
-                                                                          stock,
-                                                                          cartController
-                                                                              .cartList[itemController.cartIndex]
-                                                                              .quantityLimit,
-                                                                        )
+                                                           Text(
+                                                             (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length)
+                                                                 ? cartController
+                                                                       .cartList[itemController
+                                                                           .cartIndex]
+                                                                       .quantity
+                                                                       .toString()
+                                                                 : itemController
+                                                                       .quantity
+                                                                       .toString(),
+                                                             style: robotoMedium
+                                                                 .copyWith(
+                                                                   fontSize:
+                                                                       Dimensions
+                                                                           .fontSizeExtraLarge,
+                                                                 ),
+                                                           ),
+                                                           InkWell(
+                                                             onTap:
+                                                                 cartController
+                                                                     .isLoading
+                                                                 ? null
+                                                                 : () =>
+                                                                       (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length)
+                                                                       ? cartController.setQuantity(
+                                                                           true,
+                                                                           itemController
+                                                                               .cartIndex,
+                                                                           stock,
+                                                                           cartController
+                                                                               .cartList[itemController.cartIndex]
+                                                                               .quantityLimit,
+                                                                         )
                                                                       : itemController.setQuantity(
                                                                           true,
                                                                           stock,
@@ -642,8 +638,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                 ),
                                                 Text(
                                                   PriceConverter.convertPrice(
-                                                    itemController.cartIndex !=
-                                                            -1
+                                                    (itemController.cartIndex !=
+                                                            -1 && itemController.cartIndex < Get.find<CartController>().cartList.length)
                                                         ? _getItemDetailsDiscountPrice(
                                                             cart:
                                                                 Get.find<
@@ -877,19 +873,19 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                   isLoading: cartController.isLoading,
                                                   radius: Dimensions.radiusLarge,
                                                   height: 50,
-                                                  color: isStoreClosed ? Theme.of(context).disabledColor : (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).disabledColor : Theme.of(context).primaryColor,
-                                                  textColor: isStoreClosed ? Theme.of(context).cardColor : (itemController.cartIndex != -1 && !isChanged) ? Theme.of(context).cardColor : Colors.white,
+                                                  color: isStoreClosed ? Theme.of(context).disabledColor : (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length && !isChanged) ? Theme.of(context).disabledColor : Theme.of(context).primaryColor,
+                                                  textColor: isStoreClosed ? Theme.of(context).cardColor : (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length && !isChanged) ? Theme.of(context).cardColor : Colors.white,
                                                   buttonText: isStoreClosed
                                                       ? 'this_store_is_closed_now'.tr
                                                       : (Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && stock! <= 0)
                                                       ? 'out_of_stock'.tr
                                                       : itemController.item!.availableDateStarts != null
                                                       ? 'order_now'.tr
-                                                      : itemController.cartIndex != -1
+                                                      : (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length)
                                                       ? 'update_in_cart'.tr
                                                       : 'add_to_cart'.tr,
                                                   onPressed: isStoreClosed ? null :
-                                                      (!Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! || (stock! > 0 && ((itemController.cartIndex != -1 && isChanged) || (itemController.cartIndex == -1 && itemController.quantity! > 0))))
+                                                      (!Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! || (stock! > 0 && (((itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length) && isChanged) || ((itemController.cartIndex == -1 || itemController.cartIndex >= cartController.cartList.length) && itemController.quantity! > 0))))
                                                       ? () async {
                                                       if (!Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! || stock! > 0) {
                                                         if (itemController.item!.availableDateStarts != null) {
@@ -911,7 +907,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                                               },
                                                             ), barrierDismissible: false);
                                                           } else {
-                                                            if (itemController.cartIndex == -1) {
+                                                            if (itemController.cartIndex == -1 || itemController.cartIndex >= cartController.cartList.length) {
                                                               await cartController.addToCartOnline(cart!).then((success) {
                                                                 if (success) {
                                                                   itemController.setExistInCart(widget.item, null);
@@ -1070,7 +1066,9 @@ class QuantityButton extends StatelessWidget {
                   Get.find<CartController>().removeFromCart(cartIndex);
                   Get.find<ItemController>().setQuantity(false, stock, quantityLimit);
                 } else if (isIncrement && quantity! >= 0) {
-                  if (quantity! < stock! ||
+                  if (quantityLimit != null && quantityLimit != 0 && quantity! >= quantityLimit!) {
+                    showCustomSnackBar('${'maximum_quantity_limit'.tr} $quantityLimit');
+                  } else if (quantity! < stock! ||
                       !Get.find<SplashController>()
                           .configModel!
                           .moduleConfig!

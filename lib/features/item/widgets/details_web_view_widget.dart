@@ -503,17 +503,12 @@ class DetailsWebViewWidget extends StatelessWidget {
                                                 .paddingSizeExtraSmall,
                                           ),
                                           Text(
-                                            PriceConverter.convertPrice(
-                                              itemController.cartIndex != -1
-                                                  ? _getItemDetailsDiscountPrice(
-                                                      cart:
-                                                          Get.find<
-                                                                CartController
-                                                              >()
-                                                              .cartList[itemController
-                                                              .cartIndex],
-                                                    )
-                                                  : priceWithAddOns,
+                                             PriceConverter.convertPrice(
+                                               (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length)
+                                                   ? _getItemDetailsDiscountPrice(
+                                                       cart: cartController.cartList[itemController.cartIndex],
+                                                     )
+                                                   : priceWithAddOns,
                                             ),
                                             style: robotoBold.copyWith(
                                               color: Theme.of(
@@ -536,35 +531,20 @@ class DetailsWebViewWidget extends StatelessWidget {
                                             children: [
                                               QuantityButton(
                                                 isIncrement: false,
-                                                quantity:
-                                                    itemController.cartIndex !=
-                                                        -1
-                                                    ? cartController
-                                                          .cartList[itemController
-                                                              .cartIndex]
-                                                          .quantity
+                                                quantity: (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length)
+                                                    ? cartController.cartList[itemController.cartIndex].quantity
                                                     : itemController.quantity,
                                                 stock: stock,
-                                                isExistInCart:
-                                                    itemController.cartIndex !=
-                                                    -1,
-                                                cartIndex:
-                                                    itemController.cartIndex,
-                                                quantityLimit:
-                                                    itemController.cartIndex !=
-                                                        -1
-                                                    ? cartController
-                                                          .cartList[itemController
-                                                              .cartIndex]
-                                                          .quantityLimit
-                                                    : itemController
-                                                          .item!
-                                                          .quantityLimit,
+                                                isExistInCart: (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length),
+                                                cartIndex: itemController.cartIndex,
+                                                quantityLimit: (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length)
+                                                    ? cartController.cartList[itemController.cartIndex].quantityLimit
+                                                    : itemController.item!.quantityLimit,
                                                 cartController: cartController,
                                               ),
                                               const SizedBox(width: 30),
                                               Text(
-                                                itemController.cartIndex != -1
+                                                (itemController.cartIndex != -1 && itemController.cartIndex < Get.find<CartController>().cartList.length)
                                                     ? cartController
                                                           .cartList[itemController
                                                               .cartIndex]
@@ -581,8 +561,7 @@ class DetailsWebViewWidget extends StatelessWidget {
                                               QuantityButton(
                                                 isIncrement: true,
                                                 quantity:
-                                                    itemController.cartIndex !=
-                                                        -1
+                                                    (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length)
                                                     ? cartController
                                                           .cartList[itemController
                                                               .cartIndex]
@@ -592,11 +571,9 @@ class DetailsWebViewWidget extends StatelessWidget {
                                                 cartIndex:
                                                     itemController.cartIndex,
                                                 isExistInCart:
-                                                    itemController.cartIndex !=
-                                                    -1,
+                                                    (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length),
                                                 quantityLimit:
-                                                    itemController.cartIndex !=
-                                                        -1
+                                                    (itemController.cartIndex != -1 && itemController.cartIndex < cartController.cartList.length)
                                                     ? cartController
                                                           .cartList[itemController
                                                               .cartIndex]

@@ -611,8 +611,13 @@ class ItemController extends GetxController implements GetxService {
     if(isIncrement && _quantity == oldQty) {
       if (moduleStock && _quantity! >= stock!) {
         _stockError = 'out_of_stock'.tr;
+        showCustomSnackBar(
+          'more_stock_is_not_available'.tr,
+          getXSnackBar: getxSnackBar,
+        );
       } else if (quantityLimit != null && _quantity! >= quantityLimit && quantityLimit != 0) {
         _stockError = '${'maximum_quantity_limit'.tr} $quantityLimit';
+        showCustomSnackBar('${'maximum_quantity_limit'.tr} $quantityLimit', getXSnackBar: getxSnackBar);
       }
     }
     update();

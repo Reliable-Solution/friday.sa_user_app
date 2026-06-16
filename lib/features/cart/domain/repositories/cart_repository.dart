@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 import 'package:get/get_connect.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,16 +52,63 @@ class CartRepository implements CartRepositoryInterface<OnlineCart> {
   }
 
   Future<List<OnlineCartModel>?> _addToCartOnline(OnlineCart cart) async {
+    final String url =
+        '${AppConstants.addCartUri}${!AuthHelper.isLoggedIn() ? '?guest_id=${AuthHelper.getGuestId()}' : ''}';
+    final Map<String, dynamic> payload = cart.toJson();
     List<OnlineCartModel>? onlineCartList;
-    Response response = await apiClient.postData(
-      '${AppConstants.addCartUri}${!AuthHelper.isLoggedIn() ? '?guest_id=${AuthHelper.getGuestId()}' : ''}',
-      cart.toJson(),
-    );
-    if (response.statusCode == 200) {
-      onlineCartList = [];
-      response.body.forEach(
-        (cart) => onlineCartList!.add(OnlineCartModel.fromJson(cart)),
+    int maxAttempts = 3;
+    int attempt = 0;
+
+    while (attempt < maxAttempts) {
+      attempt++;
+      debugPrint(
+        '[CartRepository] addToCart Attempt $attempt/$maxAttempts | URL: $url | Payload: $payload',
       );
+
+      try {
+        Response response = await apiClient.postData(
+          url,
+          payload,
+          handleError: false,
+        );
+
+        debugPrint(
+          '[CartRepository] addToCart Response | Status Code: ${response.statusCode} | Body: ${response.body}',
+        );
+
+        if (response.statusCode == 200) {
+          onlineCartList = [];
+          response.body.forEach(
+            (cart) => onlineCartList!.add(OnlineCartModel.fromJson(cart)),
+          );
+          return onlineCartList;
+        }
+
+        // If server error or temporary timeout, wait and retry
+        if (response.statusCode == 500 ||
+            response.statusCode == 1 ||
+            response.statusCode == 0) {
+          debugPrint(
+            '[CartRepository] addToCart encountered transient error (${response.statusCode}). Retrying...',
+          );
+          if (attempt < maxAttempts) {
+            await Future.delayed(Duration(milliseconds: 1000 * attempt));
+            continue;
+          }
+        }
+        break; // Non-retriable error
+      } catch (e) {
+        debugPrint(
+          '[CartRepository] addToCart Exception (Attempt $attempt): $e',
+        );
+        if (attempt < maxAttempts) {
+          await Future.delayed(Duration(milliseconds: 1000 * attempt));
+          continue;
+        }
+      }
+    }
+    if (onlineCartList == null) {
+      _reportErrorToFirebase(url, payload, 'addToCartOnline');
     }
     return onlineCartList;
   }
@@ -138,16 +187,61 @@ class CartRepository implements CartRepositoryInterface<OnlineCart> {
   Future<List<OnlineCartModel>?> _updateCartOnline(
     Map<String, dynamic> body,
   ) async {
+    final String url =
+        '${AppConstants.updateCartUri}${!AuthHelper.isLoggedIn() ? '?guest_id=${AuthHelper.getGuestId()}' : ''}';
     List<OnlineCartModel>? onlineCartList;
-    Response response = await apiClient.postData(
-      '${AppConstants.updateCartUri}${!AuthHelper.isLoggedIn() ? '?guest_id=${AuthHelper.getGuestId()}' : ''}',
-      body,
-    );
-    if (response.statusCode == 200) {
-      onlineCartList = [];
-      response.body.forEach(
-        (cart) => onlineCartList!.add(OnlineCartModel.fromJson(cart)),
+    int maxAttempts = 3;
+    int attempt = 0;
+
+    while (attempt < maxAttempts) {
+      attempt++;
+      debugPrint(
+        '[CartRepository] updateCart Attempt $attempt/$maxAttempts | URL: $url | Payload: $body',
       );
+
+      try {
+        Response response = await apiClient.postData(
+          url,
+          body,
+          handleError: false,
+        );
+
+        debugPrint(
+          '[CartRepository] updateCart Response | Status Code: ${response.statusCode} | Body: ${response.body}',
+        );
+
+        if (response.statusCode == 200) {
+          onlineCartList = [];
+          response.body.forEach(
+            (cart) => onlineCartList!.add(OnlineCartModel.fromJson(cart)),
+          );
+          return onlineCartList;
+        }
+
+        if (response.statusCode == 500 ||
+            response.statusCode == 1 ||
+            response.statusCode == 0) {
+          debugPrint(
+            '[CartRepository] updateCart encountered transient error (${response.statusCode}). Retrying...',
+          );
+          if (attempt < maxAttempts) {
+            await Future.delayed(Duration(milliseconds: 1000 * attempt));
+            continue;
+          }
+        }
+        break;
+      } catch (e) {
+        debugPrint(
+          '[CartRepository] updateCart Exception (Attempt $attempt): $e',
+        );
+        if (attempt < maxAttempts) {
+          await Future.delayed(Duration(milliseconds: 1000 * attempt));
+          continue;
+        }
+      }
+    }
+    if (onlineCartList == null) {
+      _reportErrorToFirebase(url, body, 'updateCartOnline');
     }
     return onlineCartList;
   }
@@ -157,15 +251,77 @@ class CartRepository implements CartRepositoryInterface<OnlineCart> {
     num price,
     int quantity,
   ) async {
+    final String url =
+        '${AppConstants.updateCartUri}${!AuthHelper.isLoggedIn() ? '?guest_id=${AuthHelper.getGuestId()}' : ''}';
     Map<String, dynamic> data = {
       "cart_id": cartId,
       "price": price,
       "quantity": quantity,
     };
-    Response response = await apiClient.postData(
-      '${AppConstants.updateCartUri}${!AuthHelper.isLoggedIn() ? '?guest_id=${AuthHelper.getGuestId()}' : ''}',
-      data,
-    );
-    return (response.statusCode == 200);
+    int maxAttempts = 3;
+    int attempt = 0;
+
+    while (attempt < maxAttempts) {
+      attempt++;
+      debugPrint(
+        '[CartRepository] updateCartQuantity Attempt $attempt/$maxAttempts | URL: $url | Payload: $data',
+      );
+
+      try {
+        Response response = await apiClient.postData(
+          url,
+          data,
+          handleError: false,
+        );
+
+        debugPrint(
+          '[CartRepository] updateCartQuantity Response | Status Code: ${response.statusCode} | Body: ${response.body}',
+        );
+
+        if (response.statusCode == 200) {
+          return true;
+        }
+
+        if (response.statusCode == 500 ||
+            response.statusCode == 1 ||
+            response.statusCode == 0) {
+          debugPrint(
+            '[CartRepository] updateCartQuantity encountered transient error (${response.statusCode}). Retrying...',
+          );
+          if (attempt < maxAttempts) {
+            await Future.delayed(Duration(milliseconds: 1000 * attempt));
+            continue;
+          }
+        }
+        break;
+      } catch (e) {
+        debugPrint(
+          '[CartRepository] updateCartQuantity Exception (Attempt $attempt): $e',
+        );
+        if (attempt < maxAttempts) {
+          await Future.delayed(Duration(milliseconds: 1000 * attempt));
+          continue;
+        }
+      }
+    }
+    _reportErrorToFirebase(url, data, 'updateCartQuantityOnline');
+    return false;
+  }
+
+  void _reportErrorToFirebase(
+    String url,
+    Map<String, dynamic> payload,
+    String action,
+  ) {
+    try {
+      FirebaseCrashlytics.instance.recordError(
+        Exception("Cart API Failure in $action"),
+        StackTrace.current,
+        reason: 'Cart API $action failed after 3 retries',
+        information: ['URL: $url', 'Payload: $payload'],
+      );
+    } catch (e) {
+      debugPrint('Firebase Crashlytics logging failed: $e');
+    }
   }
 }

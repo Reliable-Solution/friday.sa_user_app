@@ -921,6 +921,7 @@
   "add_fund": "إضافة رصيد",
   "add_fund_from_your_digital_account": "أضف رصيدًا من حسابك الرقمي",
   "maximum_quantity_limit": "الحد الأقصى للكمية",
+  "more_stock_is_not_available": "لا يتوفر المزيد من المخزون لهذا المنتج",
   "partial_payment": "الدفع الجزئي",
   "your_wallet_have_not_sufficient_balance": "لا يوجد رصيد كافٍ في محفظتك",
   "do_you_want_to_use_now": "هل تريد استخدامه الآن؟",

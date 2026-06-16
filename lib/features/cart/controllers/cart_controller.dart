@@ -11,6 +11,7 @@ import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
 import 'package:friday_sa/helper/auth_helper.dart';
 import 'package:friday_sa/helper/date_converter.dart';
 import 'package:friday_sa/helper/module_helper.dart';
+import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 import 'package:friday_sa/helper/price_converter.dart';
 
 class CartController extends GetxController implements GetxService {
@@ -209,6 +210,8 @@ class CartController extends GetxController implements GetxService {
     _isLoading = true;
     update();
 
+    int oldQty = _cartList[cartIndex].quantity!;
+
     _cartList[cartIndex]
         .quantity = await cartServiceInterface.decideItemQuantity(
       isIncrement,
@@ -218,6 +221,20 @@ class CartController extends GetxController implements GetxService {
       quantityLimit,
       Get.find<SplashController>().configModel!.moduleConfig!.module!.stock!,
     );
+
+    if (isIncrement && _cartList[cartIndex].quantity == oldQty) {
+      _isLoading = false;
+      update();
+      bool moduleStock = Get.find<SplashController>().configModel!.moduleConfig!.module!.stock!;
+       if (moduleStock && oldQty >= stock!) {
+        showCustomSnackBar(
+          'more_stock_is_not_available'.tr,
+        );
+      } else if (quantityLimit != null && oldQty >= quantityLimit && quantityLimit != 0) {
+        showCustomSnackBar('${'maximum_quantity_limit'.tr} $quantityLimit');
+      }
+      return;
+    }
 
     num discountedPrice = await cartServiceInterface.calculateDiscountedPrice(
       _cartList[cartIndex],
