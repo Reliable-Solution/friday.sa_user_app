@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:friday_sa/util/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:friday_sa/api/curl_logger_interceptor.dart';
+import 'package:get/get.dart' hide Response;
 
 class DioClient {
   final String baseUrl;
@@ -70,7 +71,7 @@ class DioClient {
       return Response(
         requestOptions: RequestOptions(path: uri),
         statusCode: 1,
-        statusMessage: 'Connection failed',
+        statusMessage: 'connection_failed'.tr,
       );
     }
   }
@@ -82,7 +83,7 @@ class DioClient {
       return Response(
         requestOptions: RequestOptions(path: uri),
         statusCode: 1,
-        statusMessage: 'Connection failed',
+        statusMessage: 'connection_failed'.tr,
       );
     }
   }
@@ -94,7 +95,7 @@ class DioClient {
       return Response(
         requestOptions: RequestOptions(path: uri),
         statusCode: 1,
-        statusMessage: 'Connection failed',
+        statusMessage: 'connection_failed'.tr,
       );
     }
   }
@@ -106,7 +107,7 @@ class DioClient {
       return Response(
         requestOptions: RequestOptions(path: uri),
         statusCode: 1,
-        statusMessage: 'Connection failed',
+        statusMessage: 'connection_failed'.tr,
       );
     }
   }

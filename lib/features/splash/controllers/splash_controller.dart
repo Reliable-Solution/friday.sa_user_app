@@ -99,21 +99,21 @@ class SplashController extends GetxController implements GetxService {
 
   void changeCountry({String? baseUrl}) {
     Get.find<SharedPreferences>().setInt('country', _selectedCountryIndex);
-    Get.find<SharedPreferences>().setString(
-      'baseUrl',
-      baseUrl ??
-          _countryModel?[_selectedCountryIndex].url ??
-          AppConstants.baseUrl,
-    );
-    AppConstants.baseUrl =
-        baseUrl ??
-        _countryModel?[_selectedCountryIndex].url ??
-        AppConstants.baseUrl;
-    Get.find<ApiClient>().updateBaseUrl(AppConstants.baseUrl);
-    Get.find<SplashController>().getConfigData(
-      source: DataSourceEnum.client,
-      fromCountry: true,
-    );
+    // Get.find<SharedPreferences>().setString(
+    //   'baseUrl',
+    //   baseUrl ??
+    //       _countryModel?[_selectedCountryIndex].url ??
+    //       AppConstants.baseUrl,
+    // );
+    // AppConstants.baseUrl =
+    //     baseUrl ??
+    //     _countryModel?[_selectedCountryIndex].url ??
+    //     AppConstants.baseUrl;
+    // Get.find<ApiClient>().updateBaseUrl(AppConstants.baseUrl);
+    // Get.find<SplashController>().getConfigData(
+    //   source: DataSourceEnum.client,
+    //   fromCountry: true,
+    // );
 
     update();
   }

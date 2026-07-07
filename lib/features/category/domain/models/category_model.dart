@@ -7,6 +7,7 @@ class CategoryModel {
     String? createdAt,
     String? updatedAt,
     String? imageFullUrl,
+    List<CategoryModel>? childes,
   }) {
     _id = id;
     _name = name;
@@ -15,6 +16,7 @@ class CategoryModel {
     _createdAt = createdAt;
     _updatedAt = updatedAt;
     _imageFullUrl = imageFullUrl;
+    _childes = childes;
   }
 
   CategoryModel.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,12 @@ class CategoryModel {
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
     _imageFullUrl = json['image_full_url'];
+    if (json['childes'] != null) {
+      _childes = <CategoryModel>[];
+      json['childes'].forEach((v) {
+        _childes!.add(CategoryModel.fromJson(v));
+      });
+    }
   }
   int? _id;
   String? _name;
@@ -33,6 +41,7 @@ class CategoryModel {
   String? _createdAt;
   String? _updatedAt;
   String? _imageFullUrl;
+  List<CategoryModel>? _childes;
 
   int? get id => _id;
   String? get name => _name;
@@ -41,6 +50,7 @@ class CategoryModel {
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
   String? get imageFullUrl => _imageFullUrl;
+  List<CategoryModel>? get childes => _childes;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -51,6 +61,9 @@ class CategoryModel {
     data['created_at'] = _createdAt;
     data['updated_at'] = _updatedAt;
     data['image_full_url'] = _imageFullUrl;
+    if (_childes != null) {
+      data['childes'] = _childes!.map((v) => v.toJson()).toList();
+    }
 
     return data;
   }

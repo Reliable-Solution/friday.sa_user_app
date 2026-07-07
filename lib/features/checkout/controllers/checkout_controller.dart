@@ -387,7 +387,8 @@ class CheckoutController extends GetxController implements GetxService {
     _paymentMethodIndex = -1;
     _selectedDateSlot = 0;
     _selectedTimeSlot = 0;
-    _distance = null;
+    _distance = -1;
+    _isAddressLoading = true;
     _orderAttachment = null;
     _rawAttachment = null;
   }

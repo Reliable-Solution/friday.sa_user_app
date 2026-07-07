@@ -264,16 +264,20 @@ class SearchController extends GetxController implements GetxService {
             _storeResultText = query;
             _searchStoreList = [];
             _allStoreList = [];
-            _searchStoreList!.addAll(
-              StoreModel.fromJson(response.body).stores!,
-            );
-            _allStoreList!.addAll(StoreModel.fromJson(response.body).stores!);
+            final storeModel = StoreModel.fromJson(response.body);
+            if (storeModel.stores != null) {
+              _searchStoreList!.addAll(storeModel.stores!);
+              _allStoreList!.addAll(storeModel.stores!);
+            }
           } else {
             _itemResultText = query;
             _searchItemList = [];
             _allItemList = [];
-            _searchItemList!.addAll(ItemModel.fromJson(response.body).items!);
-            _allItemList!.addAll(ItemModel.fromJson(response.body).items!);
+            final itemModel = ItemModel.fromJson(response.body);
+            if (itemModel.items != null) {
+              _searchItemList!.addAll(itemModel.items!);
+              _allItemList!.addAll(itemModel.items!);
+            }
           }
         }
       }

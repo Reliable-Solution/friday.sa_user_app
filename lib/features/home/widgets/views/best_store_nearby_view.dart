@@ -160,7 +160,7 @@ class BestStoreNearbyView extends StatelessWidget {
                                   ),
                             isPharmacy
                                 ? SizedBox(
-                                    height: 130,
+                                    height: 170,
                                     width: Get.width,
                                     child: ListView.builder(
                                       scrollDirection: Axis.horizontal,
@@ -495,7 +495,7 @@ class BestStoreNearbyShimmer extends StatelessWidget {
               ),
         isPharmacy
             ? SizedBox(
-                height: 130,
+                height: 170,
                 width: Get.width,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,

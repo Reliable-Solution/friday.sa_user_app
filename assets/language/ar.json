@@ -1610,5 +1610,11 @@
   "enter_your_order_id_and_phone_number_to_track_order": "أدخل رقم الطلب ورقم الهاتف لتتبع الطلب",
   "enter_your_trip_id_and_phone_number_to_track_trip": "أدخل رقم الرحلة ورقم الهاتف لتتبع الرحلة",
   "closed": "مغلق",
-  "visit_now": "زيارة الآن"
+  "visit_now": "زيارة الآن",
+  "digital_payment_issue": "مشكلة في الدفع الرقمي",
+  "page_not_found": "الصفحة غير موجودة",
+  "connection_failed": "فشل الاتصال",
+  "please_enter_valid_iban_number": "يرجى إدخال رقم آيبان (IBAN) صحيح",
+  "organic": "عضوي",
+  "in_stock": "متوفر في المخزون"
 }

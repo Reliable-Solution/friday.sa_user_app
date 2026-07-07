@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:dio/io.dart' as dio_io;
 
 import 'package:flutter/foundation.dart';
 
@@ -47,6 +49,16 @@ class ApiClient extends GetxService {
     _dio.options.connectTimeout = Duration(seconds: timeoutInSeconds);
     _dio.options.receiveTimeout = Duration(seconds: timeoutInSeconds);
     _dio.options.validateStatus = (status) => status! < 600;
+
+    if (!kIsWeb) {
+      _dio.httpClientAdapter = dio_io.IOHttpClientAdapter(
+        createHttpClient: () {
+          final client = HttpClient();
+          client.maxConnectionsPerHost = 50; // Increase max concurrent connections per host
+          return client;
+        },
+      );
+    }
 
     token = sharedPreferences.getString(AppConstants.token);
     if (kDebugMode) {
@@ -246,15 +258,6 @@ class ApiClient extends GetxService {
         options: dio.Options(headers: requestHeaders),
       );
 
-      if (response.statusCode == 500) {
-        debugPrint('====> Retrying API due to 500 error: $uri');
-        await Future.delayed(const Duration(milliseconds: 1000));
-        response = await _dio.post(
-          fullUrl,
-          data: body,
-          options: dio.Options(headers: requestHeaders),
-        );
-      }
       stopwatch.stop();
 
       return handleDioResponse(
@@ -353,15 +356,6 @@ class ApiClient extends GetxService {
         options: dio.Options(headers: requestHeaders),
       );
 
-      if (response.statusCode == 500) {
-        debugPrint('====> Retrying API due to 500 error: $uri');
-        await Future.delayed(const Duration(milliseconds: 1000));
-        response = await _dio.put(
-          fullUrl,
-          data: body,
-          options: dio.Options(headers: requestHeaders),
-        );
-      }
       stopwatch.stop();
 
       return handleDioResponse(
@@ -397,15 +391,6 @@ class ApiClient extends GetxService {
         options: dio.Options(headers: requestHeaders),
       );
 
-      if (response.statusCode == 500) {
-        debugPrint('====> Retrying API due to 500 error: $uri');
-        await Future.delayed(const Duration(milliseconds: 1000));
-        response = await _dio.delete(
-          fullUrl,
-          data: body,
-          options: dio.Options(headers: requestHeaders),
-        );
-      }
       stopwatch.stop();
 
       return handleDioResponse(
@@ -436,7 +421,11 @@ class ApiClient extends GetxService {
     int? duration,
   }) {
     if (duration != null) {
-      _apiPerformance[uri] = duration;
+      String cleanUri = uri;
+      try {
+        cleanUri = Uri.parse(uri).path;
+      } catch (_) {}
+      _apiPerformance[cleanUri] = duration;
     }
 
     Response response0 = Response(
@@ -449,21 +438,6 @@ class ApiClient extends GetxService {
       statusText: response.statusMessage,
     );
 
-    // Color coding logic
-    String color = '\u001b[32m'; // Green (Fast)
-    String tag = ' [FAST] ';
-    if (duration != null) {
-      if (duration > 1000) {
-        color = '\u001b[31m'; // Red (High Load)
-        tag = ' 🚨 [HIGH LOAD] ';
-      } else if (duration > 500) {
-        color = '\u001b[33m'; // Yellow (Medium Load)
-        tag = ' ⚠️ [MEDIUM LOAD] ';
-      }
-    }
-    debugPrint(
-      '$color$tag====> API Response: [${response0.statusCode}] $uri ${duration != null ? '($duration ms)' : ''}\u001b[0m',
-    );
     debugPrint('Response Body: ${response.data}');
 
     if (response0.statusCode != 200 &&

@@ -56,6 +56,9 @@ class StoreController extends GetxController implements GetxService {
   Store? _store;
   Store? get store => _store;
 
+  Store? _cartStore;
+  Store? get cartStore => _cartStore;
+
   ItemModel? _storeItemModel;
   ItemModel? get storeItemModel => _storeItemModel;
 
@@ -573,7 +576,9 @@ class StoreController extends GetxController implements GetxService {
         final storeCats = Get.find<CategoryController>().storeCategoryList;
         final addedIds = <int>{};
         for (var category in storeCats) {
-          if (category.id != null && (_store!.categoryIds?.contains(category.id) ?? false) && !addedIds.contains(category.id)) {
+          if (category.id != null &&
+              (_store!.categoryIds?.contains(category.id) ?? false) &&
+              !addedIds.contains(category.id)) {
             _categoryList.add(category);
             addedIds.add(category.id!);
           }
@@ -598,17 +603,69 @@ class StoreController extends GetxController implements GetxService {
     bool fromCart = false,
     String slug = '',
   }) async {
+    if (fromCart) {
+      if (_cartStore == null || _cartStore!.id != store.id) {
+        _cartStore = null;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          update();
+        });
+      }
+      if (store.name != null) {
+        _cartStore = store;
+      } else {
+        _isLoading = true;
+        _cartStore = null;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          update();
+        });
+        Store? storeDetails = await storeServiceInterface.getStoreDetails(
+          store.id.toString(),
+          fromCart,
+          slug,
+          Get.find<LocalizationController>().locale.languageCode,
+          ModuleHelper.getModule(),
+          ModuleHelper.getCacheModule()?.id,
+          ModuleHelper.getModule()?.id,
+        );
+        log("===>>>> storeDetails api called (fromCart) === ${storeDetails?.toJson()}");
+        if (storeDetails != null) {
+          _cartStore = storeDetails;
+          Get.find<CheckoutController>().initializeTimeSlot(_cartStore!);
+        }
+        Get.find<CheckoutController>().setOrderType(
+          _cartStore != null
+              ? _cartStore!.delivery!
+                    ? 'delivery'
+                    : 'take_away'
+              : 'delivery',
+          notify: false,
+        );
+        _isLoading = false;
+        update();
+      }
+      return _cartStore;
+    }
+
     if (_store == null || _store!.id != store.id || slug.isNotEmpty) {
+      _store = null;
+      _storeItemModel = null;
+      _recommendedItemModel = null;
       _categoryIndex = 0;
       _subCategoryIndex = 0;
       _categoryList.clear();
       _subCategoryList.clear();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        update();
+      });
     }
     if (store.name != null) {
       _store = store;
     } else {
       _isLoading = true;
       _store = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        update();
+      });
       Store? storeDetails = await storeServiceInterface.getStoreDetails(
         store.id.toString(),
         fromCart,
@@ -648,7 +705,9 @@ class StoreController extends GetxController implements GetxService {
             ),
           );
         }
-        HomeScreen.loadData(false);
+        Future.delayed(const Duration(milliseconds: 1500), () {
+          HomeScreen.loadData(false);
+        });
         Get.find<CheckoutController>().clearPrevData();
       }
       Get.find<CheckoutController>().setOrderType(
@@ -812,17 +871,24 @@ class StoreController extends GetxController implements GetxService {
     }
     update();
     if (mainScrollController != null && mainScrollController!.hasClients) {
-      mainScrollController!.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      double targetOffset = 300;
+      if (mainScrollController!.offset > targetOffset) {
+        mainScrollController!.animateTo(
+          targetOffset,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     }
   }
 
   bool isSubCatLoad = false;
 
-  void setCategoryIndex(int index, {bool itemSearching = false}) {
+  void setCategoryIndex(
+    int index, {
+    bool itemSearching = false,
+    bool animate = true,
+  }) {
     if (_categoryList.isNotEmpty) {
       _categoryIndex = index;
       _subCategoryList.clear();
@@ -839,45 +905,70 @@ class StoreController extends GetxController implements GetxService {
         if (_subCatScrollController.hasClients) {
           _subCatScrollController.jumpTo(0);
         }
-        if (mainScrollController != null && mainScrollController!.hasClients) {
+      });
+      if (animate &&
+          mainScrollController != null &&
+          mainScrollController!.hasClients) {
+        double targetOffset = 300;
+        if (mainScrollController!.offset > targetOffset) {
           mainScrollController!.animateTo(
-            0,
+            targetOffset,
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeOut,
           );
         }
-      });
-      Get.find<CategoryController>()
-          .getSubCategoryList(
-            _categoryList[_categoryIndex].id?.toString() ?? "0",
-            storeId: _store?.id?.toString(),
-            loadCategoryItems: false,
-          )
-          .then((value) {
-            isSubCatLoad = false;
-            _subCategoryList.clear();
-            if (value != null && value.isNotEmpty) {
-              _subCategoryList.addAll(value);
-            }
-            update();
-            if (itemSearching) {
-              _storeSearchItemModel = null;
-              getStoreSearchItemList(
-                _searchText,
-                _store!.id.toString(),
-                1,
-                type,
-              );
-            } else {
-              _storeItemModel = null;
-              getStoreItemList(
-                _store!.id,
-                1,
-                Get.find<StoreController>().type,
-                false,
-              );
-            }
-          });
+      }
+      if (_categoryList[_categoryIndex].childes != null &&
+          _categoryList[_categoryIndex].childes!.isNotEmpty) {
+        isSubCatLoad = false;
+        _subCategoryList.clear();
+        _subCategoryList.addAll(_categoryList[_categoryIndex].childes!);
+        update();
+        if (itemSearching) {
+          _storeSearchItemModel = null;
+          getStoreSearchItemList(_searchText, _store!.id.toString(), 1, type);
+        } else {
+          _storeItemModel = null;
+          getStoreItemList(
+            _store!.id,
+            1,
+            Get.find<StoreController>().type,
+            false,
+          );
+        }
+      } else {
+        Get.find<CategoryController>()
+            .getSubCategoryList(
+              _categoryList[_categoryIndex].id?.toString() ?? "0",
+              storeId: _store?.id?.toString(),
+              loadCategoryItems: false,
+            )
+            .then((value) {
+              isSubCatLoad = false;
+              _subCategoryList.clear();
+              if (value != null && value.isNotEmpty) {
+                _subCategoryList.addAll(value);
+              }
+              update();
+              if (itemSearching) {
+                _storeSearchItemModel = null;
+                getStoreSearchItemList(
+                  _searchText,
+                  _store!.id.toString(),
+                  1,
+                  type,
+                );
+              } else {
+                _storeItemModel = null;
+                getStoreItemList(
+                  _store!.id,
+                  1,
+                  Get.find<StoreController>().type,
+                  false,
+                );
+              }
+            });
+      }
       // } else {
       //   if (itemSearching) {
       //     _storeSearchItemModel = null;
@@ -981,7 +1072,7 @@ class StoreController extends GetxController implements GetxService {
         storeId: storeId!.toString(),
       );
       setCategoryList();
-      setCategoryIndex(0);
+      setCategoryIndex(0, animate: false);
       if (categoryList.isEmpty) {
         getStoreItemList(storeId ?? store?.id, 1, 'all', false);
       }

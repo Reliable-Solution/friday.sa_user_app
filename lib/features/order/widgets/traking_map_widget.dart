@@ -246,7 +246,7 @@ class _TrackingMapWidgetState extends State<TrackingMapWidget> {
                   double.parse(addressModel.longitude!),
                 ),
                 infoWindow: InfoWindow(
-                  title: parcel ? 'Sender' : 'Destination',
+                  title: parcel ? 'sender'.tr : 'destination'.tr,
                   snippet: addressModel.address,
                 ),
                 icon: destinationImageData,
@@ -265,7 +265,7 @@ class _TrackingMapWidgetState extends State<TrackingMapWidget> {
                 ),
                 infoWindow: InfoWindow(
                   title: parcel
-                      ? 'Receiver'
+                      ? 'receiver'.tr
                       : Get.find<SplashController>()
                             .configModel!
                             .moduleConfig!

@@ -76,14 +76,19 @@ class LocationService implements LocationServiceInterface {
     Position myPosition,
   ) {
     if (mapController != null) {
-      mapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(myPosition.latitude, myPosition.longitude),
-            zoom: 17,
+      try {
+        mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: LatLng(myPosition.latitude, myPosition.longitude),
+              zoom: 17,
+            ),
           ),
-        ),
-      );
+        );
+      } catch (e) {
+        // Safe check to avoid 'Bad state: GoogleMapController for map ID was used after widget disposed'
+        debugPrint("GoogleMapController animation skipped: $e");
+      }
     }
   }
 

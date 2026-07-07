@@ -63,10 +63,6 @@ class HomeScreen extends StatefulWidget {
         fromModule: fromModule,
       );
     }
-
-
-    
-
     if (Get.find<SplashController>().module != null &&
         !Get.find<SplashController>()
             .configModel!

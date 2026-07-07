@@ -100,8 +100,10 @@ class _CartScreenState extends State<CartScreen> {
 
   void _initialBottomSheetShowHide() {
     Future.delayed(const Duration(milliseconds: 600), () {
+      if (!mounted) return;
       key.currentState?.expand();
       Future.delayed(const Duration(seconds: 3), () {
+        if (!mounted) return;
         setState(() {
           key.currentState?.contract();
         });
@@ -114,6 +116,7 @@ class _CartScreenState extends State<CartScreen> {
         _widgetKey.currentContext?.findRenderObject() as RenderBox;
     final size = renderBox.size;
 
+    if (!mounted) return;
     setState(() {
       _height = size.height;
     });
@@ -515,7 +518,7 @@ class _CartScreenState extends State<CartScreen> {
                                                     'discount'.tr,
                                                     style: robotoRegular,
                                                   ),
-                                                  storeController.store != null
+                                                  storeController.cartStore != null
                                                       ? PriceConverter.convertAnimationPrice(
                                                           cartController
                                                               .itemDiscountPrice,
@@ -640,8 +643,8 @@ class _CartScreenState extends State<CartScreen> {
                       splashController
                           .getModuleConfig(item.moduleType)
                           .newVariation! &&
-                      (storeController.store != null &&
-                          (storeController.store?.cutlery ?? false))
+                      (storeController.cartStore != null &&
+                          (storeController.cartStore?.cutlery ?? false))
                   ? Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: Dimensions.paddingSizeDefault,
@@ -823,7 +826,7 @@ class _CartScreenState extends State<CartScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('discount'.tr, style: robotoRegular),
-                              storeController.store != null
+                              storeController.cartStore != null
                                   ? PriceConverter.convertAnimationPrice(
                                       cartController.itemDiscountPrice,
                                       textStyle: robotoRegular,
@@ -1097,12 +1100,12 @@ class CheckoutButton extends StatelessWidget {
               splashController.configModel?.adminFreeDelivery;
           final storeController = Get.find<StoreController>();
           final originalDelivery = _calculateOriginalDeliveryCharge(
-            store: storeController.store,
+            store: storeController.cartStore,
             address: AddressHelper.getUserAddressFromSharedPref()!,
             distance: distance,
             extraCharge: extraCharge,
           );
-          if (!(FreeDeliveryHelper.isFreeDelivery(storeController.store)) &&
+          if (!(FreeDeliveryHelper.isFreeDelivery(storeController.cartStore)) &&
               ((adminFreeDelivery?.status ?? false) &&
                   (adminFreeDelivery?.type ==
                       'free_delivery_by_order_amount') &&
@@ -1212,8 +1215,8 @@ class CheckoutButton extends StatelessWidget {
                             cartController.cartList[0].item?.moduleType,
                           )
                           .newVariation! &&
-                      (storeController.store != null &&
-                          (storeController.store?.cutlery ?? false))
+                      (storeController.cartStore != null &&
+                          (storeController.cartStore?.cutlery ?? false))
                   ? Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 0,

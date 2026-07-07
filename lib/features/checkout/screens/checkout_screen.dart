@@ -99,6 +99,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
 
   Future<void> initCall() async {
     bool isLoggedIn = AuthHelper.isLoggedIn();
+    Get.find<CheckoutController>().clearPrevData();
     // Get.find<CheckoutController>().setGuestAddress(null, isUpdate: false);
     Get.find<CheckoutController>().initAdditionData();
     Get.find<CheckoutController>().streetNumberController.text =
@@ -374,7 +375,10 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                       orderAmount: orderAmount,
                     )..printWithName("here delivery charge");
 
-                    if (checkoutController.isAddressLoading) {
+                    if (checkoutController.isAddressLoading ||
+                        (checkoutController.orderType != 'take_away' &&
+                            (checkoutController.distance == null ||
+                                checkoutController.distance == -1))) {
                       _deliveryChargeForView = 'calculating'.tr;
                       deliveryCharge = -1;
                     } else if (checkoutController.orderType != 'take_away' &&
@@ -750,18 +754,21 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                                     ).primaryColor,
                                                   ),
                                                 ),
-                                                PriceConverter.convertAnimationPrice(
-                                                  checkoutController
-                                                      .viewTotalPrice,
-                                                  textStyle: robotoMedium
-                                                      .copyWith(
-                                                        fontSize: Dimensions
-                                                            .fontSizeLarge,
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).primaryColor,
+                                                (checkoutController.distance == -1 || checkoutController.isAddressLoading)
+                                                    ? Text(
+                                                        'calculating'.tr,
+                                                        style: robotoMedium.copyWith(
+                                                          fontSize: Dimensions.fontSizeLarge,
+                                                          color: Theme.of(context).primaryColor,
+                                                        ),
+                                                      )
+                                                    : PriceConverter.convertAnimationPrice(
+                                                        checkoutController.viewTotalPrice,
+                                                        textStyle: robotoMedium.copyWith(
+                                                          fontSize: Dimensions.fontSizeLarge,
+                                                          color: Theme.of(context).primaryColor,
+                                                        ),
                                                       ),
-                                                ),
                                               ],
                                             ),
                                           ),
@@ -817,7 +824,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
       ),
       child: SafeArea(
         child: CustomButton(
-          isLoading: checkoutController.isLoading,
+          isLoading: checkoutController.isLoading || (checkoutController.orderType != 'take_away' && (checkoutController.isAddressLoading || checkoutController.distance == -1)),
           buttonText: 'place_order'.tr,
           onPressed: checkoutController.acceptTerms
               ? () {
@@ -1048,10 +1055,26 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                       );
                     }
 
+                    if (finalAddress == null && checkoutController.orderType == 'take_away') {
+                      finalAddress = AddressHelper.getUserAddressFromSharedPref();
+                      if (finalAddress == null) {
+                        finalAddress = AddressModel(
+                          address: checkoutController.store?.address ?? '',
+                          latitude: checkoutController.store?.latitude ?? '0',
+                          longitude: checkoutController.store?.longitude ?? '0',
+                          contactPersonName: Get.find<ProfileController>().userInfoModel != null
+                              ? '${Get.find<ProfileController>().userInfoModel!.fName} ${Get.find<ProfileController>().userInfoModel!.lName}'
+                              : '',
+                          contactPersonNumber: Get.find<ProfileController>().userInfoModel?.phone ?? '',
+                        );
+                      }
+                    }
+
                     if (!isGuestLogIn &&
-                        finalAddress!.contactPersonNumber == 'null') {
+                        finalAddress != null &&
+                        (finalAddress.contactPersonNumber == 'null' || finalAddress.contactPersonNumber == null)) {
                       finalAddress.contactPersonNumber =
-                          Get.find<ProfileController>().userInfoModel!.phone;
+                          Get.find<ProfileController>().userInfoModel?.phone;
                     }
 
                     if (widget.storeId == null) {

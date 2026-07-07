@@ -81,7 +81,7 @@ class VerificationScreenState extends State<VerificationScreen> {
     _email = widget.email;
     _startTimer();
 
-    errorController = StreamController<ErrorAnimationType>();
+    errorController = StreamController<ErrorAnimationType>.broadcast();
   }
 
   void _normalizeNumber() async {
@@ -299,7 +299,9 @@ class VerificationScreenState extends State<VerificationScreen> {
                                   verificationController.updateVerificationCode,
                               beforeTextPaste: (text) => true,
                               errorAnimationController:
-                                  errorController, // Optional: Custom error animation
+                                  errorController.isClosed 
+                                      ? (errorController = StreamController<ErrorAnimationType>.broadcast())
+                                      : errorController, // Optional: Custom error animation
                               errorTextSpace: 20, // Space for error text
                               errorTextMargin: const EdgeInsets.only(top: 10),
                             ),

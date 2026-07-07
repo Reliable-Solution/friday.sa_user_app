@@ -1217,6 +1217,9 @@ class _StoreScreenState extends State<StoreScreen> {
                               : SliverToBoxAdapter(
                                   child: Container(
                                     width: Dimensions.webMaxWidth,
+                                    constraints: BoxConstraints(
+                                      minHeight: MediaQuery.of(context).size.height,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Theme.of(
                                         context,

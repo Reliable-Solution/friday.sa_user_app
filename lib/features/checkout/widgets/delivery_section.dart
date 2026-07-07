@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:friday_sa/common/widgets/address_widget.dart';
+import 'package:friday_sa/features/address/controllers/address_controller.dart';
 import 'package:friday_sa/features/address/domain/models/address_model.dart';
 import 'package:friday_sa/features/checkout/controllers/checkout_controller.dart';
 import 'package:friday_sa/features/location/controllers/location_controller.dart';
+import 'package:friday_sa/helper/address_helper.dart';
 import 'package:friday_sa/helper/auth_helper.dart';
 import 'package:friday_sa/helper/responsive_helper.dart';
 import 'package:friday_sa/helper/route_helper.dart';
@@ -69,18 +71,52 @@ class DeliverySection extends StatelessWidget {
                         Text('deliver_to'.tr, style: robotoMedium),
                         TextButton.icon(
                           onPressed: () async {
-                            var address = await Get.toNamed(
+                            var newAddress = await Get.toNamed(
                               RouteHelper.getAddAddressRoute(
                                 true,
                                 false,
                                 checkoutController.store!.zoneId,
                               ),
                             );
-                            if (address != null) {
-                              checkoutController.getDistanceInKM(
+                            if (newAddress != null) {
+                              checkoutController.setAddressLoading(true);
+                              if (newAddress.zoneData == null || newAddress.zoneData!.isEmpty) {
+                                var zoneResp = await Get.find<LocationController>().getZone(
+                                  newAddress.latitude,
+                                  newAddress.longitude,
+                                  false,
+                                );
+                                if (zoneResp.isSuccess) {
+                                  newAddress.zoneData = zoneResp.zoneData;
+                                }
+                              }
+
+                              List<AddressModel> tempAddressList = [];
+                              if (AddressHelper.getUserAddressFromSharedPref() != null) {
+                                tempAddressList.add(AddressHelper.getUserAddressFromSharedPref()!);
+                              }
+                              var originalAddressList = Get.find<AddressController>().addressList;
+                              if (originalAddressList != null && checkoutController.store != null) {
+                                for (int index = 0; index < originalAddressList.length; index++) {
+                                  if (originalAddressList[index].zoneIds!.contains(checkoutController.store!.zoneId)) {
+                                    tempAddressList.add(originalAddressList[index]);
+                                  }
+                                }
+                              }
+
+                              int newIndex = tempAddressList.indexWhere((element) =>
+                                (element.id != null && element.id == newAddress.id) ||
+                                (element.latitude == newAddress.latitude && element.longitude == newAddress.longitude)
+                              );
+
+                              if (newIndex != -1) {
+                                checkoutController.setAddressIndex(newIndex);
+                              }
+
+                              await checkoutController.getDistanceInKM(
                                 LatLng(
-                                  double.parse(address.latitude),
-                                  double.parse(address.longitude),
+                                  double.parse(newAddress.latitude),
+                                  double.parse(newAddress.longitude),
                                 ),
                                 LatLng(
                                   double.parse(
@@ -91,12 +127,13 @@ class DeliverySection extends StatelessWidget {
                                   ),
                                 ),
                               );
+                              checkoutController.setAddressLoading(false);
                               checkoutController.streetNumberController.text =
-                                  address.streetNumber ?? '';
+                                  newAddress.streetNumber ?? '';
                               checkoutController.houseController.text =
-                                  address.house ?? '';
+                                  newAddress.house ?? '';
                               checkoutController.floorController.text =
-                                  address.floor ?? '';
+                                  newAddress.floor ?? '';
                             }
                           },
                           icon: const Icon(Icons.add, size: 20),

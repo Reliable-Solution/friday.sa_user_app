@@ -1,14 +1,12 @@
 import 'dart:convert';
-import 'dart:developer' as dev;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 class CurlLoggerInterceptor extends Interceptor {
-  final Stopwatch _stopwatch = Stopwatch();
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    _stopwatch.start();
+    options.extra['stopwatch'] = Stopwatch()..start();
     try {
       final method = options.method;
       final uri = options.uri;
@@ -46,13 +44,12 @@ class CurlLoggerInterceptor extends Interceptor {
         curlString = curlString.substring(0, curlString.length - 1).trimRight();
       }
 
-      dev.log(
+      debugPrint(
         '\n============================================================\n'
         '🚀 CURL COMMAND GENERATED\n'
         '============================================================\n'
         '$curlString\n'
         '============================================================',
-        name: 'friday.curl',
       );
     } catch (e) {
       debugPrint('Error generating cURL: $e');
@@ -63,9 +60,8 @@ class CurlLoggerInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    _stopwatch.stop();
-    int duration = _stopwatch.elapsedMilliseconds;
-    _stopwatch.reset();
+    final stopwatch = response.requestOptions.extra['stopwatch'] as Stopwatch?;
+    int duration = stopwatch != null ? (stopwatch..stop()).elapsedMilliseconds : 0;
 
     // Performance Color Coding
     String color = '\u001b[32m'; // Green (Fast)
@@ -87,11 +83,11 @@ class CurlLoggerInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    _stopwatch.stop();
-    _stopwatch.reset();
+    final stopwatch = err.requestOptions.extra['stopwatch'] as Stopwatch?;
+    int duration = stopwatch != null ? (stopwatch..stop()).elapsedMilliseconds : 0;
 
     debugPrint(
-      '\u001b[31m[ERROR] ====> API Error: [${err.response?.statusCode}] ${err.requestOptions.path}\u001b[0m',
+      '\u001b[31m[ERROR] ====> API Error: [${err.response?.statusCode}] ${err.requestOptions.path} ($duration ms)\u001b[0m',
     );
     debugPrint('\u001b[31mError Message: ${err.message}\u001b[0m');
 

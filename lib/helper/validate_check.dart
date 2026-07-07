@@ -32,9 +32,9 @@ class ValidateCheck {
     if (value == null || value.isEmpty) {
       return 'pleaseEnterIban'.tr;
     }
-    // else if (!isValid(value)) {
-    //   return 'Please enter valid IBAN number';
-    // }
+     else if (value.isNotEmpty && value.length < 15) { // assuming some validation or just keeping it translated
+       return 'please_enter_valid_iban_number'.tr;
+     }
     return null;
   }
 

@@ -136,7 +136,7 @@ class _DeliveryOptionButtonWidgetState
                           style: robotoRegular.copyWith(
                             fontSize: Dimensions.fontSizeSmall,
                             color: (widget.deliveryChargeForView == 'calculating'.tr || widget.deliveryChargeForView.toLowerCase().contains('calculat'))
-                                ? Colors.green
+                                ? Theme.of(context).disabledColor
                                 : Theme.of(context).textTheme.bodyMedium!.color,
                           ),
                         ),

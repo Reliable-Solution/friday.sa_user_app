@@ -26,7 +26,11 @@ class ApiChecker {
       }
     } else {
       if (response.statusText != 'The guest id field is required.') {
-        showCustomSnackBar(response.statusText, getXSnackBar: getXSnackBar);
+        String? message = response.statusText;
+        if (response.statusCode == 500 || message == 'Internal Server Error') {
+          message = 'something_went_wrong'.tr;
+        }
+        showCustomSnackBar(message, getXSnackBar: getXSnackBar);
       }
     }
   }

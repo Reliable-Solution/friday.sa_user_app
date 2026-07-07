@@ -138,7 +138,7 @@ class PaymentFailedDialog extends StatelessWidget {
                                 Get.find<OrderController>()
                                     .cancelOrder(
                                       int.parse(orderID!),
-                                      'Digital payment issue',
+                                      'digital_payment_issue'.tr,
                                       guestId: guestId.isNotEmpty
                                           ? guestId
                                           : null,

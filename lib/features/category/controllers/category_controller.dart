@@ -134,6 +134,7 @@ class CategoryController extends GetxController implements GetxService {
     if (_storeCategoryList.isEmpty || reload || fromRecall) {
       if (reload) {
         _storeCategoryList = [];
+        update();
       }
       List<CategoryModel>? storeCategoryList;
       if (dataSource == DataSourceEnum.local) {
@@ -186,8 +187,14 @@ class CategoryController extends GetxController implements GetxService {
       if (_subCatScrollController.hasClients) {
         _subCatScrollController.jumpTo(0);
       }
-      if (mainScrollController != null && mainScrollController!.hasClients) {
-        mainScrollController!.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+      if (storeId == null &&
+          mainScrollController != null &&
+          mainScrollController!.hasClients) {
+        mainScrollController!.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
       }
     });
     _subCategoryList = null;
@@ -199,7 +206,14 @@ class CategoryController extends GetxController implements GetxService {
       _subCategoryList = [];
       _subCategoryList!.addAll(subCategoryList);
       if (loadCategoryItems) {
-        getCategoryItemList(subCategoryList.isNotEmpty ? subCategoryList[0].id.toString() : categoryID, 1, 'all', false);
+        getCategoryItemList(
+          subCategoryList.isNotEmpty
+              ? subCategoryList[0].id.toString()
+              : categoryID,
+          1,
+          'all',
+          false,
+        );
       }
     }
     return _subCategoryList;
@@ -209,7 +223,9 @@ class CategoryController extends GetxController implements GetxService {
     _subCategoryIndex = index;
     if (_isStore) {
       getCategoryStoreList(
-        (_subCategoryIndex != -1 && _subCategoryList != null && _subCategoryList!.isNotEmpty)
+        (_subCategoryIndex != -1 &&
+                _subCategoryList != null &&
+                _subCategoryList!.isNotEmpty)
             ? _subCategoryList![index].id.toString()
             : categoryID,
         1,
@@ -218,7 +234,9 @@ class CategoryController extends GetxController implements GetxService {
       );
     } else {
       getCategoryItemList(
-        (_subCategoryIndex != -1 && _subCategoryList != null && _subCategoryList!.isNotEmpty)
+        (_subCategoryIndex != -1 &&
+                _subCategoryList != null &&
+                _subCategoryList!.isNotEmpty)
             ? _subCategoryList![index].id.toString()
             : categoryID,
         1,
@@ -228,7 +246,11 @@ class CategoryController extends GetxController implements GetxService {
     }
     update();
     if (mainScrollController != null && mainScrollController!.hasClients) {
-      mainScrollController!.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+      mainScrollController!.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 

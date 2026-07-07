@@ -12,31 +12,48 @@ class $CacheResponseTable extends CacheResponse
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _endPointMeta =
-      const VerificationMeta('endPoint');
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _endPointMeta = const VerificationMeta(
+    'endPoint',
+  );
   @override
   late final GeneratedColumn<String> endPoint = GeneratedColumn<String>(
-      'end_point', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+    'end_point',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
   static const VerificationMeta _headerMeta = const VerificationMeta('header');
   @override
   late final GeneratedColumn<String> header = GeneratedColumn<String>(
-      'header', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _responseMeta =
-      const VerificationMeta('response');
+    'header',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _responseMeta = const VerificationMeta(
+    'response',
+  );
   @override
   late final GeneratedColumn<String> response = GeneratedColumn<String>(
-      'response', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'response',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [id, endPoint, header, response];
   @override
@@ -45,28 +62,36 @@ class $CacheResponseTable extends CacheResponse
   String get actualTableName => $name;
   static const String $name = 'cache_response';
   @override
-  VerificationContext validateIntegrity(Insertable<CacheResponseData> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<CacheResponseData> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('end_point')) {
-      context.handle(_endPointMeta,
-          endPoint.isAcceptableOrUnknown(data['end_point']!, _endPointMeta));
+      context.handle(
+        _endPointMeta,
+        endPoint.isAcceptableOrUnknown(data['end_point']!, _endPointMeta),
+      );
     } else if (isInserting) {
       context.missing(_endPointMeta);
     }
     if (data.containsKey('header')) {
-      context.handle(_headerMeta,
-          header.isAcceptableOrUnknown(data['header']!, _headerMeta));
+      context.handle(
+        _headerMeta,
+        header.isAcceptableOrUnknown(data['header']!, _headerMeta),
+      );
     } else if (isInserting) {
       context.missing(_headerMeta);
     }
     if (data.containsKey('response')) {
-      context.handle(_responseMeta,
-          response.isAcceptableOrUnknown(data['response']!, _responseMeta));
+      context.handle(
+        _responseMeta,
+        response.isAcceptableOrUnknown(data['response']!, _responseMeta),
+      );
     } else if (isInserting) {
       context.missing(_responseMeta);
     }
@@ -79,14 +104,22 @@ class $CacheResponseTable extends CacheResponse
   CacheResponseData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return CacheResponseData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      endPoint: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}end_point'])!,
-      header: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}header'])!,
-      response: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}response'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      endPoint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}end_point'],
+      )!,
+      header: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}header'],
+      )!,
+      response: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}response'],
+      )!,
     );
   }
 
@@ -102,11 +135,12 @@ class CacheResponseData extends DataClass
   final String endPoint;
   final String header;
   final String response;
-  const CacheResponseData(
-      {required this.id,
-      required this.endPoint,
-      required this.header,
-      required this.response});
+  const CacheResponseData({
+    required this.id,
+    required this.endPoint,
+    required this.header,
+    required this.response,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -126,8 +160,10 @@ class CacheResponseData extends DataClass
     );
   }
 
-  factory CacheResponseData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory CacheResponseData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CacheResponseData(
       id: serializer.fromJson<int>(json['id']),
@@ -147,14 +183,17 @@ class CacheResponseData extends DataClass
     };
   }
 
-  CacheResponseData copyWith(
-          {int? id, String? endPoint, String? header, String? response}) =>
-      CacheResponseData(
-        id: id ?? this.id,
-        endPoint: endPoint ?? this.endPoint,
-        header: header ?? this.header,
-        response: response ?? this.response,
-      );
+  CacheResponseData copyWith({
+    int? id,
+    String? endPoint,
+    String? header,
+    String? response,
+  }) => CacheResponseData(
+    id: id ?? this.id,
+    endPoint: endPoint ?? this.endPoint,
+    header: header ?? this.header,
+    response: response ?? this.response,
+  );
   CacheResponseData copyWithCompanion(CacheResponseCompanion data) {
     return CacheResponseData(
       id: data.id.present ? data.id.value : this.id,
@@ -203,9 +242,9 @@ class CacheResponseCompanion extends UpdateCompanion<CacheResponseData> {
     required String endPoint,
     required String header,
     required String response,
-  })  : endPoint = Value(endPoint),
-        header = Value(header),
-        response = Value(response);
+  }) : endPoint = Value(endPoint),
+       header = Value(header),
+       response = Value(response);
   static Insertable<CacheResponseData> custom({
     Expression<int>? id,
     Expression<String>? endPoint,
@@ -220,11 +259,12 @@ class CacheResponseCompanion extends UpdateCompanion<CacheResponseData> {
     });
   }
 
-  CacheResponseCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? endPoint,
-      Value<String>? header,
-      Value<String>? response}) {
+  CacheResponseCompanion copyWith({
+    Value<int>? id,
+    Value<String>? endPoint,
+    Value<String>? header,
+    Value<String>? response,
+  }) {
     return CacheResponseCompanion(
       id: id ?? this.id,
       endPoint: endPoint ?? this.endPoint,
@@ -274,20 +314,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [cacheResponse];
 }
 
-typedef $$CacheResponseTableCreateCompanionBuilder = CacheResponseCompanion
-    Function({
-  Value<int> id,
-  required String endPoint,
-  required String header,
-  required String response,
-});
-typedef $$CacheResponseTableUpdateCompanionBuilder = CacheResponseCompanion
-    Function({
-  Value<int> id,
-  Value<String> endPoint,
-  Value<String> header,
-  Value<String> response,
-});
+typedef $$CacheResponseTableCreateCompanionBuilder =
+    CacheResponseCompanion Function({
+      Value<int> id,
+      required String endPoint,
+      required String header,
+      required String response,
+    });
+typedef $$CacheResponseTableUpdateCompanionBuilder =
+    CacheResponseCompanion Function({
+      Value<int> id,
+      Value<String> endPoint,
+      Value<String> header,
+      Value<String> response,
+    });
 
 class $$CacheResponseTableFilterComposer
     extends Composer<_$AppDatabase, $CacheResponseTable> {
@@ -299,16 +339,24 @@ class $$CacheResponseTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get endPoint => $composableBuilder(
-      column: $table.endPoint, builder: (column) => ColumnFilters(column));
+    column: $table.endPoint,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get header => $composableBuilder(
-      column: $table.header, builder: (column) => ColumnFilters(column));
+    column: $table.header,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get response => $composableBuilder(
-      column: $table.response, builder: (column) => ColumnFilters(column));
+    column: $table.response,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$CacheResponseTableOrderingComposer
@@ -321,16 +369,24 @@ class $$CacheResponseTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get endPoint => $composableBuilder(
-      column: $table.endPoint, builder: (column) => ColumnOrderings(column));
+    column: $table.endPoint,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get header => $composableBuilder(
-      column: $table.header, builder: (column) => ColumnOrderings(column));
+    column: $table.header,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get response => $composableBuilder(
-      column: $table.response, builder: (column) => ColumnOrderings(column));
+    column: $table.response,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CacheResponseTableAnnotationComposer
@@ -355,23 +411,31 @@ class $$CacheResponseTableAnnotationComposer
       $composableBuilder(column: $table.response, builder: (column) => column);
 }
 
-class $$CacheResponseTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $CacheResponseTable,
-    CacheResponseData,
-    $$CacheResponseTableFilterComposer,
-    $$CacheResponseTableOrderingComposer,
-    $$CacheResponseTableAnnotationComposer,
-    $$CacheResponseTableCreateCompanionBuilder,
-    $$CacheResponseTableUpdateCompanionBuilder,
-    (
-      CacheResponseData,
-      BaseReferences<_$AppDatabase, $CacheResponseTable, CacheResponseData>
-    ),
-    CacheResponseData,
-    PrefetchHooks Function()> {
+class $$CacheResponseTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CacheResponseTable,
+          CacheResponseData,
+          $$CacheResponseTableFilterComposer,
+          $$CacheResponseTableOrderingComposer,
+          $$CacheResponseTableAnnotationComposer,
+          $$CacheResponseTableCreateCompanionBuilder,
+          $$CacheResponseTableUpdateCompanionBuilder,
+          (
+            CacheResponseData,
+            BaseReferences<
+              _$AppDatabase,
+              $CacheResponseTable,
+              CacheResponseData
+            >,
+          ),
+          CacheResponseData,
+          PrefetchHooks Function()
+        > {
   $$CacheResponseTableTableManager(_$AppDatabase db, $CacheResponseTable table)
-      : super(TableManagerState(
+    : super(
+        TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
@@ -380,52 +444,55 @@ class $$CacheResponseTableTableManager extends RootTableManager<
               $$CacheResponseTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$CacheResponseTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> endPoint = const Value.absent(),
-            Value<String> header = const Value.absent(),
-            Value<String> response = const Value.absent(),
-          }) =>
-              CacheResponseCompanion(
-            id: id,
-            endPoint: endPoint,
-            header: header,
-            response: response,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String endPoint,
-            required String header,
-            required String response,
-          }) =>
-              CacheResponseCompanion.insert(
-            id: id,
-            endPoint: endPoint,
-            header: header,
-            response: response,
-          ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> endPoint = const Value.absent(),
+                Value<String> header = const Value.absent(),
+                Value<String> response = const Value.absent(),
+              }) => CacheResponseCompanion(
+                id: id,
+                endPoint: endPoint,
+                header: header,
+                response: response,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String endPoint,
+                required String header,
+                required String response,
+              }) => CacheResponseCompanion.insert(
+                id: id,
+                endPoint: endPoint,
+                header: header,
+                response: response,
+              ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: null,
-        ));
+        ),
+      );
 }
 
-typedef $$CacheResponseTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $CacheResponseTable,
-    CacheResponseData,
-    $$CacheResponseTableFilterComposer,
-    $$CacheResponseTableOrderingComposer,
-    $$CacheResponseTableAnnotationComposer,
-    $$CacheResponseTableCreateCompanionBuilder,
-    $$CacheResponseTableUpdateCompanionBuilder,
-    (
+typedef $$CacheResponseTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CacheResponseTable,
       CacheResponseData,
-      BaseReferences<_$AppDatabase, $CacheResponseTable, CacheResponseData>
-    ),
-    CacheResponseData,
-    PrefetchHooks Function()>;
+      $$CacheResponseTableFilterComposer,
+      $$CacheResponseTableOrderingComposer,
+      $$CacheResponseTableAnnotationComposer,
+      $$CacheResponseTableCreateCompanionBuilder,
+      $$CacheResponseTableUpdateCompanionBuilder,
+      (
+        CacheResponseData,
+        BaseReferences<_$AppDatabase, $CacheResponseTable, CacheResponseData>,
+      ),
+      CacheResponseData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;

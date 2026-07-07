@@ -182,7 +182,7 @@ class BottomSection extends StatelessWidget {
                                     ),
                             ],
                           ),
-                          checkoutController.distance == -1
+                          (checkoutController.distance == -1 || checkoutController.isAddressLoading)
                               ? Text(
                                   'calculating'.tr,
                                   style: robotoMedium.copyWith(
@@ -434,11 +434,11 @@ class BottomSection extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('delivery_fee'.tr, style: robotoRegular),
-                            checkoutController.distance == -1
+                             (checkoutController.distance == -1 || checkoutController.isAddressLoading)
                                 ? Text(
                                     'calculating'.tr,
                                     style: robotoRegular.copyWith(
-                                      color: Colors.red,
+                                      color: Theme.of(context).disabledColor,
                                     ),
                                   )
                                 : (deliveryCharge == 0 ||
@@ -544,7 +544,7 @@ class BottomSection extends StatelessWidget {
                                 : Theme.of(context).primaryColor,
                           ),
                         ),
-                        checkoutController.distance == -1
+                        (checkoutController.distance == -1 || checkoutController.isAddressLoading)
                             ? Text(
                                 'calculating'.tr,
                                 style: robotoMedium.copyWith(

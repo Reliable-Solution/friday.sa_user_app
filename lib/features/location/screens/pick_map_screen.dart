@@ -91,14 +91,16 @@ class _PickMapScreenState extends State<PickMapScreen> {
     _initialPosition = initial;
     _checkAlreadyLocationEnable();
 
-    locationController.setMarker(
-      widget.fromAddAddress
-          ? LatLng(locationController.position.latitude, locationController.position.longitude)
-          : _initialPosition,
-    );
-    if(mounted) {
-      setState(() {});
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      locationController.setMarker(
+        widget.fromAddAddress
+            ? LatLng(locationController.position.latitude, locationController.position.longitude)
+            : _initialPosition,
+      );
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   _checkAlreadyLocationEnable() async {

@@ -106,6 +106,7 @@ class DashboardScreenState extends State<DashboardScreen> {
         .getRegistrationSuccessfulSharedPref();
     if (canShowBottomSheet) {
       Future.delayed(const Duration(seconds: 1), () {
+        if (!mounted) return;
         ResponsiveHelper.isDesktop(Get.context)
             ? Get.dialog(
                 const Dialog(child: StoreRegistrationSuccessBottomSheet()),
@@ -116,7 +117,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                 Get.find<HomeController>().saveIsStoreRegistrationSharedPref(
                   false,
                 );
-                setState(() {});
+                if (mounted) {
+                  setState(() {});
+                }
               })
             : showModalBottomSheet(
                 context: Get.context!,
@@ -130,7 +133,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                 Get.find<HomeController>().saveIsStoreRegistrationSharedPref(
                   false,
                 );
-                setState(() {});
+                if (mounted) {
+                  setState(() {});
+                }
               });
       });
     }
@@ -142,6 +147,7 @@ class DashboardScreenState extends State<DashboardScreen> {
         Get.find<LocationController>().showLocationSuggestion &&
         active) {
       Future.delayed(const Duration(seconds: 1), () {
+        if (!mounted) return;
         showModalBottomSheet(
           context: Get.context!,
           isScrollControlled: true,
@@ -149,7 +155,9 @@ class DashboardScreenState extends State<DashboardScreen> {
           builder: (con) => const AddressBottomSheetWidget(),
         ).then((value) {
           Get.find<LocationController>().showSuggestedLocation(false);
-          setState(() {});
+          if (mounted) {
+            setState(() {});
+          }
         });
       });
     }

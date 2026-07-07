@@ -1610,5 +1610,11 @@
   "enter_your_order_id_and_phone_number_to_track_order": "Enter your order ID & phone number to track order",
   "enter_your_trip_id_and_phone_number_to_track_trip": "Enter your trip ID & phone number to track trip",
   "closed": "Closed",
-  "visit_now": "Visit Now"
+  "visit_now": "Visit Now",
+  "digital_payment_issue": "Digital payment issue",
+  "page_not_found": "Page Not Found",
+  "connection_failed": "Connection failed",
+  "please_enter_valid_iban_number": "Please enter valid IBAN number",
+  "organic": "Organic",
+  "in_stock": "In stock"
 }

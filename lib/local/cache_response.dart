@@ -21,7 +21,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<int> insertCacheResponse(CacheResponseCompanion entry) async {
-    return into(cacheResponse).insert(entry);
+    return into(cacheResponse).insert(entry, mode: InsertMode.insertOrReplace);
   }
 
   Future<List<CacheResponseData>> getAllCacheResponses() async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NotFound extends StatelessWidget {
   const NotFound({super.key});
@@ -13,7 +14,7 @@ class NotFound extends StatelessWidget {
           tween: Tween<num>(begin: 12.0, end: 30.0),
           builder: (BuildContext context, dynamic value, Widget? child) {
             return Text(
-              'Page Not Found',
+              'page_not_found'.tr,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: value),
             );
           },

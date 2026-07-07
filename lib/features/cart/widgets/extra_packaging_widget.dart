@@ -14,7 +14,7 @@ class ExtraPackagingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<StoreController>(
       builder: (storeController) {
-        return storeController.store?.extraPackagingStatus ?? false
+        return storeController.cartStore?.extraPackagingStatus ?? false
             ? Container(
                 padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
                 margin: const EdgeInsets.all(Dimensions.paddingSizeDefault),
@@ -40,7 +40,7 @@ class ExtraPackagingWidget extends StatelessWidget {
                     const Spacer(),
                     Text(
                       PriceConverter.convertPrice(
-                        storeController.store?.extraPackagingAmount,
+                        storeController.cartStore?.extraPackagingAmount,
                       ),
                       style: robotoMedium,
                     ),

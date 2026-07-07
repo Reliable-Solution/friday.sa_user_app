@@ -103,8 +103,13 @@ class ItemWidget extends StatelessWidget {
     if (isFoodModule) {
       isAvailable = true;
     }
-    bool isOutOfStock = !isStore &&
-        Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! &&
+    bool isOutOfStock =
+        !isStore &&
+        Get.find<SplashController>()
+            .configModel!
+            .moduleConfig!
+            .module!
+            .stock! &&
         (item!.stock ?? 0) <= 0;
 
     return Stack(
@@ -532,7 +537,11 @@ class ItemWidget extends StatelessWidget {
                                   : MainAxisAlignment.spaceBetween,
                               children: [
                                 const SizedBox(),
-                                CartCountView(item: item!, index: index, isCompact: true),
+                                CartCountView(
+                                  item: item!,
+                                  index: index,
+                                  isCompact: true,
+                                ),
                               ],
                             ),
                           ],

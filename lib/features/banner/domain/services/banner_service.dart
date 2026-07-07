@@ -47,10 +47,12 @@ class BannerService implements BannerServiceInterface {
   @override
   List<int?> moduleIdList() {
     List<int?> moduleIdList = [];
-    for (ZoneData zone
-        in AddressHelper.getUserAddressFromSharedPref()!.zoneData!) {
-      for (Modules module in zone.modules ?? []) {
-        moduleIdList.add(module.id);
+    final address = AddressHelper.getUserAddressFromSharedPref();
+    if (address != null && address.zoneData != null) {
+      for (ZoneData zone in address.zoneData!) {
+        for (Modules module in zone.modules ?? []) {
+          moduleIdList.add(module.id);
+        }
       }
     }
     return moduleIdList;

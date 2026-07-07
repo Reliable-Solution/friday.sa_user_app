@@ -194,7 +194,7 @@ class SpecialOfferCard extends StatelessWidget {
                         border: Border.all(color: Colors.grey.shade200),
                       ),
                       child: Text(
-                        'Organic',
+                        'organic'.tr,
                         style: robotoRegular.copyWith(fontSize: 10, color: Colors.black54),
                       ),
                     ),
@@ -258,7 +258,7 @@ class SpecialOfferCard extends StatelessWidget {
                   const Icon(Icons.check_circle_outline, color: Color(0xFF108910), size: 14),
                   const SizedBox(width: 4),
                   Text(
-                    'In stock',
+                    'in_stock'.tr,
                     style: robotoMedium.copyWith(fontSize: 11, color: Colors.grey.shade700),
                   ),
                 ],
