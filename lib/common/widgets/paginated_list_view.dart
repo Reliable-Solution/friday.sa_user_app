@@ -249,20 +249,26 @@ class _PaginatedListViewState extends State<PaginatedListView> {
     int pageSize = widget.totalSize != null ? (widget.totalSize! / 10).ceil() : (_offset ?? 0) + 1;
     debugPrint("====> Pagination $_offset. && $pageSize");
     if (_offset != null && _offset! < pageSize && !_offsetList.contains(_offset! + 1)) {
-      setState(() {
-        _offset = _offset! + 1;
-        _offsetList.add(_offset);
-        _isLoading = true;
-      });
+      if (mounted) {
+        setState(() {
+          _offset = _offset! + 1;
+          _offsetList.add(_offset);
+          _isLoading = true;
+        });
+      }
       await widget.onPaginate(_offset);
-      setState(() {
-        _isLoading = false;
-      });
-    } else {
-      if (_isLoading) {
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
+      }
+    } else {
+      if (_isLoading) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }

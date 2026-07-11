@@ -787,10 +787,13 @@ class StoreController extends GetxController implements GetxService {
       );
 
       if (storeItemModel != null) {
-        if (offset == 1) {
+        if (offset == 1 || _storeItemModel == null) {
           _storeItemModel = storeItemModel;
         } else {
-          _storeItemModel!.items!.addAll(storeItemModel.items!);
+          if (storeItemModel.items != null) {
+            _storeItemModel!.items ??= [];
+            _storeItemModel!.items!.addAll(storeItemModel.items!);
+          }
           _storeItemModel!.totalSize = storeItemModel.totalSize;
           _storeItemModel!.offset = storeItemModel.offset;
         }

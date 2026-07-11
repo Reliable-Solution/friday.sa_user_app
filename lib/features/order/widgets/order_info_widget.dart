@@ -1094,16 +1094,19 @@ class OrderInfoWidget extends StatelessWidget {
                                                 );
                                                 startApiCall();
                                               },
+                                              customBorder: const CircleBorder(),
                                               child: Container(
-                                                 padding: const EdgeInsets.all(8),
+                                                 height: 40,
+                                                 width: 40,
+                                                 alignment: Alignment.center,
                                                  decoration: BoxDecoration(
                                                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                                                    shape: BoxShape.circle,
                                                  ),
                                                  child: Image.asset(
                                                    Images.chatOrderDetails,
-                                                   height: 18,
-                                                   width: 18,
+                                                   height: 25,
+                                                   width: 25,
                                                    matchTextDirection: true,
                                                    color: Theme.of(context).primaryColor,
                                                  ),
@@ -1444,16 +1447,19 @@ class OrderInfoWidget extends StatelessWidget {
                                         ),
                                       );
                                     },
+                                    customBorder: const CircleBorder(),
                                     child: Container(
-                                                 padding: const EdgeInsets.all(8),
+                                                 height: 40,
+                                                 width: 40,
+                                                 alignment: Alignment.center,
                                                  decoration: BoxDecoration(
                                                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                                                    shape: BoxShape.circle,
                                                  ),
                                                  child: Image.asset(
                                                    Images.chatOrderDetails,
-                                                   height: 18,
-                                                   width: 18,
+                                                   height: 25,
+                                                   width: 25,
                                                    matchTextDirection: true,
                                                    color: Theme.of(context).primaryColor,
                                                  ),

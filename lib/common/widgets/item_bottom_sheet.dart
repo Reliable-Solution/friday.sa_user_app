@@ -101,7 +101,11 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
             .newVariation ??
         false;
     Get.find<ItemController>().initData(widget.item, widget.cart);
-    Get.find<StoreController>().getStoreDetails(store_model.Store(id: widget.item!.storeId), false);
+    Get.find<StoreController>().getStoreDetails(
+      store_model.Store(id: widget.item!.storeId),
+      false,
+      fromCart: widget.cart != null,
+    );
     _initInitialState();
   }
 
@@ -1178,7 +1182,10 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                       Expanded(
                                         child: GetBuilder<StoreController>(
                                           builder: (storeController) {
-                                            bool isStoreClosed = (widget.item!.storeOpen == 0 || widget.item!.storeActive == false) || (storeController.store != null && (storeController.store!.open == 0 || storeController.store!.active == false));
+                                             bool isStoreClosed = (widget.item!.storeOpen == 0 || widget.item!.storeActive == false) ||
+                                                 ((widget.cart != null ? storeController.cartStore : storeController.store) != null &&
+                                                 ((widget.cart != null ? storeController.cartStore : storeController.store)!.open == 0 ||
+                                                 (widget.cart != null ? storeController.cartStore : storeController.store)!.active == false));
 
 
                                             return GetBuilder<CartController>(
@@ -1505,7 +1512,7 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                                                               .addToCartOnline(
                                                                                 onlineCart,
                                                                               );
-                                                                          Get.back();
+                                                                          Navigator.pop(Get.context!);
                                                                           //showCartSnackBar();
                                                                         }
                                                                       });
@@ -1530,7 +1537,7 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                                                     success,
                                                                   ) {
                                                                     if (success) {
-                                                                      Get.back();
+                                                                      Navigator.pop(Get.context!);
                                                                     }
                                                                   });
                                                             } else {
@@ -1539,12 +1546,12 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                                                   >()
                                                                   .addToCartOnline(
                                                                     onlineCart,
-                                                                  )
+                                                                    )
                                                                   .then((
                                                                     success,
                                                                   ) {
                                                                     if (success) {
-                                                                      Get.back();
+                                                                      Navigator.pop(Get.context!);
                                                                     }
                                                                   });
                                                             }

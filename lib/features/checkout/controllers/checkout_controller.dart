@@ -165,6 +165,7 @@ class CheckoutController extends GetxController implements GetxService {
     _store = await Get.find<StoreController>().getStoreDetails(
       Store(id: storeId),
       false,
+      fromCart: true,
     );
     initializeTimeSlot(_store!);
 

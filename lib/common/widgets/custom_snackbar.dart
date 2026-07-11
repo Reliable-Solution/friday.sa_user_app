@@ -12,42 +12,33 @@ void showCustomSnackBar(
 }) {
   if (message != null && message.isNotEmpty) {
     if (getXSnackBar) {
-      try {
-        Get.showSnackbar(
-          GetSnackBar(
-            backgroundColor: Colors.transparent,
-            messageText: CustomToast(text: message, isError: isError),
-            maxWidth: 500,
-            duration: Duration(seconds: showDuration ?? 3),
-            snackStyle: SnackStyle.FLOATING,
-            margin: const EdgeInsets.only(
-              left: Dimensions.paddingSizeSmall,
-              right: Dimensions.paddingSizeSmall,
-              bottom: 100,
-            ),
-            borderRadius: 50,
-            isDismissible: true,
-            dismissDirection: DismissDirection.horizontal,
-          ),
-        );
-      } catch (e) {
-        // Fallback to standard ScaffoldMessenger if GetX snackbar controller throws LateInitializationError
-        if (Get.context != null) {
-          ScaffoldMessenger.of(Get.context!).showSnackBar(
-            SnackBar(
-              dismissDirection: DismissDirection.endToStart,
-              elevation: 0.0,
+      if (Get.context != null && Overlay.maybeOf(Get.context!) != null) {
+        try {
+          Get.showSnackbar(
+            GetSnackBar(
               backgroundColor: Colors.transparent,
-              padding: EdgeInsets.zero,
-              content: CustomToast(text: message, isError: isError),
-              duration: Duration(seconds: showDuration ?? 2),
-              behavior: SnackBarBehavior.floating,
+              messageText: CustomToast(text: message, isError: isError),
+              maxWidth: 500,
+              duration: Duration(seconds: showDuration ?? 3),
+              snackStyle: SnackStyle.FLOATING,
+              margin: const EdgeInsets.only(
+                left: Dimensions.paddingSizeSmall,
+                right: Dimensions.paddingSizeSmall,
+                bottom: 100,
+              ),
+              borderRadius: 50,
+              isDismissible: true,
+              dismissDirection: DismissDirection.horizontal,
             ),
           );
-        }
+          return;
+        } catch (_) {}
       }
-    } else {
-      if (Get.context != null) {
+    }
+    
+    // Fallback to standard ScaffoldMessenger
+    if (Get.context != null && ScaffoldMessenger.maybeOf(Get.context!) != null) {
+      try {
         ScaffoldMessenger.of(Get.context!).showSnackBar(
           SnackBar(
             dismissDirection: DismissDirection.endToStart,
@@ -59,7 +50,7 @@ void showCustomSnackBar(
             behavior: SnackBarBehavior.floating,
           ),
         );
-      }
+      } catch (_) {}
     }
   }
 }

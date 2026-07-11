@@ -114,32 +114,39 @@ class NotificationHelper {
       if (message.data['type'] == 'demo_reset') {
         Get.dialog(const DemoResetDialogWidget(), barrierDismissible: false);
       }
-      if (message.data['type'] == 'message' &&
-          Get.currentRoute.startsWith(RouteHelper.messages)) {
+      if (message.data['type'] == 'message') {
         if (AuthHelper.isLoggedIn()) {
           Get.find<ChatController>().getConversationList(1);
-          if (Get.find<ChatController>().messageModel!.conversation!.id
-                  .toString() ==
-              message.data['conversation_id'].toString()) {
-            Get.find<ChatController>().getMessages(
-              1,
-              NotificationBodyModel(
-                notificationType: NotificationType.message,
-                adminId: message.data['sender_type'] == UserType.admin.name
-                    ? 0
-                    : null,
-                restaurantId:
-                    message.data['sender_type'] == UserType.vendor.name
-                    ? 0
-                    : null,
-                deliverymanId:
-                    message.data['sender_type'] == UserType.delivery_man.name
-                    ? 0
-                    : null,
-              ),
-              null,
-              int.parse(message.data['conversation_id'].toString()),
-            );
+          if (Get.currentRoute.startsWith(RouteHelper.messages)) {
+            if (Get.find<ChatController>().messageModel != null &&
+                Get.find<ChatController>().messageModel!.conversation != null &&
+                Get.find<ChatController>().messageModel!.conversation!.id.toString() ==
+                    message.data['conversation_id'].toString()) {
+              Get.find<ChatController>().getMessages(
+                1,
+                NotificationBodyModel(
+                  notificationType: NotificationType.message,
+                  adminId: message.data['sender_type'] == UserType.admin.name
+                      ? 0
+                      : null,
+                  restaurantId:
+                      message.data['sender_type'] == UserType.vendor.name
+                      ? 0
+                      : null,
+                  deliverymanId:
+                      message.data['sender_type'] == UserType.delivery_man.name
+                      ? 0
+                      : null,
+                ),
+                null,
+                int.parse(message.data['conversation_id'].toString()),
+              );
+            } else {
+              NotificationHelper.showNotification(
+                message,
+                flutterLocalNotificationsPlugin,
+              );
+            }
           } else {
             NotificationHelper.showNotification(
               message,
@@ -147,15 +154,6 @@ class NotificationHelper {
             );
           }
         }
-      } else if (message.data['type'] == 'message' &&
-          Get.currentRoute.startsWith(RouteHelper.conversation)) {
-        if (AuthHelper.isLoggedIn()) {
-          Get.find<ChatController>().getConversationList(1);
-        }
-        NotificationHelper.showNotification(
-          message,
-          flutterLocalNotificationsPlugin,
-        );
       } else if (message.data['type'] == 'demo_reset') {
       } else if (message.data['type'] == 'trip_status' &&
           message.data['status'] == 'completed' &&

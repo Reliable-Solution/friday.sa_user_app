@@ -59,6 +59,34 @@ class _StoreRegistrationScreenState extends State<StoreRegistrationScreen>
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
+  // Public Info Fields
+  final TextEditingController _nationalAddressController = TextEditingController();
+  final TextEditingController _crNumberController = TextEditingController();
+  final TextEditingController _orgIdController = TextEditingController();
+  final TextEditingController _mgmtPhoneController = TextEditingController();
+  final TextEditingController _mgmtEmailController = TextEditingController();
+  final TextEditingController _mgmtPhoneMarketingController = TextEditingController();
+  final TextEditingController _mgmtEmailMarketingController = TextEditingController();
+  
+  // Branches Info Fields
+  final TextEditingController _branchNumberController = TextEditingController();
+  final TextEditingController _branchNameController = TextEditingController();
+  final TextEditingController _branchLocationController = TextEditingController();
+  final TextEditingController _branchCoordinatesController = TextEditingController();
+  final TextEditingController _branchContactController = TextEditingController();
+
+  // Accounting Info Fields
+  final TextEditingController _bankNameController = TextEditingController();
+  final TextEditingController _beneficiaryNameController = TextEditingController();
+  final TextEditingController _accountingEmailController = TextEditingController();
+
+  // Owner & Management Info Fields
+  final TextEditingController _ownerContactEmailController = TextEditingController();
+  final TextEditingController _managerNameController = TextEditingController();
+  final TextEditingController _managerPhoneController = TextEditingController();
+  final TextEditingController _managerEmailController = TextEditingController();
+
   final List<FocusNode> _nameFocus = [];
   final List<FocusNode> _addressFocus = [];
   final FocusNode _vatFocus = FocusNode();
@@ -69,6 +97,31 @@ class _StoreRegistrationScreenState extends State<StoreRegistrationScreen>
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
   final FocusNode _confirmPasswordFocus = FocusNode();
+
+  // FocusNodes for new fields
+  final FocusNode _nationalAddressFocus = FocusNode();
+  final FocusNode _crNumberFocus = FocusNode();
+  final FocusNode _orgIdFocus = FocusNode();
+  final FocusNode _mgmtPhoneFocus = FocusNode();
+  final FocusNode _mgmtEmailFocus = FocusNode();
+  final FocusNode _mgmtPhoneMarketingFocus = FocusNode();
+  final FocusNode _mgmtEmailMarketingFocus = FocusNode();
+  final FocusNode _branchNumberFocus = FocusNode();
+  final FocusNode _branchNameFocus = FocusNode();
+  final FocusNode _branchLocationFocus = FocusNode();
+  final FocusNode _branchCoordinatesFocus = FocusNode();
+  final FocusNode _branchContactFocus = FocusNode();
+  final FocusNode _bankNameFocus = FocusNode();
+  final FocusNode _beneficiaryNameFocus = FocusNode();
+  final FocusNode _accountingEmailFocus = FocusNode();
+  final FocusNode _ownerContactEmailFocus = FocusNode();
+  final FocusNode _managerNameFocus = FocusNode();
+  final FocusNode _managerPhoneFocus = FocusNode();
+  final FocusNode _managerEmailFocus = FocusNode();
+
+  bool _isVatIncluded = false;
+  String type = 'vendor';
+
   final List<Language>? _languageList =
       Get.find<SplashController>().configModel!.language;
   final ScrollController _scrollController = ScrollController();
@@ -77,6 +130,11 @@ class _StoreRegistrationScreenState extends State<StoreRegistrationScreen>
   final GlobalKey _locationInfoScrollKey = GlobalKey();
 
   String? _countryDialCode;
+  String? _mgmtPhoneCountryCode;
+  String? _mgmtPhoneMarketingCountryCode;
+  String? _branchContactCountryCode;
+  String? _managerPhoneCountryCode;
+
   bool firstTime = true;
   TabController? _tabController;
   final List<Tab> _tabs = [];
@@ -95,6 +153,10 @@ class _StoreRegistrationScreenState extends State<StoreRegistrationScreen>
     _countryDialCode = CountryCode.fromCountryCode(
       Get.find<SplashController>().configModel!.country!,
     ).dialCode;
+    _mgmtPhoneCountryCode = _countryDialCode;
+    _mgmtPhoneMarketingCountryCode = _countryDialCode;
+    _branchContactCountryCode = _countryDialCode;
+    _managerPhoneCountryCode = _countryDialCode;
     for (var language in _languageList) {
       if (kDebugMode) {
         debugPrint(language.toJson().toString());
@@ -269,6 +331,53 @@ class _StoreRegistrationScreenState extends State<StoreRegistrationScreen>
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
+                                            Text(
+                                              'type'.tr,
+                                              style: robotoBold.copyWith(
+                                                fontSize: Dimensions.fontSizeLarge,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).cardColor,
+                                                borderRadius: BorderRadius.circular(
+                                                  Dimensions.radiusDefault,
+                                                ),
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: Colors.black12,
+                                                    blurRadius: 5,
+                                                    spreadRadius: 1,
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: Dimensions.paddingSizeSmall,
+                                                vertical: Dimensions.paddingSizeDefault,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  typeWidget(
+                                                    title: 'vendor'.tr,
+                                                    value: 'vendor',
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 25,
+                                                    child: VerticalDivider(),
+                                                  ),
+                                                  typeWidget(
+                                                    title: 'farmer'.tr,
+                                                    value: 'farmer',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
                                             Text(
                                               'vendor_info'.tr,
                                               style: robotoBold.copyWith(
@@ -996,7 +1105,323 @@ class _StoreRegistrationScreenState extends State<StoreRegistrationScreen>
                                                 ],
                                               ),
                                             ),
-                                          ],
+                                          
+
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
+                                            Text(
+                                              'public_info'.tr,
+                                              style: robotoBold.copyWith(
+                                                fontSize: Dimensions.fontSizeLarge,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).cardColor,
+                                                borderRadius: BorderRadius.circular(
+                                                  Dimensions.radiusDefault,
+                                                ),
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: Colors.black12,
+                                                    blurRadius: 5,
+                                                    spreadRadius: 1,
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: Dimensions.paddingSizeSmall,
+                                                vertical: Dimensions.paddingSizeDefault,
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  CustomTextField(
+                                                    hintText: 'enter_national_address'.tr,
+                                                    labelText: 'national_address'.tr,
+                                                    controller: _nationalAddressController,
+                                                    focusNode: _nationalAddressFocus,
+                                                    nextFocus: _crNumberFocus,
+                                                    inputType: TextInputType.text,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_cr_number'.tr,
+                                                    labelText: 'cr_number'.tr,
+                                                    controller: _crNumberController,
+                                                    focusNode: _crNumberFocus,
+                                                    nextFocus: _orgIdFocus,
+                                                    inputType: TextInputType.text,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_organisation_id'.tr,
+                                                    labelText: 'organisation_id'.tr,
+                                                    controller: _orgIdController,
+                                                    focusNode: _orgIdFocus,
+                                                    inputType: TextInputType.number,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Checkbox(
+                                                        value: _isVatIncluded,
+                                                        activeColor: Theme.of(context).primaryColor,
+                                                        onChanged: (bool? value) {
+                                                          setState(() {
+                                                            _isVatIncluded = value ?? false;
+                                                          });
+                                                        },
+                                                      ),
+                                                      Text(
+                                                        'vat_included_in_price_list'.tr,
+                                                        style: robotoRegular.copyWith(
+                                                          fontSize: Dimensions.fontSizeDefault,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
+                                            Text(
+                                              'management_info'.tr,
+                                              style: robotoBold.copyWith(
+                                                fontSize: Dimensions.fontSizeLarge,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).cardColor,
+                                                borderRadius: BorderRadius.circular(
+                                                  Dimensions.radiusDefault,
+                                                ),
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: Colors.black12,
+                                                    blurRadius: 5,
+                                                    spreadRadius: 1,
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: Dimensions.paddingSizeSmall,
+                                                vertical: Dimensions.paddingSizeDefault,
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  CustomTextField(
+                                                    hintText: 'enter_management_contact_no'.tr,
+                                                    labelText: 'management_contact_no'.tr,
+                                                    controller: _mgmtPhoneController,
+                                                    focusNode: _mgmtPhoneFocus,
+                                                    nextFocus: _mgmtEmailFocus,
+                                                    inputType: TextInputType.phone,
+                                                    isPhone: true,
+                                                    onCountryChanged: (CountryCode countryCode) {
+                                                      // country code callback
+                                                    },
+                                                    countryDialCode: _countryDialCode,
+                                                    validator: (value) {
+                                                      if (value != null && value.trim().isNotEmpty) {
+                                                        String cleanVal = value.trim();
+                                                        if (cleanVal.startsWith('+') || cleanVal.startsWith('00')) {
+                                                          return 'enter_a_valid_phone_number'.tr;
+                                                        }
+                                                        if (!RegExp(r'^[0-9]+$').hasMatch(cleanVal) || cleanVal.length < 5 || cleanVal.length > 12) {
+                                                          return 'enter_a_valid_phone_number'.tr;
+                                                        }
+                                                      }
+                                                      return null;
+                                                    },
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_management_email'.tr,
+                                                    labelText: 'management_email'.tr,
+                                                    controller: _mgmtEmailController,
+                                                    focusNode: _mgmtEmailFocus,
+                                                    nextFocus: _mgmtPhoneMarketingFocus,
+                                                    inputType: TextInputType.emailAddress,
+                                                    validator: (value) => value != null && value.trim().isNotEmpty
+                                                        ? ValidateCheck.validateEmail(value.trim())
+                                                        : null,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_marketing_contact_no'.tr,
+                                                    labelText: 'marketing_contact_no'.tr,
+                                                    controller: _mgmtPhoneMarketingController,
+                                                    focusNode: _mgmtPhoneMarketingFocus,
+                                                    nextFocus: _mgmtEmailMarketingFocus,
+                                                    inputType: TextInputType.phone,
+                                                    isPhone: true,
+                                                    onCountryChanged: (CountryCode countryCode) {
+                                                      // country code callback
+                                                    },
+                                                    countryDialCode: _countryDialCode,
+                                                    validator: (value) {
+                                                      if (value != null && value.trim().isNotEmpty) {
+                                                        String cleanVal = value.trim();
+                                                        if (cleanVal.startsWith('+') || cleanVal.startsWith('00')) {
+                                                          return 'enter_a_valid_phone_number'.tr;
+                                                        }
+                                                        if (!RegExp(r'^[0-9]+$').hasMatch(cleanVal) || cleanVal.length < 5 || cleanVal.length > 12) {
+                                                          return 'enter_a_valid_phone_number'.tr;
+                                                        }
+                                                      }
+                                                      return null;
+                                                    },
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_marketing_email'.tr,
+                                                    labelText: 'marketing_email'.tr,
+                                                    controller: _mgmtEmailMarketingController,
+                                                    focusNode: _mgmtEmailMarketingFocus,
+                                                    nextFocus: _branchNumberFocus,
+                                                    inputType: TextInputType.emailAddress,
+                                                    validator: (value) => value != null && value.trim().isNotEmpty
+                                                        ? ValidateCheck.validateEmail(value.trim())
+                                                        : null,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
+                                            Text(
+                                              'branches_info'.tr,
+                                              style: robotoBold.copyWith(
+                                                fontSize: Dimensions.fontSizeLarge,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).cardColor,
+                                                borderRadius: BorderRadius.circular(
+                                                  Dimensions.radiusDefault,
+                                                ),
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: Colors.black12,
+                                                    blurRadius: 5,
+                                                    spreadRadius: 1,
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: Dimensions.paddingSizeSmall,
+                                                vertical: Dimensions.paddingSizeDefault,
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  CustomTextField(
+                                                    hintText: 'enter_number_of_branches'.tr,
+                                                    labelText: 'number_of_branches'.tr,
+                                                    controller: _branchNumberController,
+                                                    focusNode: _branchNumberFocus,
+                                                    nextFocus: _branchNameFocus,
+                                                    inputType: TextInputType.number,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_branch_name'.tr,
+                                                    labelText: 'branch_name_1'.tr,
+                                                    controller: _branchNameController,
+                                                    focusNode: _branchNameFocus,
+                                                    nextFocus: _branchLocationFocus,
+                                                    inputType: TextInputType.text,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_branch_google_map_location'.tr,
+                                                    labelText: 'branch_google_map_location'.tr,
+                                                    controller: _branchLocationController,
+                                                    focusNode: _branchLocationFocus,
+                                                    nextFocus: _branchCoordinatesFocus,
+                                                    inputType: TextInputType.text,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_branch_coordinates'.tr,
+                                                    labelText: 'branch_coordinates'.tr,
+                                                    controller: _branchCoordinatesController,
+                                                    focusNode: _branchCoordinatesFocus,
+                                                    nextFocus: _branchContactFocus,
+                                                    inputType: TextInputType.text,
+                                                    validator: (value) {
+                                                      if (value != null && value.trim().isNotEmpty) {
+                                                         final regExp = RegExp(r'^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$');
+                                                        if (!regExp.hasMatch(value.trim())) {
+                                                          return 'enter_valid_coordinates'.tr;
+                                                        }
+                                                      }
+                                                      return null;
+                                                    },
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_branch_contact'.tr,
+                                                    labelText: 'branch_contact'.tr,
+                                                    controller: _branchContactController,
+                                                    focusNode: _branchContactFocus,
+                                                    inputType: TextInputType.phone,
+                                                    isPhone: true,
+                                                    onCountryChanged: (CountryCode countryCode) {
+                                                      // country code callback
+                                                    },
+                                                    countryDialCode: _countryDialCode,
+                                                    validator: (value) {
+                                                      if (value != null && value.trim().isNotEmpty) {
+                                                        String cleanVal = value.trim();
+                                                        if (cleanVal.startsWith('+') || cleanVal.startsWith('00')) {
+                                                          return 'enter_a_valid_phone_number'.tr;
+                                                        }
+                                                        if (!RegExp(r'^[0-9]+$').hasMatch(cleanVal) || cleanVal.length < 5 || cleanVal.length > 12) {
+                                                          return 'enter_a_valid_phone_number'.tr;
+                                                        }
+                                                      }
+                                                      return null;
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                           ],
                                         ),
                                       ),
                                     ),
@@ -1291,6 +1716,190 @@ class _StoreRegistrationScreenState extends State<StoreRegistrationScreen>
                                                         ),
                                                   ),
                                                   // const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
+                                            Text(
+                                              'accounting_info'.tr,
+                                              style: robotoBold.copyWith(
+                                                fontSize: Dimensions.fontSizeLarge,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).cardColor,
+                                                borderRadius: BorderRadius.circular(
+                                                  Dimensions.radiusDefault,
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey.withValues(
+                                                      alpha: 0.1,
+                                                    ),
+                                                    spreadRadius: 1,
+                                                    blurRadius: 10,
+                                                    offset: const Offset(0, 1),
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: Dimensions.paddingSizeSmall,
+                                                vertical: Dimensions.paddingSizeDefault,
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  CustomTextField(
+                                                    hintText: 'enter_bank_name'.tr,
+                                                    labelText: 'bank_name'.tr,
+                                                    controller: _bankNameController,
+                                                    focusNode: _bankNameFocus,
+                                                    nextFocus: _beneficiaryNameFocus,
+                                                    inputType: TextInputType.text,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_beneficiary_name'.tr,
+                                                    labelText: 'beneficiary_name'.tr,
+                                                    controller: _beneficiaryNameController,
+                                                    focusNode: _beneficiaryNameFocus,
+                                                    nextFocus: _accountingEmailFocus,
+                                                    inputType: TextInputType.name,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_accounting_email'.tr,
+                                                    labelText: 'accounting_finance_email'.tr,
+                                                    controller: _accountingEmailController,
+                                                    focusNode: _accountingEmailFocus,
+                                                    nextFocus: _ownerContactEmailFocus,
+                                                    inputType: TextInputType.emailAddress,
+                                                    validator: (value) => value != null && value.trim().isNotEmpty
+                                                        ? ValidateCheck.validateEmail(value.trim())
+                                                        : null,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_vat_number'.tr,
+                                                    labelText: 'vat_number'.tr,
+                                                    controller: _vatController,
+                                                    focusNode: _vatFocus,
+                                                    inputType: TextInputType.text,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
+                                            Text(
+                                              'owner_manager_info'.tr,
+                                              style: robotoBold.copyWith(
+                                                fontSize: Dimensions.fontSizeLarge,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: Dimensions.paddingSizeDefault,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).cardColor,
+                                                borderRadius: BorderRadius.circular(
+                                                  Dimensions.radiusDefault,
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey.withValues(
+                                                      alpha: 0.1,
+                                                    ),
+                                                    spreadRadius: 1,
+                                                    blurRadius: 10,
+                                                    offset: const Offset(0, 1),
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: Dimensions.paddingSizeSmall,
+                                                vertical: Dimensions.paddingSizeDefault,
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  CustomTextField(
+                                                    hintText: 'enter_owner_contact_email'.tr,
+                                                    labelText: 'owner_contact_email'.tr,
+                                                    controller: _ownerContactEmailController,
+                                                    focusNode: _ownerContactEmailFocus,
+                                                    nextFocus: _managerNameFocus,
+                                                    inputType: TextInputType.emailAddress,
+                                                    validator: (value) => value != null && value.trim().isNotEmpty
+                                                        ? ValidateCheck.validateEmail(value.trim())
+                                                        : null,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_manager_name'.tr,
+                                                    labelText: 'manager_name'.tr,
+                                                    controller: _managerNameController,
+                                                    focusNode: _managerNameFocus,
+                                                    nextFocus: _managerPhoneFocus,
+                                                    inputType: TextInputType.name,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_manager_phone'.tr,
+                                                    labelText: 'manager_contact_no'.tr,
+                                                    controller: _managerPhoneController,
+                                                    focusNode: _managerPhoneFocus,
+                                                    nextFocus: _managerEmailFocus,
+                                                    inputType: TextInputType.phone,
+                                                    isPhone: true,
+                                                    onCountryChanged: (CountryCode countryCode) {
+                                                      _managerPhoneCountryCode = countryCode.dialCode;
+                                                    },
+                                                    countryDialCode: _countryDialCode != null
+                                                        ? CountryCode.fromCountryCode(Get.find<SplashController>().configModel!.country!).code
+                                                        : Get.find<LocalizationController>().locale.countryCode,
+                                                    validator: (value) {
+                                                      if (value != null && value.trim().isNotEmpty) {
+                                                        String cleanVal = value.trim();
+                                                        if (cleanVal.startsWith('+') || cleanVal.startsWith('00')) {
+                                                          return 'enter_a_valid_phone_number'.tr;
+                                                        }
+                                                        if (!RegExp(r'^[0-9]+$').hasMatch(cleanVal) || cleanVal.length < 5 || cleanVal.length > 12) {
+                                                          return 'enter_a_valid_phone_number'.tr;
+                                                          }
+                                                      }
+                                                      return null;
+                                                    },
+                                                  ),
+                                                  const SizedBox(
+                                                    height: Dimensions.paddingSizeExtremeLarge,
+                                                  ),
+                                                  CustomTextField(
+                                                    hintText: 'enter_manager_email'.tr,
+                                                    labelText: 'manager_contact_email'.tr,
+                                                    controller: _managerEmailController,
+                                                    focusNode: _managerEmailFocus,
+                                                    inputType: TextInputType.emailAddress,
+                                                    validator: (value) => value != null && value.trim().isNotEmpty
+                                                        ? ValidateCheck.validateEmail(value.trim())
+                                                        : null,
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -2792,6 +3401,28 @@ class _StoreRegistrationScreenState extends State<StoreRegistrationScreen>
                           pickUpZoneIds: storeRegController.pickupZoneIdList
                               .map((e) => e.toString())
                               .toList(),
+                          type: type,
+                          nationalAddress: _nationalAddressController.text.trim(),
+                          crNumber: _crNumberController.text.trim(),
+                          organisationId: _orgIdController.text.trim(),
+                          isVatIncluded: _isVatIncluded ? "1" : "0",
+                          mgmtContact: _mgmtPhoneController.text.trim().isNotEmpty ? '$_mgmtPhoneCountryCode${_mgmtPhoneController.text.trim()}' : '',
+                          mgmtEmail: _mgmtEmailController.text.trim(),
+                          mgmtContactMarketing: _mgmtPhoneMarketingController.text.trim().isNotEmpty ? '$_mgmtPhoneMarketingCountryCode${_mgmtPhoneMarketingController.text.trim()}' : '',
+                          mgmtEmailMarketing: _mgmtEmailMarketingController.text.trim(),
+                          numberOfBranches: _branchNumberController.text.trim(),
+                          branchName: _branchNameController.text.trim(),
+                          branchLocation: _branchLocationController.text.trim(),
+                          branchCoordinates: _branchCoordinatesController.text.trim(),
+                          branchContact: _branchContactController.text.trim().isNotEmpty ? '$_branchContactCountryCode${_branchContactController.text.trim()}' : '',
+                          bankName: _bankNameController.text.trim(),
+                          beneficiaryName: _beneficiaryNameController.text.trim(),
+                          accountingEmail: _accountingEmailController.text.trim(),
+                          ownerContactEmail: _ownerContactEmailController.text.trim(),
+                          managerName: _managerNameController.text.trim(),
+                          managerContact: _managerPhoneController.text.trim().isNotEmpty ? '$_managerPhoneCountryCode${_managerPhoneController.text.trim()}' : '',
+                          managerEmail: _managerEmailController.text.trim(),
+                          vatNumber: _vatController.text.trim(),
                         ),
                       );
                     }
@@ -2865,5 +3496,48 @@ class _StoreRegistrationScreenState extends State<StoreRegistrationScreen>
         curve: Curves.easeInOut,
       );
     }
+  }
+
+  Widget typeWidget({required String title, required String value}) {
+    final isSelected = type == value;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() {
+          type = value;
+        }),
+        child: ColoredBox(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                margin: const EdgeInsets.only(
+                  right: Dimensions.paddingSizeSmall,
+                ),
+                padding: const EdgeInsets.all(3),
+                child: CircleAvatar(
+                  radius: 6,
+                  backgroundColor: isSelected
+                      ? Theme.of(context).primaryColor
+                      : Colors.transparent,
+                ),
+              ),
+              Text(
+                title,
+                style: robotoRegular.copyWith(
+                  fontSize: Dimensions.fontSizeDefault,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

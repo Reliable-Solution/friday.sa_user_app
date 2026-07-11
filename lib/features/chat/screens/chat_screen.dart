@@ -108,7 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
           canPop: true,
           onPopInvokedWithResult: (didPop, result) async {
             if (widget.fromNotification) {
-              Get.offAllNamed(RouteHelper.getInitialRoute());
+              Future.microtask(() => Get.offAllNamed(RouteHelper.getInitialRoute()));
             } else {
               return;
             }
