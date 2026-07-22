@@ -15,7 +15,9 @@ import 'package:friday_sa/common/widgets/custom_snackbar.dart';
 import 'package:friday_sa/common/widgets/discount_tag.dart';
 import 'package:friday_sa/common/widgets/not_available_widget.dart';
 import 'package:friday_sa/features/store/screens/store_screen.dart';
+import 'package:friday_sa/helper/responsive_helper.dart';
 import 'package:friday_sa/helper/string_extension.dart';
+
 
 class StoreCardWithDistance extends StatelessWidget {
   const StoreCardWithDistance({
@@ -31,6 +33,7 @@ class StoreCardWithDistance extends StatelessWidget {
   final bool? isNewStore;
   final bool? fromTopOffers;
   final bool isFeatured;
+  final bool showAllChips = true;
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +49,15 @@ class StoreCardWithDistance extends StatelessWidget {
 
     bool isFreeDelivery = FreeDeliveryHelper.isFreeDelivery(store);
 
+    double imageSize = MediaQuery.of(context).size.width < 340 ? 65 : 80;
+    double logoSize = MediaQuery.of(context).size.width < 340 ? 24 : 28;
+    double horizontalGap = MediaQuery.of(context).size.width < 340 ? 4 : 12;
+    double cardPadding = MediaQuery.of(context).size.width < 340 ? 4.0 : 8.0;
+
     return Container(
       width: cardWidth,
       constraints: BoxConstraints(minHeight: isFreeDelivery ? 120 : 108),
-      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 1, vertical: 5),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
@@ -84,7 +92,7 @@ class StoreCardWithDistance extends StatelessWidget {
         },
         radius: 16,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 4.0),
+          padding: EdgeInsets.symmetric(horizontal: cardPadding, vertical: 4.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -94,8 +102,8 @@ class StoreCardWithDistance extends StatelessWidget {
                 children: [
                   // Background Cover Image
                   Container(
-                    width: 80,
-                    height: 80,
+                    width: imageSize,
+                    height: imageSize,
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(12),
@@ -131,8 +139,8 @@ class StoreCardWithDistance extends StatelessWidget {
                     bottom: -2,
                     right: -2,
                     child: Container(
-                      width: 28,
-                      height: 28,
+                      width: logoSize,
+                      height: logoSize,
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         shape: BoxShape.circle,
@@ -157,13 +165,15 @@ class StoreCardWithDistance extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: horizontalGap),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
+                child: SingleChildScrollView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
                     // Store Name and PLUS badge row
                     Column(
                       children: [
@@ -202,10 +212,10 @@ class StoreCardWithDistance extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
 
-                    // Ratings & Chips Wrap (Highly responsive, zero overflow, minimalistic bullet dots)
+                    // Ratings & Chips Wrap (Highly responsive, zero overflow, minimalistic spacing)
                     Wrap(
-                      spacing: 3,
-                      runSpacing: 2,
+                      spacing: 5,
+                      runSpacing: 4,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Row(
@@ -226,14 +236,7 @@ class StoreCardWithDistance extends StatelessWidget {
                             ),
                           ],
                         ),
-                        Text(
-                          '•',
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 12,
-                          ),
-                        ),
-                        if (store.delivery ?? false) ...[
+                        if ((store.delivery ?? false) && showAllChips) ...[
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 6,
@@ -255,22 +258,15 @@ class StoreCardWithDistance extends StatelessWidget {
                                 Text(
                                   'home_delivery'.tr,
                                   style: robotoBold.copyWith(
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     color: Theme.of(context).primaryColor,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Text(
-                            '•',
-                            style: TextStyle(
-                              color: Colors.grey.shade400,
-                              fontSize: 12,
-                            ),
-                          ),
                         ],
-                        if (store.takeAway ?? false) ...[
+                        if ((store.takeAway ?? false) && showAllChips) ...[
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 6,
@@ -292,26 +288,19 @@ class StoreCardWithDistance extends StatelessWidget {
                                 Text(
                                   'pickup'.tr,
                                   style: robotoBold.copyWith(
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     color: Colors.green.shade900,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Text(
-                            '•',
-                            style: TextStyle(
-                              color: Colors.grey.shade400,
-                              fontSize: 12,
-                            ),
-                          ),
                         ],
                         if (FreeDeliveryHelper.isFreeDelivery(store)) ...[
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 4,
-                              vertical: 1.5,
+                              horizontal: 6,
+                              vertical: 2,
                             ),
                             decoration: BoxDecoration(
                               color: Colors.green.shade600,
@@ -329,57 +318,45 @@ class StoreCardWithDistance extends StatelessWidget {
                                 Text(
                                   'free_delivery'.tr,
                                   style: robotoBold.copyWith(
-                                    fontSize: 10,
+                                    fontSize: 12,
                                     color: Colors.white,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Text(
-                            '•',
-                            style: TextStyle(
-                              color: Colors.grey.shade400,
-                              fontSize: 12,
+                        ],
+                        if (showAllChips) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade100,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.local_offer_outlined,
+                                  color: Colors.green.shade900,
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  'in_store_price'.tr,
+                                  style: robotoBold.copyWith(
+                                    fontSize: 12,
+                                    color: Colors.green.shade900,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade100,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.local_offer_outlined,
-                                color: Colors.green.shade900,
-                                size: 12,
-                              ),
-                              const SizedBox(width: 3),
-                              Text(
-                                'in_store_price'.tr,
-                                style: robotoBold.copyWith(
-                                  fontSize: 11,
-                                  color: Colors.green.shade900,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                         if ((Get.find<StoreController>().getDiscount(store) ?? 0) > 0) ...[
-                          Text(
-                            '•',
-                            style: TextStyle(
-                              color: Colors.grey.shade400,
-                              fontSize: 12,
-                            ),
-                          ),
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 6,
@@ -401,7 +378,7 @@ class StoreCardWithDistance extends StatelessWidget {
                                 Text(
                                   'COUPON',
                                   style: robotoBold.copyWith(
-                                    fontSize: 10,
+                                    fontSize: 12,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -487,7 +464,8 @@ class StoreCardWithDistance extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+            ),
+              const SizedBox(width: 4),
 
               // Wishlist Heart Icon placed beautifully at the trailing end of the card
               GetBuilder<FavouriteController>(
@@ -513,7 +491,7 @@ class StoreCardWithDistance extends StatelessWidget {
                       }
                     },
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Icon(
                         isWished ? Icons.favorite : Icons.favorite_border,
                         size: 22,

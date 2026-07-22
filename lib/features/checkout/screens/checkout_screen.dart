@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:friday_sa/common/widgets/address_widget.dart';
 import 'package:friday_sa/features/address/controllers/address_controller.dart';
@@ -110,13 +111,23 @@ class CheckoutScreenState extends State<CheckoutScreen> {
         AddressHelper.getUserAddressFromSharedPref()!.floor ?? '';
     Get.find<CheckoutController>().couponController.text = '';
 
-    Get.find<CheckoutController>().getDmTipMostTapped();
+    // Load secondary non-blocking APIs in parallel to avoid serial network delay
+    Future.wait([
+      Get.find<CheckoutController>().getDmTipMostTapped(),
+      Get.find<CheckoutController>().getOfflineMethodList(),
+      if (isLoggedIn) ...[
+        if (Get.find<ProfileController>().userInfoModel == null)
+          Get.find<ProfileController>().getUserInfo(),
+        Get.find<CouponController>().getCouponList(),
+        if (Get.find<AddressController>().addressList == null)
+          Get.find<AddressController>().getAddressList(),
+      ],
+    ]);
+
     Get.find<CheckoutController>().setPreferenceTimeForView(
       '',
       isUpdate: false,
     );
-
-    Get.find<CheckoutController>().getOfflineMethodList();
 
     if (Get.find<CheckoutController>().isCreateAccount) {
       Get.find<CheckoutController>().toggleCreateAccount(willUpdate: false);
@@ -124,18 +135,6 @@ class CheckoutScreenState extends State<CheckoutScreen> {
 
     if (Get.find<CheckoutController>().isPartialPay) {
       Get.find<CheckoutController>().changePartialPayment(isUpdate: false);
-    }
-
-    if (isLoggedIn) {
-      if (Get.find<ProfileController>().userInfoModel == null) {
-        Get.find<ProfileController>().getUserInfo();
-      }
-
-      Get.find<CouponController>().getCouponList();
-
-      if (Get.find<AddressController>().addressList == null) {
-        Get.find<AddressController>().getAddressList();
-      }
     }
 
     if (widget.storeId == null) {
@@ -438,8 +437,9 @@ class CheckoutScreenState extends State<CheckoutScreen> {
 
                     _setSinglePaymentActive();
 
-                    return (checkoutController.distance != null &&
-                            checkoutController.store != null)
+                    log("===>>> CheckoutScreen Render Check: distance=${checkoutController.distance}, store=${checkoutController.store?.id}, isAddressLoading=${checkoutController.isAddressLoading}");
+
+                    return (checkoutController.store != null)
                         ? Column(
                             children: [
                               ResponsiveHelper.isDesktop(context)
@@ -823,9 +823,13 @@ class CheckoutScreenState extends State<CheckoutScreen> {
         horizontal: Dimensions.paddingSizeLarge,
       ),
       child: SafeArea(
-        child: CustomButton(
-          isLoading: checkoutController.isLoading || (checkoutController.orderType != 'take_away' && (checkoutController.isAddressLoading || checkoutController.distance == -1)),
-          buttonText: 'place_order'.tr,
+        child: Builder(
+          builder: (context) {
+            bool buttonLoading = checkoutController.isLoading || (checkoutController.orderType != 'take_away' && (checkoutController.isAddressLoading || checkoutController.distance == -1));
+            log("===>>> Place Order Button Loading State: isLoading=$buttonLoading (controller.isLoading=${checkoutController.isLoading}, isAddressLoading=${checkoutController.isAddressLoading}, distance=${checkoutController.distance}, orderType=${checkoutController.orderType})");
+            return CustomButton(
+              isLoading: buttonLoading,
+              buttonText: 'place_order'.tr,
           onPressed: checkoutController.acceptTerms
               ? () {
                   bool isAvailable = true;
@@ -1302,6 +1306,8 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                   }
                 }
               : null,
+            );
+          },
         ),
       ),
     );

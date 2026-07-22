@@ -1385,6 +1385,14 @@ class CheckoutButton extends StatelessWidget {
                       }
                       Get.find<CouponController>().removeCouponData(false);
 
+                      if (cartController.cartList.isNotEmpty && cartController.cartList[0].item?.storeId != null) {
+                        Get.find<StoreController>().getStoreDetails(
+                          Store(id: cartController.cartList[0].item!.storeId),
+                          false,
+                          fromCart: true,
+                        );
+                      }
+
                       Get.toNamed(RouteHelper.getCheckoutRoute('cart'));
                     }
                   },

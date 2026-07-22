@@ -19,8 +19,7 @@ Future<void> route({NotificationBodyModel? body}) async {
     String minimumVersion = _getMinimumVersion() ?? "0";
 
     print("=====> Splash Screen Version ${minimumVersion.toString()}");
-    bool isMaintenanceMode =
-        Get.find<SplashController>().configModel?.maintenanceMode ?? false;
+    bool isMaintenanceMode = Get.find<SplashController>().configModel?.maintenanceMode ?? false;
     bool needsUpdate = isHigherVersion(minimumVersion);
 
     print("=======> Second Splash Screen Version $needsUpdate");

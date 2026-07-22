@@ -216,6 +216,9 @@ import 'package:get/get.dart';
 Future<Map<String, Map<String, String>>> init() async {
   /// Core
   final sharedPreferences = await SharedPreferences.getInstance();
+  if (sharedPreferences.containsKey('baseUrl') && (sharedPreferences.getString('baseUrl')?.isNotEmpty ?? false)) {
+    AppConstants.baseUrl = sharedPreferences.getString('baseUrl')!;
+  }
   Get.put<SharedPreferences>(sharedPreferences, permanent: true);
   Get.lazyPut(
     () => ApiClient(

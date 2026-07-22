@@ -406,7 +406,7 @@ class _ItemThatYouLoveShimmerViewState
                                                       ),
                                                       Container(
                                                         height: 5,
-                                                        width: 100,
+                                                        width: 30,
                                                         color: Theme.of(
                                                           context,
                                                         ).cardColor,
@@ -417,7 +417,7 @@ class _ItemThatYouLoveShimmerViewState
                                                       ),
                                                       Container(
                                                         height: 5,
-                                                        width: 100,
+                                                        width: 30,
                                                         color: Theme.of(
                                                           context,
                                                         ).cardColor,

@@ -42,7 +42,7 @@ class CategoryView extends StatelessWidget {
                         children: [
                           Expanded(
                             child: SizedBox(
-                              height: 130,
+                              height: 145,
                               child: categoryController.categoryList != null
                                   ? ListView.builder(
                                       controller: scrollController,

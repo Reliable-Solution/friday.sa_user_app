@@ -166,8 +166,8 @@ class ApiClient extends GetxService {
       // AppConstants.operationAreaId: operationIds != null ? jsonEncode(operationIds) : '',
       AppConstants.localizationKey:
           languageCode ?? AppConstants.languages[0].languageCode!,
-      AppConstants.latitude: latitude != null ? jsonEncode(latitude) : '',
-      AppConstants.longitude: longitude != null ? jsonEncode(longitude) : '',
+      AppConstants.latitude: latitude ?? '',
+      AppConstants.longitude: longitude ?? '',
       'Authorization': 'Bearer $token',
     });
     if (setHeader) {

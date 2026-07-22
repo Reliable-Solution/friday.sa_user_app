@@ -353,23 +353,27 @@ class OrderViewWidget extends StatelessWidget {
                                                      child: Column(
                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                        children: [
-                                                         Row(
-                                                           children: [
-                                                             Text(
-                                                               '${isParcel ? 'delivery_id'.tr : 'order_id'.tr}: ',
-                                                               style: robotoRegular.copyWith(
-                                                                 fontSize: Dimensions.fontSizeSmall,
-                                                                 color: Theme.of(context).textTheme.bodyLarge?.color,
+                                                         Text.rich(
+                                                           TextSpan(
+                                                             children: [
+                                                               TextSpan(
+                                                                 text: '${isParcel ? 'delivery_id'.tr : 'order_id'.tr}: ',
+                                                                 style: robotoRegular.copyWith(
+                                                                   fontSize: Dimensions.fontSizeSmall,
+                                                                   color: Theme.of(context).textTheme.bodyLarge?.color,
+                                                                 ),
                                                                ),
-                                                             ),
-                                                             Text(
-                                                               '#${paginatedOrderModel.orders![index].id}',
-                                                               style: robotoBold.copyWith(
-                                                                 fontSize: Dimensions.fontSizeSmall,
-                                                                 color: Theme.of(context).textTheme.bodyLarge?.color,
+                                                               TextSpan(
+                                                                 text: '#${paginatedOrderModel.orders![index].id}',
+                                                                 style: robotoBold.copyWith(
+                                                                   fontSize: Dimensions.fontSizeSmall,
+                                                                   color: Theme.of(context).textTheme.bodyLarge?.color,
+                                                                 ),
                                                                ),
-                                                             ),
-                                                           ],
+                                                             ],
+                                                           ),
+                                                           maxLines: 1,
+                                                           overflow: TextOverflow.ellipsis,
                                                          ),
                                                          const SizedBox(height: 2),
                                                          Text(

@@ -70,11 +70,11 @@ class ModuleView extends StatelessWidget {
                           ),
                         ),
                         GridView.builder(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 4,
                             mainAxisSpacing: Dimensions.paddingSizeDefault,
                             crossAxisSpacing: Dimensions.paddingSizeDefault,
-                            childAspectRatio: 1 / 1.35,
+                            childAspectRatio: MediaQuery.of(context).size.width < 340 ? 1 / 1.55 : 1 / 1.35,
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
                           itemCount: splashController.moduleList!.length,
@@ -84,47 +84,50 @@ class ModuleView extends StatelessWidget {
                             return CustomInkWell(
                               onTap: () => splashController.switchModule(index, true),
                               radius: Dimensions.radiusLarge,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
-                                      color: Theme.of(context).cardColor,
-                                      border: Border.all(
-                                        color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
-                                        width: 1,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.03),
-                                          blurRadius: 15,
-                                          spreadRadius: 0,
-                                          offset: const Offset(0, 8),
+                              child: SingleChildScrollView(
+                                physics: const NeverScrollableScrollPhysics(),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+                                        color: Theme.of(context).cardColor,
+                                        border: Border.all(
+                                          color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                                          width: 1,
                                         ),
-                                      ],
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(alpha: 0.03),
+                                            blurRadius: 15,
+                                            spreadRadius: 0,
+                                            offset: const Offset(0, 8),
+                                          ),
+                                        ],
+                                      ),
+                                      child: CustomImage(
+                                        image: '${splashController.moduleList![index].iconFullUrl}',
+                                        height: 35,
+                                        width: 35,
+                                      ),
                                     ),
-                                    child: CustomImage(
-                                      image: '${splashController.moduleList![index].iconFullUrl}',
-                                      height: 35,
-                                      width: 35,
+                                    const SizedBox(height: Dimensions.paddingSizeSmall),
+                                    Text(
+                                      splashController.moduleList![index].moduleName!,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                      style: robotoBold.copyWith(
+                                        fontSize: 10,
+                                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                                        height: 1.2,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: Dimensions.paddingSizeSmall),
-                                  Text(
-                                    splashController.moduleList![index].moduleName!,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.center,
-                                    style: robotoBold.copyWith(
-                                      fontSize: 10,
-                                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                                      height: 1.2,
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             );
                           },

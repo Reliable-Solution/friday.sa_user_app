@@ -44,7 +44,7 @@ class CategoryView extends StatelessWidget {
                         children: [
                           Expanded(
                             child: SizedBox(
-                              height: 158,
+                              height: 175,
                               child: categoryController.categoryList != null
                                   ? ListView.builder(
                                       controller: scrollController,
@@ -96,40 +96,43 @@ class CategoryView extends StatelessWidget {
                                             },
                                             child: SizedBox(
                                               width: 75,
-                                              child: Column(
-                                                children: [
-                                                  Container(
-                                                    height: 70, width: 70,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color: Theme.of(context).cardColor,
-                                                      border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.1), width: 1),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: Colors.black.withValues(alpha: 0.03),
-                                                          blurRadius: 10, spreadRadius: 0, offset: const Offset(0, 4),
+                                              child: SingleChildScrollView(
+                                                physics: const NeverScrollableScrollPhysics(),
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      height: 70, width: 70,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: Theme.of(context).cardColor,
+                                                        border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.1), width: 1),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black.withValues(alpha: 0.03),
+                                                            blurRadius: 10, spreadRadius: 0, offset: const Offset(0, 4),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: ClipOval(
+                                                        child: CustomImage(
+                                                          image: '${categoryController.categoryList![index].imageFullUrl}',
+                                                          height: 70, width: 70, fit: BoxFit.cover,
                                                         ),
-                                                      ],
-                                                    ),
-                                                    child: ClipOval(
-                                                      child: CustomImage(
-                                                        image: '${categoryController.categoryList![index].imageFullUrl}',
-                                                        height: 70, width: 70, fit: BoxFit.cover,
                                                       ),
                                                     ),
-                                                  ),
-                                                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                                                  Text(
-                                                    (index == 9 && categoryController.categoryList!.length > 10)
-                                                        ? 'see_all'.tr
-                                                        : categoryController.categoryList![index].name!,
-                                                    style: robotoMedium.copyWith(
-                                                      fontSize: 10,
-                                                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                                                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                                    Text(
+                                                      (index == 9 && categoryController.categoryList!.length > 10)
+                                                          ? 'see_all'.tr
+                                                          : categoryController.categoryList![index].name!,
+                                                      style: robotoMedium.copyWith(
+                                                        fontSize: 10,
+                                                        color: Theme.of(context).textTheme.bodyLarge?.color,
+                                                      ),
+                                                      maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
                                                     ),
-                                                    maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ),),
                                         );

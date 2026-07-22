@@ -92,7 +92,9 @@ class _ItemsViewState extends State<ItemsView> {
                             ? 225
                             : ResponsiveHelper.isMobile(context)
                             ? widget.stores != null && widget.isStore
-                                  ? (widget.stores!.any((s) => s != null && FreeDeliveryHelper.isFreeDelivery(s)) ? 130 : 110)
+                                  ? (widget.stores!.any((s) => s != null && FreeDeliveryHelper.isFreeDelivery(s))
+                                      ? (MediaQuery.of(context).size.width < 340 ? 130 : 145)
+                                      : (MediaQuery.of(context).size.width < 340 ? 120 : 135))
                                   : 125
                             : 125,
                         crossAxisCount: widget.isFavourite

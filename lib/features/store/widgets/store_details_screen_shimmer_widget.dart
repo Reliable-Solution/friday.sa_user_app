@@ -286,63 +286,69 @@ class StoreDetailsScreenShimmerWidget extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const SizedBox(),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                    Dimensions.radiusSmall,
-                                  ),
-                                  child: Shimmer(
-                                    child: Container(
-                                      height: 10,
-                                      width: 200,
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).shadowColor,
-                                        borderRadius: BorderRadius.circular(
-                                          Dimensions.radiusSmall,
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        Dimensions.radiusSmall,
+                                      ),
+                                      child: Shimmer(
+                                        child: Container(
+                                          height: 10,
+                                          width: 120,
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).shadowColor,
+                                            borderRadius: BorderRadius.circular(
+                                              Dimensions.radiusSmall,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                    Dimensions.radiusSmall,
-                                  ),
-                                  child: Shimmer(
-                                    child: Container(
-                                      height: 10,
-                                      width: 100,
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).shadowColor,
-                                        borderRadius: BorderRadius.circular(
-                                          Dimensions.radiusSmall,
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        Dimensions.radiusSmall,
+                                      ),
+                                      child: Shimmer(
+                                        child: Container(
+                                          height: 10,
+                                          width: 80,
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).shadowColor,
+                                            borderRadius: BorderRadius.circular(
+                                              Dimensions.radiusSmall,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                    Dimensions.radiusSmall,
-                                  ),
-                                  child: Shimmer(
-                                    child: Container(
-                                      height: 10,
-                                      width: 200,
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).shadowColor,
-                                        borderRadius: BorderRadius.circular(
-                                          Dimensions.radiusSmall,
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        Dimensions.radiusSmall,
+                                      ),
+                                      child: Shimmer(
+                                        child: Container(
+                                          height: 10,
+                                          width: 150,
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).shadowColor,
+                                            borderRadius: BorderRadius.circular(
+                                              Dimensions.radiusSmall,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
+                                    const SizedBox(),
+                                  ],
                                 ),
-                                const SizedBox(),
-                              ],
+                              ),
                             ),
                             Icon(
                               Icons.favorite_border,

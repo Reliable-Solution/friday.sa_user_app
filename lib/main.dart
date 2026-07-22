@@ -32,7 +32,6 @@ import 'helper/get_di.dart' as di;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-
 String currentAppVersion = '1.0.0';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -55,7 +54,6 @@ Future<void> main() async {
   print('loading version');
   await initAppVersion();
   await initializeDateFormatting();
-
 
   print("object 1");
 
