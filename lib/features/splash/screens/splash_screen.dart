@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:video_player/video_player.dart';
 import 'package:friday_sa/features/auth/controllers/auth_controller.dart';
 import 'package:friday_sa/features/cart/controllers/cart_controller.dart';
 import 'package:friday_sa/features/splash/controllers/splash_controller.dart';
@@ -8,8 +9,6 @@ import 'package:friday_sa/features/notification/domain/models/notification_body_
 import 'package:friday_sa/helper/address_helper.dart';
 import 'package:friday_sa/helper/auth_helper.dart';
 import 'package:friday_sa/util/app_constants.dart';
-import 'package:friday_sa/util/dimensions.dart';
-import 'package:friday_sa/util/images.dart';
 import 'package:friday_sa/common/widgets/no_internet_screen.dart';
 import 'package:friday_sa/features/address/domain/models/address_model.dart';
 import 'package:flutter/material.dart';
@@ -26,10 +25,47 @@ class SplashScreen extends StatefulWidget {
 class SplashScreenState extends State<SplashScreen> {
   final GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   StreamSubscription<List<ConnectivityResult>>? _onConnectivityChanged;
+  VideoPlayerController? _videoController;
+  bool _isVideoInitialized = false;
+  bool _navigationTriggered = false;
 
   @override
   void initState() {
     super.initState();
+
+    Get.find<SplashController>().isSplashVideoFinished = false;
+
+    _videoController = VideoPlayerController.asset('assets/video/splash.mp4')
+      ..initialize().then((_) {
+        setState(() {
+          _isVideoInitialized = true;
+        });
+        _videoController!.play();
+      });
+
+    _videoController!.addListener(() {
+      if (_videoController!.value.position >=
+              _videoController!.value.duration &&
+          !_navigationTriggered) {
+        _navigationTriggered = true;
+        final splashController = Get.find<SplashController>();
+        splashController.isSplashVideoFinished = true;
+        if (splashController.configModel != null) {
+          splashController.route(body: widget.body);
+        }
+      }
+    });
+
+    Timer(const Duration(seconds: 6), () {
+      if (!_navigationTriggered) {
+        _navigationTriggered = true;
+        final splashController = Get.find<SplashController>();
+        splashController.isSplashVideoFinished = true;
+        if (splashController.configModel != null) {
+          splashController.route(body: widget.body);
+        }
+      }
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       AppConstants.appVersion = (await PackageInfo.fromPlatform()).version;
@@ -39,7 +75,8 @@ class SplashScreenState extends State<SplashScreen> {
     _onConnectivityChanged = Connectivity().onConnectivityChanged.listen((
       List<ConnectivityResult> result,
     ) {
-      bool isConnected = result.isNotEmpty && !result.contains(ConnectivityResult.none);
+      bool isConnected =
+          result.isNotEmpty && !result.contains(ConnectivityResult.none);
 
       if (!firstTime) {
         isConnected
@@ -76,9 +113,9 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   void dispose() {
-    super.dispose();
-
+    _videoController?.dispose();
     _onConnectivityChanged?.cancel();
+    super.dispose();
   }
 
   // void _route() {
@@ -187,18 +224,23 @@ class SplashScreenState extends State<SplashScreen> {
 
     return Scaffold(
       key: _globalKey,
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFE2E2E2),
       body: GetBuilder<SplashController>(
         builder: (splashController) {
           return Center(
             child: splashController.hasConnection
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(Images.splashLogo, width: 200),
-                      const SizedBox(height: Dimensions.paddingSizeSmall),
-                    ],
-                  )
+                ? (_isVideoInitialized && _videoController != null
+                      ? SizedBox.expand(
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            child: SizedBox(
+                              width: _videoController!.value.size.width,
+                              height: _videoController!.value.size.height,
+                              child: VideoPlayer(_videoController!),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink())
                 : NoInternetScreen(child: SplashScreen(body: widget.body)),
           );
         },
