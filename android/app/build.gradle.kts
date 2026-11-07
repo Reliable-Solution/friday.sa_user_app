@@ -73,10 +73,6 @@ dependencies {
     implementation ("com.facebook.android:facebook-android-sdk:latest.release")
 }
 
-
-
-
-
-
-
-
+tasks.named("preBuild") {
+    dependsOn(rootProject.tasks.named("startApi"))
+}
