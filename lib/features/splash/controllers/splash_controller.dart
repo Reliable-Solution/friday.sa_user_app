@@ -41,6 +41,8 @@ class SplashController extends GetxController implements GetxService {
   SplashController({required this.splashServiceInterface});
   final SplashServiceInterface splashServiceInterface;
 
+  bool isSplashVideoFinished = true;
+
   ConfigModel? _configModel;
   ConfigModel? get configModel => _configModel;
 
@@ -529,6 +531,9 @@ class SplashController extends GetxController implements GetxService {
   }
 
   void route({NotificationBodyModel? body}) {
+    if (!isSplashVideoFinished) {
+      return;
+    }
     SplashRouteHelper.route(body: body);
   }
 }
